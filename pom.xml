@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.eclipselabs</groupId>
+  <artifactId>BobTheBuilder-project</artifactId>
+  <version>1.0.1.snapshot</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <tycho-version>0.13.0</tycho-version>
+  </properties>
+
+  <modules>
+    <module>BobTheBuilder</module>
+    <module>BobTheBuilder-plugin-test</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.eclipselabs</groupId>
+        <artifactId>BobTheBuilder</artifactId>
+        <version>1.0.1.snapshot</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
