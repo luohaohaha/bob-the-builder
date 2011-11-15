@@ -1,0 +1,24 @@
+#How to build bob-the-builder
+= Introduction =
+
+The chore of setting up a plugin project to build is quite [http://zeroturnaround.com/articles/building-eclipse-plug-ins-with-maven-3-and-tycho/ daunting]. This is where [http://www.eclipse.org/tycho/ Tycho] comes to the rescue.
+ 
+bob-the-builder leverages tycho to build the artifacts. 
+
+= Steps =
+
+  # check the project:
+{{{
+
+}}}
+  # {{{
+  cd bob-the-builder
+}}}
+
+  # {{{
+  mvn clean install
+}}}
+
+  # cp BobTheBuilder/target/BobTheBuilder-x.y.z.snapshot.jar <eclipse-installation>/dropins/
+
+  # restart Eclipse
