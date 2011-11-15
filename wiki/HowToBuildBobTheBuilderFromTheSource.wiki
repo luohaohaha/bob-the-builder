@@ -5,20 +5,10 @@ The chore of setting up a plugin project to build is quite [http://zeroturnaroun
  
 bob-the-builder leverages tycho to build the artifacts. 
 
-= Steps =
+= Build steps with [http://maven.apache.org/ maven3] =
 
-  # check the project:
-{{{
-
-}}}
-  # {{{
-  cd bob-the-builder
-}}}
-
-  # {{{
-  mvn clean install
-}}}
-
-  # cp BobTheBuilder/target/BobTheBuilder-x.y.z.snapshot.jar <eclipse-installation>/dropins/
-
+  # [http://code.google.com/a/eclipselabs.org/p/bob-the-builder/source/checkout check out the project]
+  # `cd bob-the-builder`
+  # `mvn clean install`
+  # `cp BobTheBuilder/target/BobTheBuilder-x.y.z.snapshot.jar <eclipse-installation>/dropins/`
   # restart Eclipse
