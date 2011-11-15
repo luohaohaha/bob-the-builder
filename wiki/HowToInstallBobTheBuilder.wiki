@@ -1,0 +1,5 @@
+#Instructions on how to install bob-the-builder using the released jars
+
+= Install steps =
+  # Download the [http://code.google.com/a/eclipselabs.org/p/bob-the-builder/downloads/list latest released jar].
+  # `cp BobTheBuilder-x.y.z.snapshot.jar <your-eclipse-installation>/dropins/`
