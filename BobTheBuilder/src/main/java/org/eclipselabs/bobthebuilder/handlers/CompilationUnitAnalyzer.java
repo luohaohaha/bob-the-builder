@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipselabs.bobthebuilder.handlers.BuildTypeAnalyzer.Result;
 
 public class CompilationUnitAnalyzer {
   public static final String BUILDER_CLASS_NAME = "Builder";
@@ -245,35 +246,12 @@ public class CompilationUnitAnalyzer {
     Collection<ValidationFramework> validationFrameworks = null;
     Collection<ValidationFramework> existingValidationFrameworkImports = null;
     try {
-      IType[] topLevelTypes = compilationUnit.getTypes();
-      if (topLevelTypes.length > 1) {
-        throw new IllegalStateException(
-            "Compilation units with more than one type are not supported. Compilation unit: " +
-              compilationUnit.getElementName());
-      }
-      type = topLevelTypes[0];
-      if (!type.isClass()) {
-        throw new IllegalStateException("The main type has to be a class."
-          + type.getElementName());
-      }
-      if (type.isBinary()) {
-        throw new IllegalStateException("Binary types are not supported." + type.getElementName());
-      }
-      for (IField each : type.getFields()) {
-        if (isFinalStatic(each)) {
-          continue;
-        }
-        fields.add(each);
-        copyOfFields.add(each);
-      }
-      IType[] types = type.getTypes();
-      for (IType each : types) {
-        if (each.getElementName().equals(BUILDER_CLASS_NAME)) {
-          builderType = each;
-          missingBuilder = false;
-          break;
-        }
-      }
+      type = new TypeAnalyzer(compilationUnit).analyze();
+      fields = new FieldAnalyzer(type).analyze();
+      copyOfFields.addAll(fields);
+      Result builderAnalyzerResult = new BuildTypeAnalyzer(type).analyze();
+      builderType = builderAnalyzerResult.getBuilderType();
+      missingBuilder = !builderAnalyzerResult.isPresent();
       if (builderType != null) {
         for (IField each : builderType.getFields()) {
           if (isFinalStatic(each)) {
