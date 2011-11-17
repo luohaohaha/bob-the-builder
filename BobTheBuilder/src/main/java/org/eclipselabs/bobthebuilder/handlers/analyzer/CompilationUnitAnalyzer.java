@@ -1,18 +1,15 @@
-package org.eclipselabs.bobthebuilder.handlers;
+package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IImportDeclaration;
@@ -20,7 +17,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
-import org.eclipselabs.bobthebuilder.handlers.BuildTypeAnalyzer.Result;
+import org.eclipselabs.bobthebuilder.handlers.ValidationFramework;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.Method;
 
 public class CompilationUnitAnalyzer {
   public static final String BUILDER_CLASS_NAME = "Builder";
@@ -108,7 +106,7 @@ public class CompilationUnitAnalyzer {
       this.builderType = builderType;
       this.missingConstructorWithBuilder = missingConstructorWithBuilder;
       Validate.notNull(
-        missingFieldsInConstructorWithBuilder, 
+        missingFieldsInConstructorWithBuilder,
         "missingFieldsInConstructorWithBuilder may not be null");
       this.missingFieldsInConstructorWithBuilder = missingFieldsInConstructorWithBuilder;
       this.constructorWithBuilder = constructorWithBuilder;
@@ -247,29 +245,27 @@ public class CompilationUnitAnalyzer {
     Collection<ValidationFramework> existingValidationFrameworkImports = null;
     try {
       type = new TypeAnalyzer(compilationUnit).analyze();
-      fields = new FieldAnalyzer(type).analyze();
+      fields = new MainTypeFieldAnalyzer(type).analyze();
       copyOfFields.addAll(fields);
-      Result builderAnalyzerResult = new BuildTypeAnalyzer(type).analyze();
-      builderType = builderAnalyzerResult.getBuilderType();
+      AnalyzerResult.Type builderAnalyzerResult = new BuilderTypeAnalyzer(type).analyze();
+      builderType = builderAnalyzerResult.getElement();
       missingBuilder = !builderAnalyzerResult.isPresent();
-      if (builderType != null) {
-        for (IField each : builderType.getFields()) {
-          if (isFinalStatic(each)) {
-            continue;
-          }
-          builderFields.add(each);
-          copyOfBuilderFields.add(each);
-          anotherCopyOfBuilderFields.add(each);
-        }
-      }
-      missingFieldsInBuilder = analyzeMissingFieldsInBuilder(copyOfFields, builderFields);
-      extraFieldsInBuilder = analyzeExtraFieldsInBuilder(copyOfBuilderFields, fields);
-      missingWithMethodsForFields = analyzeMissingWithMethodsForFields(
-        anotherCopyOfBuilderFields, missingFieldsInBuilder, builderType, extraFieldsInBuilder);
-      missingConstructorWithBuilder = analyzeMissingConstructorWithBuilder(
-        missingBuilder, type).isMissing();
-      constructorWithBuilder = analyzeMissingConstructorWithBuilder(
-        missingBuilder, type).getConstructor();
+      builderFields = new BuilderTypeFieldAnalyzer(builderAnalyzerResult).analyze();
+      copyOfBuilderFields.addAll(builderFields);
+      anotherCopyOfBuilderFields.addAll(builderFields);
+      missingFieldsInBuilder =
+          new MissingFieldsInBuilderAnalyzer(copyOfFields, builderFields).analyze();
+      extraFieldsInBuilder = new ExtraFieldsInBuilderAnalyzer(copyOfBuilderFields, fields)
+          .analyze();
+      missingWithMethodsForFields = new MissingWithMethodsInBuilderAnalyzer(
+          anotherCopyOfBuilderFields,
+          missingFieldsInBuilder,
+          builderAnalyzerResult,
+          extraFieldsInBuilder).analyze();
+      Method constructorWithBuilderResult = 
+        new ConstructorWithBuilderInMainTypeAnalyzer(builderAnalyzerResult, type).analyze();
+      missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
+      constructorWithBuilder = constructorWithBuilderResult.getElement();
       missingFieldsInConstructorWithBuilder = analyzeMissingFieldsInConstructorWithBuilder(
         fields, constructorWithBuilder, missingConstructorWithBuilder);
       missingBuildMethodInBuilder = analyzeMissingBuildMethodInBuilder(missingBuilder, builderType);
@@ -284,7 +280,7 @@ public class CompilationUnitAnalyzer {
           analyzeValidationFramework(missingValidateMethodInBuilder, validationMethod,
             compilationUnit);
       existingValidationFrameworkImports =
-        analyzeExistingValidationFrameworkImports(compilationUnit);
+          analyzeExistingValidationFrameworkImports(compilationUnit);
 
     }
     catch (JavaModelException e) {
@@ -401,13 +397,13 @@ public class CompilationUnitAnalyzer {
     return result;
   }
 
-  interface Predicate {
+  public interface Predicate {
     boolean match(String fieldToMatch, String input, String signature);
   }
 
-  static class FieldAssignmentPredicate implements Predicate {
+  public static class FieldAssignmentPredicate implements Predicate {
 
-    static String createFieldAssignmentRegex(String fieldName) {
+    public static String createFieldAssignmentRegex(String fieldName) {
       return "this\\." + fieldName + "\\s*=\\s*\\S*" + fieldName + "\\s*;";
     }
 
@@ -428,34 +424,6 @@ public class CompilationUnitAnalyzer {
         return true;
       }
       return input.contains(fieldToMatch);
-    }
-
-  }
-
-  private boolean isFinalStatic(IField field) throws JavaModelException {
-    int flags = field.getFlags();
-    if (Flags.isFinal(flags) && Flags.isStatic(flags)) {
-      return true;
-    }
-    return false;
-  }
-
-  private static class ConstructorWithBuilderData {
-    private final boolean missing;
-
-    private final IMethod constructor;
-
-    ConstructorWithBuilderData(boolean missing, IMethod constructor) {
-      this.missing = missing;
-      this.constructor = constructor;
-    }
-
-    public boolean isMissing() {
-      return missing;
-    }
-
-    public IMethod getConstructor() {
-      return constructor;
     }
 
   }
@@ -492,77 +460,4 @@ public class CompilationUnitAnalyzer {
     return true;
   }
 
-  ConstructorWithBuilderData analyzeMissingConstructorWithBuilder(
-      boolean missingBuilder, IType type) throws JavaModelException {
-    if (missingBuilder) {
-      return new ConstructorWithBuilderData(true, null);
-    }
-    for (IMethod each : type.getMethods()) {
-      if (each.isConstructor()) {
-        if (each.getSignature().equals(Analyzed.CONSTRUCTOR_WITH_BUILDER_SIGNATURE)) {
-          return new ConstructorWithBuilderData(false, each);
-        }
-      }
-    }
-    return new ConstructorWithBuilderData(true, null);
-  }
-
-  private Set<IField> analyzeMissingWithMethodsForFields(Set<IField> copyOfBuilderFields,
-    Set<IField> missingFieldsInBuilder, IType builderType, Set<IField> extraFieldsInBuilder)
-    throws JavaModelException {
-    Set<IField> result = new HashSet<IField>();
-    result.addAll(missingFieldsInBuilder);
-    Iterator<IField> iterator = copyOfBuilderFields.iterator();
-    while (iterator.hasNext()) {
-      IField each = iterator.next();
-      IMethod[] methods = builderType.getMethods();
-      for (IMethod eachBuilderMethod : methods) {
-        if (eachBuilderMethod.getElementName().equals(
-          "with" + StringUtils.capitalize(each.getElementName())) &&
-          eachBuilderMethod.getParameterTypes()[0].equals(each.getTypeSignature())) {
-          iterator.remove();
-        }
-      }
-    }
-    Iterator<IField> iteratorToRemoveExtraFields = copyOfBuilderFields.iterator();
-    while (iteratorToRemoveExtraFields.hasNext()) {
-      IField each = iteratorToRemoveExtraFields.next();
-      if (extraFieldsInBuilder.contains(each)) {
-        iteratorToRemoveExtraFields.remove();
-      }
-    }
-    result.addAll(copyOfBuilderFields);
-    return result;
-  }
-
-  private Set<IField> analyzeMissingFieldsInBuilder(Set<IField> copyOfFields,
-    Set<IField> builderFields) throws JavaModelException {
-    Iterator<IField> iterator = copyOfFields.iterator();
-    while (iterator.hasNext()) {
-      IField each = iterator.next();
-      for (IField eachBuilderField : builderFields) {
-        if (each.getElementName().equals(eachBuilderField.getElementName()) &&
-            each.getTypeSignature().equals(eachBuilderField.getTypeSignature())) {
-          iterator.remove();
-        }
-      }
-    }
-    return copyOfFields;
-  }
-
-  private Set<IField> analyzeExtraFieldsInBuilder(Set<IField> copyOfBuilderFields,
-    Set<IField> fields)
-    throws JavaModelException {
-    Iterator<IField> iterator = copyOfBuilderFields.iterator();
-    while (iterator.hasNext()) {
-      IField each = iterator.next();
-      for (IField eachField : fields) {
-        if (each.getElementName().equals(eachField.getElementName()) &&
-            each.getTypeSignature().equals(eachField.getTypeSignature())) {
-          iterator.remove();
-        }
-      }
-    }
-    return copyOfBuilderFields;
-  }
 }

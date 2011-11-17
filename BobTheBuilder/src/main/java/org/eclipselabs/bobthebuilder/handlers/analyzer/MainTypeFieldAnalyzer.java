@@ -1,5 +1,6 @@
-package org.eclipselabs.bobthebuilder.handlers;
+package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,15 +10,15 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
-public class FieldAnalyzer {
+public class MainTypeFieldAnalyzer {
   private final IType type;
 
-  FieldAnalyzer(IType type) {
+  public MainTypeFieldAnalyzer(IType type) {
     Validate.notNull(type, "Type may not be null");
     this.type = type;
   }
-  
-  Set<IField> analyze() throws JavaModelException {
+
+  public Set<IField> analyze() throws JavaModelException {
     Set<IField> fields = new HashSet<IField>();
     for (IField each : type.getFields()) {
       if (isFinalStatic(each)) {
@@ -25,9 +26,9 @@ public class FieldAnalyzer {
       }
       fields.add(each);
     }
-    return fields;
+    return Collections.unmodifiableSet(fields);
   }
-  
+
   private boolean isFinalStatic(IField field) throws JavaModelException {
     int flags = field.getFlags();
     if (Flags.isFinal(flags) && Flags.isStatic(flags)) {

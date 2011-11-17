@@ -30,7 +30,7 @@ public enum ValidationFramework {
   private static final String checkNotEmptyCollectionTemplateEnding =
       "(!%1$s.isEmpty(), \"%1$s may not be empty\");";
 
-  String fullClassName;
+  public String fullClassName;
 
   private String checkArgument;
 

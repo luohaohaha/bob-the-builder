@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.handlers.FieldTextBuilder.FieldDeclarationBuilder;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer;
 
 public class DialogRequest {
 
