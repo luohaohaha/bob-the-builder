@@ -1,4 +1,4 @@
-package org.eclipselabs.bobthebuilder.handlers;
+package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -9,12 +9,12 @@ public class TypeAnalyzer {
 
   private final ICompilationUnit compilationUnit;
 
-  TypeAnalyzer(ICompilationUnit compilationUnit) {
+  public TypeAnalyzer(ICompilationUnit compilationUnit) {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     this.compilationUnit = compilationUnit;
   }
   
-  IType analyze() throws JavaModelException {
+  public IType analyze() throws JavaModelException {
     IType type = null;
     IType[] topLevelTypes = compilationUnit.getTypes();
     if (topLevelTypes.length > 1) {
