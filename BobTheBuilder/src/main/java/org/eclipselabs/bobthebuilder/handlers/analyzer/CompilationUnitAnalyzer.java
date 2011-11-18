@@ -24,6 +24,10 @@ public class CompilationUnitAnalyzer {
 
   public static class Analyzed {
 
+    // TODO change from missing to isPresent. Some of this has been already
+    // happening in the micro-analyzers
+    // TODO audit whether all of this fields are really needed.
+    // GRoup fields in classes of coherent
     public static final String BUILD_METHOD_NAME = "build";
 
     public static final String VALIDATE_METHOD_NAME = "validate";
@@ -66,7 +70,7 @@ public class CompilationUnitAnalyzer {
 
     private final Collection<ValidationFramework> existingValidationFrameworkImports;
 
-    public Analyzed(
+    private Analyzed(
         ICompilationUnit compilationUnit,
         Set<IField> fields,
         Set<IField> builderFields,
@@ -85,6 +89,8 @@ public class CompilationUnitAnalyzer {
         IMethod validateMethodInBuilder,
         Collection<ValidationFramework> possibleValidationFrameworks,
         Collection<ValidationFramework> existingValidationFrameworkImports) {
+      // TODO analyzed whether all this validation is redundant.
+      // move it to the analyze method
       Validate.notNull(compilationUnit, "compilation unit may not be null");
       this.compilationUnit = compilationUnit;
       Validate.notNull(fields, "fields may not be null");
@@ -266,10 +272,10 @@ public class CompilationUnitAnalyzer {
       missingFieldsInConstructorWithBuilder =
           new MissingInstructionsInMethodAnalyzer.ConstructorWithBuilderInMainType(
               fields, constructorWithBuilderResult).analyze();
-      missingBuildMethodInBuilder = 
-        !new MissingMethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
+      missingBuildMethodInBuilder =
+          !new MissingMethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
       missingValidateMethodInBuilder =
-        !new MissingMethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze().isPresent();
+          !new MissingMethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze().isPresent();
       validationMethod = analyzeMissingValidateMethodInBuilder(missingBuilder, builderType)
           .getValidationMethod();
       missingFieldValidationsInBuilder =

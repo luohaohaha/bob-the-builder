@@ -1,10 +1,9 @@
 package org.eclipselabs.bobthebuilder.handlers;
 
-import java.io.File;
-
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -19,6 +18,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipselabs.bobthebuilder.Activator;
 
 public class TreeBasedBuilderDialog extends Dialog {
 
@@ -45,10 +45,13 @@ public class TreeBasedBuilderDialog extends Dialog {
     String iconFilePathname = "icons/btb.png";
     shell.setText("Bob The Builder Plugin");
 
-    if (new File(iconFilePathname).exists()) {
-      Image image = new Image(shell.getDisplay(), iconFilePathname);
-      shell.setImage(image);
+    Image bobsImage = null;
+    ImageDescriptor imageDescriptor = 
+      Activator.getImageDescriptor(iconFilePathname);
+    if (imageDescriptor != null) {
+      bobsImage = new Image(shell.getDisplay(), imageDescriptor.getImageData());
     }
+    shell.setImage(bobsImage);
 
     GridLayout gridLayout = new GridLayout();
     gridLayout.numColumns = NUMBER_OF_COLUMNS;
@@ -100,6 +103,7 @@ public class TreeBasedBuilderDialog extends Dialog {
     GridData executeGridData = createBottomSectionGridDate();
     Button executeButton = new Button(shell, SWT.PUSH);
     executeButton.setLayoutData(executeGridData);
+    executeButton.setImage(bobsImage);
     executeButton.setText("Bob, build!");
     executeButton.setFocus();
     executeButton.addListener(SWT.Selection, new Listener() {
