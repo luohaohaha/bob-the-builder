@@ -4,5 +4,5 @@
   # Download the [http://code.google.com/a/eclipselabs.org/p/bob-the-builder/downloads/list latest released jar].
   # `cp BobTheBuilder-x.y.z.snapshot.jar <your-eclipse-installation>/dropins/`
   # restart eclipse and load a Java file in your editor
-    * [www.myeclipseide.com/ MyEclipse] users should see a notification window about the detection of the plugin in the `dropins` folder
+    * [http://www.myeclipseide.com/ MyEclipse] users should see a notification window about the detection of the plugin in the `dropins` folder
   # A new context menu labeled `Bob The Builder` should show up between `Run` and `Window` menus
