@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer.FieldAssignmentPredicate;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.FieldPredicate;
 
 public interface Composer {
 
@@ -44,7 +44,7 @@ public interface Composer {
         String originalSource = originalConstructorWithBuilder.getSource().substring(0, length - 1);
         for (IField each : request.getExtraFieldsInBuilder()) {
           originalSource = originalSource.replaceAll(
-            FieldAssignmentPredicate.createFieldAssignmentRegex(each.getElementName()), "");
+            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getElementName()), "");
         }
         sourceLines.add(originalSource);
         originalConstructorWithBuilder.delete(true, null);
@@ -103,7 +103,7 @@ public interface Composer {
         String originalSource = originalValidateMethod.getSource().substring(0, length - 1);
         for (IField each : request.getExtraFieldsInBuilder()) {
           originalSource = originalSource.replaceAll(
-            FieldAssignmentPredicate.createFieldAssignmentRegex(each.getElementName()), "");
+            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getElementName()), "");
         }
         sourceLines.add(originalSource);
         originalValidateMethod.delete(true, null);

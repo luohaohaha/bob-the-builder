@@ -6,11 +6,11 @@
   <parent>
     <artifactId>BobTheBuilder-project</artifactId>
     <groupId>org.eclipselabs</groupId>
-    <version>1.0.1.snapshot</version>
+    <version>1.0.2-SNAPSHOT</version>
   </parent>
   <groupId>org.eclipselabs</groupId>
   <artifactId>BobTheBuilder-plugin-test</artifactId>
-  <version>1.0.1.snapshot</version>
+  <version>1.0.2-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.eclipselabs</groupId>
       <artifactId>BobTheBuilder</artifactId>
-      <version>1.0.1.snapshot</version>
+      <version>1.0.2.snapshot</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
