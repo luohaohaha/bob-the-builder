@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -16,7 +14,6 @@ import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.handlers.ValidationFramework;
 import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.Method;
 
@@ -262,15 +259,17 @@ public class CompilationUnitAnalyzer {
           missingFieldsInBuilder,
           builderAnalyzerResult,
           extraFieldsInBuilder).analyze();
-      Method constructorWithBuilderResult = 
-        new ConstructorWithBuilderInMainTypeAnalyzer(builderAnalyzerResult, type).analyze();
+      Method constructorWithBuilderResult =
+          new ConstructorWithBuilderInMainTypeAnalyzer(builderAnalyzerResult, type).analyze();
       missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
       constructorWithBuilder = constructorWithBuilderResult.getElement();
-      missingFieldsInConstructorWithBuilder = analyzeMissingFieldsInConstructorWithBuilder(
-        fields, constructorWithBuilder, missingConstructorWithBuilder);
-      missingBuildMethodInBuilder = analyzeMissingBuildMethodInBuilder(missingBuilder, builderType);
+      missingFieldsInConstructorWithBuilder =
+          new MissingInstructionsInMethodAnalyzer.ConstructorWithBuilderInMainType(
+              fields, constructorWithBuilderResult).analyze();
+      missingBuildMethodInBuilder = 
+        !new MissingMethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
       missingValidateMethodInBuilder =
-          analyzeMissingValidateMethodInBuilder(missingBuilder, builderType).isMissing();
+        !new MissingMethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze().isPresent();
       validationMethod = analyzeMissingValidateMethodInBuilder(missingBuilder, builderType)
           .getValidationMethod();
       missingFieldValidationsInBuilder =
@@ -354,7 +353,8 @@ public class CompilationUnitAnalyzer {
   private Set<IField> analyzeMissingFieldValidationsInBuilder(
       boolean missingValidateMethodInBuilder, IMethod validateMethod, Set<IField> builderFields) throws JavaModelException {
     return analyzeMissingFieldsInMethod(
-      builderFields, validateMethod, missingValidateMethodInBuilder, new FieldValidationPredicate());
+      builderFields, validateMethod, missingValidateMethodInBuilder,
+      new FieldPredicate.FieldValidation());
   }
 
   private BuilderValidationMethodData analyzeMissingValidateMethodInBuilder(boolean missingBuilder,
@@ -371,14 +371,8 @@ public class CompilationUnitAnalyzer {
     return new BuilderValidationMethodData(true, null);
   }
 
-  private Set<IField> analyzeMissingFieldsInConstructorWithBuilder(
-    Set<IField> fields, IMethod constructorWithBuilder, boolean missingConstructorWithBuilder) throws JavaModelException {
-    return analyzeMissingFieldsInMethod(fields, constructorWithBuilder,
-      missingConstructorWithBuilder, new FieldAssignmentPredicate());
-  }
-
   private Set<IField> analyzeMissingFieldsInMethod(
-    Set<IField> fields, IMethod method, boolean missingMethod, Predicate predicate) throws JavaModelException {
+    Set<IField> fields, IMethod method, boolean missingMethod, FieldPredicate predicate) throws JavaModelException {
     if (missingMethod) {
       return fields;
     }
@@ -395,37 +389,6 @@ public class CompilationUnitAnalyzer {
       }
     }
     return result;
-  }
-
-  public interface Predicate {
-    boolean match(String fieldToMatch, String input, String signature);
-  }
-
-  public static class FieldAssignmentPredicate implements Predicate {
-
-    public static String createFieldAssignmentRegex(String fieldName) {
-      return "this\\." + fieldName + "\\s*=\\s*\\S*" + fieldName + "\\s*;";
-    }
-
-    @Override
-    public boolean match(String fieldToMatch, String input, String signature) {
-      Pattern pattern = Pattern.compile(createFieldAssignmentRegex(fieldToMatch));
-      Matcher matcher = pattern.matcher(input);
-      return matcher.find();
-    }
-
-  }
-
-  static class FieldValidationPredicate implements Predicate {
-
-    @Override
-    public boolean match(String fieldToMatch, String input, String signature) {
-      if (signature.equals(Signature.SIG_BOOLEAN)) { // No need to validate booleans
-        return true;
-      }
-      return input.contains(fieldToMatch);
-    }
-
   }
 
   private static class BuilderValidationMethodData {
