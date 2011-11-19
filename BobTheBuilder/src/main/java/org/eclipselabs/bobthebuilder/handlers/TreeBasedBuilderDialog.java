@@ -153,7 +153,7 @@ public class TreeBasedBuilderDialog extends Dialog {
           }
         }
         for (Control control : validationsGroup.getChildren()) {
-          if (control.isEnabled()) {
+          if (((Button)control).getSelection()) {
             composerRequestBuilder.withValidationFramework((ValidationFramework) control.getData());
           }
         }
