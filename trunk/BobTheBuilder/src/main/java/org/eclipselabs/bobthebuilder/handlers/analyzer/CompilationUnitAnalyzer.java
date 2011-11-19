@@ -1,7 +1,5 @@
 package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -68,8 +65,6 @@ public class CompilationUnitAnalyzer {
 
     private final IMethod validateMethodInBuilder;
 
-    private final Collection<ValidationFramework> existingValidationFrameworkImports;
-
     private Analyzed(
         ICompilationUnit compilationUnit,
         Set<IField> fields,
@@ -87,8 +82,7 @@ public class CompilationUnitAnalyzer {
         boolean missingValidateMethodInBuilder,
         Set<IField> missingFieldsInBuilderValidation,
         IMethod validateMethodInBuilder,
-        Collection<ValidationFramework> possibleValidationFrameworks,
-        Collection<ValidationFramework> existingValidationFrameworkImports) {
+        Collection<ValidationFramework> possibleValidationFrameworks) {
       // TODO analyzed whether all this validation is redundant.
       // move it to the analyze method
       Validate.notNull(compilationUnit, "compilation unit may not be null");
@@ -124,9 +118,6 @@ public class CompilationUnitAnalyzer {
       Validate.notEmpty(
         possibleValidationFrameworks, "possibleValidationFrameworks may not be empty");
       this.possibleValidationFrameworks = possibleValidationFrameworks;
-      Validate.notNull(
-        existingValidationFrameworkImports, "existingValidationFrameworkImports may not be null");
-      this.existingValidationFrameworkImports = existingValidationFrameworkImports;
     }
 
     public ICompilationUnit getCompilationUnit() {
@@ -197,10 +188,6 @@ public class CompilationUnitAnalyzer {
       return validateMethodInBuilder;
     }
 
-    public Collection<ValidationFramework> getExistingValidationFrameworkImports() {
-      return Collections.unmodifiableCollection(existingValidationFrameworkImports);
-    }
-
     public boolean isThereAnythingToDo() {
       if (!isMissingBuilder() &&
           getMissingFieldsInBuilder().isEmpty() &&
@@ -245,7 +232,6 @@ public class CompilationUnitAnalyzer {
     boolean missingBuildMethodInBuilder = true;
     boolean missingValidateMethodInBuilder = true;
     Collection<ValidationFramework> validationFrameworks = null;
-    Collection<ValidationFramework> existingValidationFrameworkImports = null;
     try {
       type = new TypeAnalyzer(compilationUnit).analyze();
       fields = new MainTypeFieldAnalyzer(type).analyze();
@@ -274,19 +260,15 @@ public class CompilationUnitAnalyzer {
               fields, constructorWithBuilderResult).analyze();
       missingBuildMethodInBuilder =
           !new MissingMethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
-      missingValidateMethodInBuilder =
-          !new MissingMethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze().isPresent();
-      validationMethod = analyzeMissingValidateMethodInBuilder(missingBuilder, builderType)
-          .getValidationMethod();
+      Method analyzedValidateInBuilder =
+          new MissingMethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze();
+      missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
+      validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =
-          analyzeMissingFieldValidationsInBuilder(
-            missingValidateMethodInBuilder, validationMethod, fields);
+          new MissingInstructionsInMethodAnalyzer.ValidateInBuilder(
+              fields, analyzedValidateInBuilder).analyze();
       validationFrameworks =
-          analyzeValidationFramework(missingValidateMethodInBuilder, validationMethod,
-            compilationUnit);
-      existingValidationFrameworkImports =
-          analyzeExistingValidationFrameworkImports(compilationUnit);
-
+          new ValidationFrameworkAnalyzer(analyzedValidateInBuilder, compilationUnit).analyze();
     }
     catch (JavaModelException e) {
       new IllegalStateException("Something went really wrong: " + e.getMessage());
@@ -308,125 +290,7 @@ public class CompilationUnitAnalyzer {
         missingValidateMethodInBuilder,
         Collections.unmodifiableSet(missingFieldValidationsInBuilder),
         validationMethod,
-        Collections.unmodifiableCollection(validationFrameworks),
-        Collections.unmodifiableCollection(existingValidationFrameworkImports));
-  }
-
-  private Collection<ValidationFramework> analyzeExistingValidationFrameworkImports(
-    ICompilationUnit compilationUnit) throws JavaModelException {
-    Collection<ValidationFramework> existingImports = new ArrayList<ValidationFramework>();
-    IImportDeclaration[] imports = compilationUnit.getImports();
-    for (IImportDeclaration each : imports) {
-      for (ValidationFramework eachFramework : ValidationFramework.values()) {
-        if (each.getElementName().contains(eachFramework.getFullClassName())) {
-          existingImports.add(eachFramework);
-        }
-      }
-    }
-    return existingImports;
-  }
-
-  private Collection<ValidationFramework> analyzeValidationFramework(
-    boolean missingValidateMethodInBuilder,
-    IMethod validationMethod, ICompilationUnit compilationUnit) throws JavaModelException {
-    if (missingValidateMethodInBuilder) {
-      return Arrays.asList(ValidationFramework.values());
-    }
-
-    String methodSource = validationMethod.getSource();
-    if (methodSource.contains(ValidationFramework.GOOGLE_GUAVA.getCheckArgument()) ||
-        methodSource.contains(ValidationFramework.GOOGLE_GUAVA.getCheckNotNull())) {
-      return Arrays.asList(ValidationFramework.GOOGLE_GUAVA);
-    }
-    if (methodSource.contains(ValidationFramework.COMMONS_LANG2.getCheckArgument()) ||
-        methodSource.contains(ValidationFramework.COMMONS_LANG2.getCheckNotNull())) {
-      for (IImportDeclaration each : compilationUnit.getImports()) {
-        if (each.getElementName().equals(ValidationFramework.COMMONS_LANG2.fullClassName)) {
-          return Arrays.asList(ValidationFramework.COMMONS_LANG2);
-        }
-        else if (each.getElementName().equals(ValidationFramework.COMMONS_LANG3.fullClassName)) {
-          return Arrays.asList(ValidationFramework.COMMONS_LANG3);
-        }
-        else {
-          // Fall-back strategy
-          return Arrays.asList(ValidationFramework.COMMONS_LANG2);
-        }
-      }
-    }
-    return Arrays.asList(ValidationFramework.values());
-  }
-
-  private Set<IField> analyzeMissingFieldValidationsInBuilder(
-      boolean missingValidateMethodInBuilder, IMethod validateMethod, Set<IField> builderFields) throws JavaModelException {
-    return analyzeMissingFieldsInMethod(
-      builderFields, validateMethod, missingValidateMethodInBuilder,
-      new FieldPredicate.FieldValidation());
-  }
-
-  private BuilderValidationMethodData analyzeMissingValidateMethodInBuilder(boolean missingBuilder,
-    IType builderType) throws JavaModelException {
-    if (missingBuilder) {
-      return new BuilderValidationMethodData(true, null);
-    }
-    for (IMethod each : builderType.getMethods()) {
-      if (each.getElementName().equals(Analyzed.VALIDATE_METHOD_NAME) &&
-          each.getParameterTypes().length == 0) {
-        return new BuilderValidationMethodData(false, each);
-      }
-    }
-    return new BuilderValidationMethodData(true, null);
-  }
-
-  private Set<IField> analyzeMissingFieldsInMethod(
-    Set<IField> fields, IMethod method, boolean missingMethod, FieldPredicate predicate) throws JavaModelException {
-    if (missingMethod) {
-      return fields;
-    }
-    if (method.getSource() == null) {
-      return fields;
-    }
-    Set<IField> result = new HashSet<IField>();
-    for (IField each : fields) {
-      String fieldName = each.getElementName();
-      boolean found = predicate.match(
-        fieldName, method.getSource(), each.getTypeSignature());
-      if (!found) {
-        result.add(each);
-      }
-    }
-    return result;
-  }
-
-  private static class BuilderValidationMethodData {
-    private final boolean missing;
-
-    private final IMethod validationMethod;
-
-    BuilderValidationMethodData(boolean missing, IMethod validationMethod) {
-      this.missing = missing;
-      this.validationMethod = validationMethod;
-    }
-
-    public boolean isMissing() {
-      return missing;
-    }
-
-    public IMethod getValidationMethod() {
-      return validationMethod;
-    }
-
-  }
-
-  boolean analyzeMissingBuildMethodInBuilder(boolean missingBuilder, IType builderType) throws JavaModelException {
-    if (missingBuilder) {
-      return true;
-    }
-    for (IMethod each : builderType.getMethods()) {
-      if (each.getElementName().equals(Analyzed.BUILD_METHOD_NAME)) {
-        return false;
-      }
-    }
-    return true;
+        Collections.unmodifiableCollection(validationFrameworks));
   }
 
 }

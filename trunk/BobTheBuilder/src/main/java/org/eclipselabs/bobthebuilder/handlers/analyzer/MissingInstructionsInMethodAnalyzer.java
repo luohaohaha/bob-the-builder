@@ -44,8 +44,8 @@ public abstract class MissingInstructionsInMethodAnalyzer {
   
   public static class ValidateInBuilder extends MissingInstructionsInMethodAnalyzer {
 
-    public ValidateInBuilder(Set<IField> builderTypeFields, Method validateInBuilderResult) {
-      super(builderTypeFields, validateInBuilderResult);
+    public ValidateInBuilder(Set<IField> mainTypeFields, Method validateInBuilderResult) {
+      super(mainTypeFields, validateInBuilderResult);
     }
 
     @Override

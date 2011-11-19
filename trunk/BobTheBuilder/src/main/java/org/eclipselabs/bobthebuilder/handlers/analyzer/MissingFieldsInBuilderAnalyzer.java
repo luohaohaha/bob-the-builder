@@ -9,6 +9,7 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 
+//TODO audit whether MissingInstructionsInMethodAnalyzer can be used
 public class MissingFieldsInBuilderAnalyzer {
 
   private final Set<IField> mainTypeFields = new HashSet<IField>();

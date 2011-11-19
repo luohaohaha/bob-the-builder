@@ -91,10 +91,10 @@ public interface Composer {
       }
       if (request.isCreateValidateMethodInBuilder()) {
         builder.createMethod(
-        composeValidateMethodInBuilder(
-          request.getMissingFieldValidationsInBuild(),
-          request.getValidationFramework()),
-        null, true, null);
+          composeValidateMethodInBuilder(
+            request.getMissingFieldValidationsInBuild(),
+            request.getValidationFramework()),
+          null, true, null);
       }
       else if (!request.getMissingFieldValidationsInBuild().isEmpty()) {
         IMethod originalValidateMethod = dialogRequest.getValidateMethodInBuilder();
@@ -113,11 +113,10 @@ public interface Composer {
         sourceLines.add("}");
         type.createMethod(StringUtils.join(sourceLines, "\n"), null, true, null);
       }
-      if (request.isCreateValidateMethodInBuilder() 
+      if (request.isCreateValidateMethodInBuilder()
           || !request.getMissingFieldValidationsInBuild().isEmpty()) {
-        if (!dialogRequest.getExistingValidationFrameworkImports().contains(request.getValidationFramework())) {
-          compilationUnit.createImport(request.getValidationFramework().getFullClassName(), null, null);
-        }
+        compilationUnit.createImport(
+          request.getValidationFramework().getFullClassName(), null, null);
       }
       compilationUnit.commitWorkingCopy(true, null);
     }

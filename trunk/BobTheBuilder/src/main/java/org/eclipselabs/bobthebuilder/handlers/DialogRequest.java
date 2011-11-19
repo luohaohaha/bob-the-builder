@@ -48,12 +48,10 @@ public class DialogRequest {
   private final boolean missingValidateMethodInBuilder;
 
   private final IMethod validateMethodInBuilder;
-  
+
   private final Collection<ValidationFramework> possibleValidationFrameworks;
 
   private final BobTheBuilderTreeNode tree;
-
-  private Collection<ValidationFramework> existingValidationFrameworkImports;
 
   public DialogRequest(CompilationUnitAnalyzer.Analyzed analyzed) throws JavaModelException {
     Validate.notNull(analyzed, "Analyzed may not be null");
@@ -75,7 +73,6 @@ public class DialogRequest {
     this.missingFieldValidationsInBuilder = analyzed.getMissingFieldValidationsInBuilder();
     this.validateMethodInBuilder = analyzed.getValidateMethodInBuilder();
     this.possibleValidationFrameworks = analyzed.getPossibleValidationFrameworks();
-    this.existingValidationFrameworkImports = analyzed.getExistingValidationFrameworkImports();
     this.thereAnythingToDo = analyzed.isThereAnythingToDo();
     this.tree = createTree();
   }
@@ -138,11 +135,11 @@ public class DialogRequest {
             : "The validate() method already exists in the Builder")
           .build());
     tree.addChild(
-      convertToTree(
-        Feature.MISSING_VALIDATIONS,
-        "Select the validation to add to the validate method in the Builder",
-        missingFieldValidationsInBuilder,
-        new FieldTextBuilder.ValidationBuilder(possibleValidationFrameworks.iterator().next())));
+        convertToTree(
+          Feature.MISSING_VALIDATIONS,
+          "Select the validation to add to the validate method in the Builder",
+          missingFieldValidationsInBuilder,
+          new FieldTextBuilder.ValidationBuilder(possibleValidationFrameworks.iterator().next())));
     return tree;
   }
 
@@ -237,15 +234,6 @@ public class DialogRequest {
 
   public Collection<ValidationFramework> getPossibleValidationFrameworks() {
     return Collections.unmodifiableCollection(possibleValidationFrameworks);
-  }
-
-  public Collection<ValidationFramework> getExistingValidationFrameworkImports() {
-    return Collections.unmodifiableCollection(existingValidationFrameworkImports);
-  }
-
-  public void setExistingValidationFrameworkImports(
-    Collection<ValidationFramework> existingValidationFrameworkImports) {
-    this.existingValidationFrameworkImports = existingValidationFrameworkImports;
   }
 
   public BobTheBuilderTreeNode getTree() {
