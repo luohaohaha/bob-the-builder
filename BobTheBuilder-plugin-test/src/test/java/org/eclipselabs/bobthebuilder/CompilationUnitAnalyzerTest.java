@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer;
 import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer.Analyzed;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.MethodPredicate;
 import org.eclipselabs.bobthebuilder.handlers.ValidationFramework;
 import org.junit.Before;
 import org.junit.Test;
@@ -126,7 +127,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getElementName()).thenReturn(CompilationUnitAnalyzer.BUILDER_CLASS_NAME);
     when(constructorWithBuilder.isConstructor()).thenReturn(true);
     when(constructorWithBuilder.getSignature()).thenReturn(
-      CompilationUnitAnalyzer.Analyzed.CONSTRUCTOR_WITH_BUILDER_SIGNATURE);
+      MethodPredicate.ConstructorWithBuilder.CONSTRUCTOR_WITH_BUILDER_SIGNATURE);
     when(constructorWithBuilder.isConstructor()).thenReturn(true);
     when(constructorWithNoBuilder.getSignature()).thenReturn("AnotherSignature");
     when(mainTypeMethod.isConstructor()).thenReturn(false);

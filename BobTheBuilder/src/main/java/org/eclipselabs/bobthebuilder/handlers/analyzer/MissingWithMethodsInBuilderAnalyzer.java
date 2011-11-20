@@ -16,14 +16,14 @@ public class MissingWithMethodsInBuilderAnalyzer {
 
   private final Set<IField> missingFieldsInBuilder = new HashSet<IField>();
 
-  private final AnalyzerResult.Type builderTypeAnalyzerResult;
+  private final AnalyzerResult.ForType builderTypeAnalyzerResult;
 
   private final Set<IField> extraFieldsInBuilder = new HashSet<IField>();
 
   MissingWithMethodsInBuilderAnalyzer(
       Set<IField> builderFields,
       Set<IField> missingFieldsInBuilder,
-      AnalyzerResult.Type builderTypeAnalyzerResult,
+      AnalyzerResult.ForType builderTypeAnalyzerResult,
       Set<IField> extraFieldsInBuilder) {
     Validate.notNull(builderFields, "builder fields may not be null");
     Validate.noNullElements(builderFields, "builder fields contains a null");

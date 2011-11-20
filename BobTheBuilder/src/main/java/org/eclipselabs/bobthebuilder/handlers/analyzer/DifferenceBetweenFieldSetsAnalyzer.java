@@ -10,13 +10,13 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 
 //TODO audit whether MissingInstructionsInMethodAnalyzer can be used
-public class MissingFieldsInBuilderAnalyzer {
+public class DifferenceBetweenFieldSetsAnalyzer {
 
   private final Set<IField> mainTypeFields = new HashSet<IField>();
 
   private final Set<IField> builderFields = new HashSet<IField>();
 
-  public MissingFieldsInBuilderAnalyzer(Set<IField> mainTypeFields, Set<IField> builderFields) {
+  public DifferenceBetweenFieldSetsAnalyzer(Set<IField> mainTypeFields, Set<IField> builderFields) {
     Validate.notNull(mainTypeFields, "main type fields may not be null");
     Validate.notNull(builderFields, "builder type fields may not be null");
     this.mainTypeFields.addAll(mainTypeFields);

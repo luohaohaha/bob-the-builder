@@ -3,6 +3,7 @@ package org.eclipselabs.bobthebuilder.handlers.analyzer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.Signature;
 
 public interface FieldPredicate {
@@ -16,6 +17,8 @@ public interface FieldPredicate {
 
     @Override
     public boolean match(String fieldToMatch, String input, String signature) {
+      Validate.notNull(fieldToMatch, "field to match may not be null");
+      Validate.notNull(input, "input may not be null");
       Pattern pattern = Pattern.compile(createFieldAssignmentRegex(fieldToMatch));
       Matcher matcher = pattern.matcher(input);
       return matcher.find();
