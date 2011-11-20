@@ -7,14 +7,14 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.handlers.ValidationFramework;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.Method;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.ForMethod;
 
 public class ValidationFrameworkAnalyzer {
-  private final AnalyzerResult.Method analyzedValidateResult;
+  private final AnalyzerResult.ForMethod analyzedValidateResult;
 
   private final ICompilationUnit compilationUnit;
 
-  public ValidationFrameworkAnalyzer(Method analyzedValidateResult, ICompilationUnit compilationUnit) {
+  public ValidationFrameworkAnalyzer(ForMethod analyzedValidateResult, ICompilationUnit compilationUnit) {
     this.analyzedValidateResult = analyzedValidateResult;
     this.compilationUnit = compilationUnit;
   }

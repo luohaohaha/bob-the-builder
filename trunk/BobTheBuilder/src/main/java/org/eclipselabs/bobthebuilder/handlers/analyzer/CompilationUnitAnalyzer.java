@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.handlers.ValidationFramework;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.Method;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.ForMethod;
 
 public class CompilationUnitAnalyzer {
   public static final String BUILDER_CLASS_NAME = "Builder";
@@ -48,8 +48,6 @@ public class CompilationUnitAnalyzer {
     private final IType builderType;
 
     private final boolean missingConstructorWithBuilder;
-
-    public final static String CONSTRUCTOR_WITH_BUILDER_SIGNATURE = "(QBuilder;)V";
 
     private final Set<IField> missingFieldsInConstructorWithBuilder;
 
@@ -235,33 +233,35 @@ public class CompilationUnitAnalyzer {
     try {
       type = new TypeAnalyzer(compilationUnit).analyze();
       fields = new MainTypeFieldAnalyzer(type).analyze();
+      // TODO if we have our own representation of the IField, we can do fancier set operations.
       copyOfFields.addAll(fields);
-      AnalyzerResult.Type builderAnalyzerResult = new BuilderTypeAnalyzer(type).analyze();
+      AnalyzerResult.ForType builderAnalyzerResult = new BuilderTypeAnalyzer(type).analyze();
       builderType = builderAnalyzerResult.getElement();
       missingBuilder = !builderAnalyzerResult.isPresent();
       builderFields = new BuilderTypeFieldAnalyzer(builderAnalyzerResult).analyze();
       copyOfBuilderFields.addAll(builderFields);
       anotherCopyOfBuilderFields.addAll(builderFields);
       missingFieldsInBuilder =
-          new MissingFieldsInBuilderAnalyzer(copyOfFields, builderFields).analyze();
-      extraFieldsInBuilder = new ExtraFieldsInBuilderAnalyzer(copyOfBuilderFields, fields)
+          new DifferenceBetweenFieldSetsAnalyzer(copyOfFields, builderFields).analyze();
+      // flip-flop collections so that the subtraction of sets works
+      extraFieldsInBuilder = new DifferenceBetweenFieldSetsAnalyzer(copyOfBuilderFields, fields)
           .analyze();
       missingWithMethodsForFields = new MissingWithMethodsInBuilderAnalyzer(
           anotherCopyOfBuilderFields,
           missingFieldsInBuilder,
           builderAnalyzerResult,
           extraFieldsInBuilder).analyze();
-      Method constructorWithBuilderResult =
-          new ConstructorWithBuilderInMainTypeAnalyzer(builderAnalyzerResult, type).analyze();
+      ForMethod constructorWithBuilderResult =
+          new MethodAnalyzer.ConstructorWithBuilder(builderAnalyzerResult, type).analyze();
       missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
       constructorWithBuilder = constructorWithBuilderResult.getElement();
       missingFieldsInConstructorWithBuilder =
           new MissingInstructionsInMethodAnalyzer.ConstructorWithBuilderInMainType(
               fields, constructorWithBuilderResult).analyze();
       missingBuildMethodInBuilder =
-          !new MissingMethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
-      Method analyzedValidateInBuilder =
-          new MissingMethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze();
+          !new MethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
+      ForMethod analyzedValidateInBuilder =
+          new MethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze();
       missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
       validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =

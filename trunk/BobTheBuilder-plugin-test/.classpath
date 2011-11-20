@@ -6,5 +6,7 @@
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.8.1/junit-4.8.1.jar" sourcepath="M2_REPO/junit/junit/4.8.1/junit-4.8.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/eclipse/tycho/org.eclipse.jdt.core/3.8.0.v_C03/org.eclipse.jdt.core-3.8.0.v_C03.jar" sourcepath="M2_REPO/org/eclipse/tycho/org.eclipse.jdt.core/3.8.0.v_C03/org.eclipse.jdt.core-3.8.0.v_C03-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0.jar" sourcepath="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.6/commons-lang-2.6.jar" sourcepath="M2_REPO/commons-lang/commons-lang/2.6/commons-lang-2.6-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/guava/guava/10.0.1/guava-10.0.1.jar" sourcepath="M2_REPO/com/google/guava/guava/10.0.1/guava-10.0.1-sources.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>

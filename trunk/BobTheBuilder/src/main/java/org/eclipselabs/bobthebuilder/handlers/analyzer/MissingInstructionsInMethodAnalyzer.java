@@ -6,16 +6,16 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.Method;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.ForMethod;
 
 public abstract class MissingInstructionsInMethodAnalyzer {
 
   private final Set<IField> typeFields;
 
-  private final AnalyzerResult.Method analyzedMethodResult;
+  private final AnalyzerResult.ForMethod analyzedMethodResult;
 
   public MissingInstructionsInMethodAnalyzer(
-      Set<IField> typeFields, AnalyzerResult.Method analyzedMethodResult) {
+      Set<IField> typeFields, AnalyzerResult.ForMethod analyzedMethodResult) {
     Validate.notNull(typeFields, "type fields set may not be null");
     Validate.noNullElements(typeFields, "type fields set may not contain nulls");
     Validate.notNull(analyzedMethodResult, "analyzed method result may not be null");
@@ -44,7 +44,7 @@ public abstract class MissingInstructionsInMethodAnalyzer {
   
   public static class ValidateInBuilder extends MissingInstructionsInMethodAnalyzer {
 
-    public ValidateInBuilder(Set<IField> mainTypeFields, Method validateInBuilderResult) {
+    public ValidateInBuilder(Set<IField> mainTypeFields, ForMethod validateInBuilderResult) {
       super(mainTypeFields, validateInBuilderResult);
     }
 
@@ -58,7 +58,7 @@ public abstract class MissingInstructionsInMethodAnalyzer {
   public static class ConstructorWithBuilderInMainType extends MissingInstructionsInMethodAnalyzer {
 
     public ConstructorWithBuilderInMainType(
-        Set<IField> mainTypeFields, Method constructorWithBuilderResult) {
+        Set<IField> mainTypeFields, ForMethod constructorWithBuilderResult) {
       super(mainTypeFields, constructorWithBuilderResult);
     }
 

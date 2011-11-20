@@ -6,25 +6,21 @@ import org.eclipse.jdt.core.JavaModelException;
 
 public class BuilderTypeAnalyzer {
 
-  public static final String BUILDER_CLASS_NAME = "Builder";
+  static final String BUILDER_CLASS_NAME = "Builder";
 
-  private IType type;
+  private IType mainType;
 
-  public BuilderTypeAnalyzer(IType type) {
-    Validate.notNull(type, "type may not be null");
-    this.type = type;
+  public BuilderTypeAnalyzer(IType mainType) {
+    Validate.notNull(mainType, "main type may not be null");
+    this.mainType = mainType;
   }
 
-  public AnalyzerResult.Type analyze() throws JavaModelException {
-    boolean present = false;
-    IType builderType = null;
-    for (IType each : type.getTypes()) {
+  public AnalyzerResult.ForType analyze() throws JavaModelException {
+    for (IType each : mainType.getTypes()) {
       if (each.getElementName().equals(BUILDER_CLASS_NAME)) {
-        builderType = each;
-        present = true;
-        break;
+        return AnalyzerResult.ForType.getPresentInstance(each);
       }
     }
-    return new AnalyzerResult.Type(present, builderType);
+    return AnalyzerResult.ForType.NOT_PRESENT;
   }
 }

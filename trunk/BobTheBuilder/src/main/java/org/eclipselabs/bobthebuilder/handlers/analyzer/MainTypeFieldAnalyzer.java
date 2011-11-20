@@ -18,6 +18,8 @@ public class MainTypeFieldAnalyzer {
     this.type = type;
   }
 
+  // TODO create a particular view of the IField instead of using eclipse's IField
+  // This will help the operations with sets that are necessary in the analyzer phase
   public Set<IField> analyze() throws JavaModelException {
     Set<IField> fields = new HashSet<IField>();
     for (IField each : type.getFields()) {
