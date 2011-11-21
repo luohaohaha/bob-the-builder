@@ -25,9 +25,6 @@ public class CompilationUnitAnalyzer {
     // happening in the micro-analyzers
     // TODO audit whether all of this fields are really needed.
     // GRoup fields in classes of coherent
-    public static final String BUILD_METHOD_NAME = "build";
-
-    public static final String VALIDATE_METHOD_NAME = "validate";
 
     private final ICompilationUnit compilationUnit;
 
@@ -256,7 +253,7 @@ public class CompilationUnitAnalyzer {
       missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
       constructorWithBuilder = constructorWithBuilderResult.getElement();
       missingFieldsInConstructorWithBuilder =
-          new MissingInstructionsInMethodAnalyzer.ConstructorWithBuilderInMainType(
+          new MethodContentAnalyzer.ConstructorWithBuilderInMainType(
               fields, constructorWithBuilderResult).analyze();
       missingBuildMethodInBuilder =
           !new MethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
@@ -265,7 +262,7 @@ public class CompilationUnitAnalyzer {
       missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
       validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =
-          new MissingInstructionsInMethodAnalyzer.ValidateInBuilder(
+          new MethodContentAnalyzer.ValidateInBuilder(
               fields, analyzedValidateInBuilder).analyze();
       validationFrameworks =
           new ValidationFrameworkAnalyzer(analyzedValidateInBuilder, compilationUnit).analyze();
