@@ -23,6 +23,7 @@ public abstract class MethodAnalyzer {
       return AnalyzerResult.ForMethod.NOT_PRESENT;
     }
     for (IMethod each : analyzedTypeResult.getElement().getMethods()) {
+      // TODO use ioc to add behavior
       if (getPredicate().match(each)) {
         return AnalyzerResult.ForMethod.getPresentInstance(each);
       }
@@ -55,7 +56,7 @@ public abstract class MethodAnalyzer {
     }
 
   }
-  
+
   public static class ConstructorWithBuilder extends MethodAnalyzer {
 
     private ForType analyzedBuilderTypeResult;
@@ -66,7 +67,7 @@ public abstract class MethodAnalyzer {
       this.analyzedBuilderTypeResult = analyzedBuilderTypeResult;
     }
 
-    //This feels like shoe-horning the parent #analyze() for this case
+    // This feels like shoehorning the parent #analyze() for this case
     @Override
     public ForMethod analyze() throws JavaModelException {
       if (!analyzedBuilderTypeResult.isPresent()) {
@@ -79,6 +80,6 @@ public abstract class MethodAnalyzer {
     protected MethodPredicate getPredicate() {
       return new MethodPredicate.ConstructorWithBuilder();
     }
-    
+
   }
 }

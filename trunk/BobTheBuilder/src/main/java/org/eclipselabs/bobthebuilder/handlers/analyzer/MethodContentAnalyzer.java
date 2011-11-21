@@ -1,5 +1,6 @@
 package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,20 +9,22 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.ForMethod;
 
-public abstract class MissingInstructionsInMethodAnalyzer {
+public abstract class MethodContentAnalyzer {
 
   private final Set<IField> typeFields;
 
   private final AnalyzerResult.ForMethod analyzedMethodResult;
 
-  public MissingInstructionsInMethodAnalyzer(
+  public MethodContentAnalyzer(
       Set<IField> typeFields, AnalyzerResult.ForMethod analyzedMethodResult) {
     Validate.notNull(typeFields, "type fields set may not be null");
+    Validate.isTrue(!typeFields.isEmpty(), "fields may not be empty");
     Validate.noNullElements(typeFields, "type fields set may not contain nulls");
     Validate.notNull(analyzedMethodResult, "analyzed method result may not be null");
-    this.typeFields = typeFields;
+    this.typeFields = Collections.unmodifiableSet(typeFields);
     this.analyzedMethodResult = analyzedMethodResult;
   }
+
   public Set<IField> analyze() throws JavaModelException {
     if (!analyzedMethodResult.isPresent()) {
       return typeFields;
@@ -32,17 +35,19 @@ public abstract class MissingInstructionsInMethodAnalyzer {
     Set<IField> result = new HashSet<IField>();
     for (IField each : typeFields) {
       String fieldName = each.getElementName();
+      // TODO use ioc to add behavior
       boolean found = getPredicate().match(
         fieldName, analyzedMethodResult.getElement().getSource(), each.getTypeSignature());
       if (!found) {
         result.add(each);
       }
     }
-    return result;
+    return Collections.unmodifiableSet(result);
   }
+
   protected abstract FieldPredicate getPredicate();
-  
-  public static class ValidateInBuilder extends MissingInstructionsInMethodAnalyzer {
+
+  public static class ValidateInBuilder extends MethodContentAnalyzer {
 
     public ValidateInBuilder(Set<IField> mainTypeFields, ForMethod validateInBuilderResult) {
       super(mainTypeFields, validateInBuilderResult);
@@ -52,10 +57,10 @@ public abstract class MissingInstructionsInMethodAnalyzer {
     protected FieldPredicate getPredicate() {
       return new FieldPredicate.FieldValidation();
     }
-    
+
   }
-  
-  public static class ConstructorWithBuilderInMainType extends MissingInstructionsInMethodAnalyzer {
+
+  public static class ConstructorWithBuilderInMainType extends MethodContentAnalyzer {
 
     public ConstructorWithBuilderInMainType(
         Set<IField> mainTypeFields, ForMethod constructorWithBuilderResult) {
@@ -66,6 +71,6 @@ public abstract class MissingInstructionsInMethodAnalyzer {
     protected FieldPredicate getPredicate() {
       return new FieldPredicate.FieldAssignment();
     }
-    
+
   }
 }

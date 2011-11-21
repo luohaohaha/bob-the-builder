@@ -24,8 +24,12 @@ public class FieldPredicateTest {
   @Before
   public void setUp() throws Exception {
     fieldToMatch = field1Name;
-    input = String.format("this.%1$s = %1$s;", field1Name);
+    input = createAssignment(field1Name);
     signature = Signature.SIG_DOUBLE;
+  }
+
+  static String createAssignment(String field1Name) {
+    return String.format("this.%1$s = %1$s;", field1Name);
   }
 
   @Test(expected = IllegalArgumentException.class)

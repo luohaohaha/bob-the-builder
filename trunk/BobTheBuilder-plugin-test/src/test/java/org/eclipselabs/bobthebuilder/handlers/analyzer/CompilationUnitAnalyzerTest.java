@@ -1,4 +1,4 @@
-package org.eclipselabs.bobthebuilder;
+package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,10 +17,8 @@ import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.Signature;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer.Analyzed;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.MethodPredicate;
 import org.eclipselabs.bobthebuilder.handlers.ValidationFramework;
+import org.eclipselabs.bobthebuilder.handlers.analyzer.CompilationUnitAnalyzer.Analyzed;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -133,9 +131,9 @@ public class CompilationUnitAnalyzerTest {
     when(mainTypeMethod.isConstructor()).thenReturn(false);
     when(finalStaticField.getFlags()).thenReturn(Flags.AccFinal | Flags.AccStatic);
     when(buildMethod.getElementName()).thenReturn(
-      CompilationUnitAnalyzer.Analyzed.BUILD_METHOD_NAME);
+      MethodPredicate.BuildInBuilder.BUILD_METHOD_NAME);
     when(validateMethod.getElementName()).thenReturn(
-      CompilationUnitAnalyzer.Analyzed.VALIDATE_METHOD_NAME);
+      MethodPredicate.ValidateInBuilder.VALIDATE_METHOD_NAME);
     when(validateMethod.getParameterTypes()).thenReturn(new String[] {});
     when(validateMethod.getSource()).thenReturn("private void validate(){}");
     when(commonsLang2ValidateImport.getElementName())
@@ -590,7 +588,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getFields()).thenReturn(fields);
     IMethod anotherValidateMethod = mock(IMethod.class);
     when(anotherValidateMethod.getElementName()).thenReturn(
-      CompilationUnitAnalyzer.Analyzed.VALIDATE_METHOD_NAME);
+      MethodPredicate.ValidateInBuilder.VALIDATE_METHOD_NAME);
     when(anotherValidateMethod.getParameterTypes()).thenReturn(new String[] { "newParam" });
     when(builderType.getMethods()).thenReturn(
       new IMethod[] { withField1Method, withField2Method, buildMethod, anotherValidateMethod });
