@@ -108,7 +108,9 @@ public class DialogRequest {
           new FieldTextBuilder.WithMethodBuilder()));
     tree.addChild(
         new FeatureTreeNode.Builder()
-            .withData(Feature.MISSING_CONSTRUCTOR)
+            .withData(missingConstructorWithBuilder
+                ? Feature.MISSING_CONSTRUCTOR
+                : Feature.NONE)
             .withParent(tree)
             .withText(missingConstructorWithBuilder
                 ? "A private constructor will be created"
@@ -121,14 +123,18 @@ public class DialogRequest {
           missingFieldsInConstructorWithBuilder,
           new FieldTextBuilder.FieldAssignmentBuilder()));
     tree.addChild(new FeatureTreeNode.Builder()
-        .withData(Feature.MISSING_BUILD)
+        .withData(missingBuildMethodInBuilder
+            ? Feature.MISSING_BUILD
+            : Feature.NONE)
         .withParent(tree)
         .withText(missingBuildMethodInBuilder
             ? "A build() method will be created in the Builder"
             : "The build() method already exists in the Builder")
         .build());
     tree.addChild(new FeatureTreeNode.Builder()
-        .withData(Feature.MISSING_VALIDATE)
+        .withData(missingValidateMethodInBuilder
+            ? Feature.MISSING_VALIDATE
+            : Feature.NONE)
         .withParent(tree)
         .withText(missingValidateMethodInBuilder
             ? "A validate() method will be created in the Builder"

@@ -32,6 +32,7 @@ public abstract class MethodAnalyzer {
     return AnalyzerResult.ForMethod.NOT_PRESENT;
   }
 
+  //TODO let's analyze that the contents are validate(); return new Foo(this);
   public static class BuildInBuilder extends MethodAnalyzer {
 
     public BuildInBuilder(AnalyzerResult.ForType analyzedBuilderTypeResult) {
