@@ -1,6 +1,7 @@
 package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
 import org.apache.commons.lang.Validate;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -57,6 +58,21 @@ public abstract class MethodAnalyzer {
 
   }
 
+  public static class WithMethodInBuilder extends MethodAnalyzer {
+
+    private final IField field;
+
+    protected WithMethodInBuilder(ForType analyzedTypeResult, IField field) {
+      super(analyzedTypeResult);
+      this.field = field;
+    }
+
+    @Override
+    protected MethodPredicate getPredicate() {
+      return new MethodPredicate.WithMethodInBuilder(field);
+    }
+    
+  }
   public static class ConstructorWithBuilder extends MethodAnalyzer {
 
     private ForType analyzedBuilderTypeResult;
