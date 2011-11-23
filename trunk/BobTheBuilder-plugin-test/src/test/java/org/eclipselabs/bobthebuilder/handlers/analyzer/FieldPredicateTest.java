@@ -19,7 +19,7 @@ public class FieldPredicateTest {
 
   private String field1Name = "field1";
 
-  private String field2Name = "field1";
+  private String field2Name = "field2";
 
   @Before
   public void setUp() throws Exception {

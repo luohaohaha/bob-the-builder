@@ -243,7 +243,7 @@ public class CompilationUnitAnalyzer {
       // flip-flop collections so that the subtraction of sets works
       extraFieldsInBuilder = new DifferenceBetweenFieldSetsAnalyzer(copyOfBuilderFields, fields)
           .analyze();
-      missingWithMethodsForFields = new MissingWithMethodsInBuilderAnalyzer(
+      missingWithMethodsForFields = new WithMethodsInBuilderAnalyzer(
           anotherCopyOfBuilderFields,
           missingFieldsInBuilder,
           builderAnalyzerResult,
