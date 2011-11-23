@@ -111,7 +111,7 @@ public interface Composer {
           sourceLines.add(request.getValidationFramework().composeFieldValidation(each));
         }
         sourceLines.add("}");
-        type.createMethod(StringUtils.join(sourceLines, "\n"), null, true, null);
+        builder.createMethod(StringUtils.join(sourceLines, "\n"), null, true, null);
       }
       if (request.isCreateValidateMethodInBuilder()
           || !request.getMissingFieldValidationsInBuild().isEmpty()) {

@@ -1,5 +1,6 @@
 package org.eclipselabs.bobthebuilder.handlers.analyzer;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.core.Signature;
@@ -52,7 +53,7 @@ public class FieldPredicateTest {
   public void testFieldAssignmentDoesNotMatch() {
     input = String.format("this.%1$s = %1$s;", field2Name);
     boolean actual = new FieldPredicate.FieldAssignment().match(fieldToMatch, input, signature);
-    assertTrue(actual);
+    assertFalse(actual);
   }
 
 }

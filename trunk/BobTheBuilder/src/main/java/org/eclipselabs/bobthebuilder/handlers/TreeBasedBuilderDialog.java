@@ -7,6 +7,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -17,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.bobthebuilder.Activator;
 
@@ -31,7 +33,7 @@ public class TreeBasedBuilderDialog extends Dialog {
   private static final int NUMBER_OF_COLUMNS = 3;
 
   public TreeBasedBuilderDialog(DialogRequest request) {
-    super(new Shell(), SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CENTER);
+    super(new Shell(SWT.APPLICATION_MODAL | SWT.ON_TOP));
     if (request == null) {
       throw new NullPointerException("Request cannot be null");
     }
@@ -39,15 +41,36 @@ public class TreeBasedBuilderDialog extends Dialog {
     this.shell = getParent().getShell();
   }
 
+  static class WindowCoordinates {
+    private final int x;
+    private final int y;
+    WindowCoordinates(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+    public int getX() {
+      return x;
+    }
+    public int getY() {
+      return y;
+    }
+    
+  }
   @SuppressWarnings("deprecation")
   public void show() {
 
     String iconFilePathname = "icons/btb.png";
     shell.setText("Bob The Builder Plugin");
 
+    shell.addListener(SWT.Traverse, createListenerThatClosesDialog());
+
+    WindowCoordinates windowCoordinates = centerWindow();
+    
+    shell.setLocation(windowCoordinates.getX(), windowCoordinates.getY());
+    
     Image bobsImage = null;
-    ImageDescriptor imageDescriptor = 
-      Activator.getImageDescriptor(iconFilePathname);
+    ImageDescriptor imageDescriptor =
+        Activator.getImageDescriptor(iconFilePathname);
     if (imageDescriptor != null) {
       bobsImage = new Image(shell.getDisplay(), imageDescriptor.getImageData());
     }
@@ -153,7 +176,7 @@ public class TreeBasedBuilderDialog extends Dialog {
           }
         }
         for (Control control : validationsGroup.getChildren()) {
-          if (((Button)control).getSelection()) {
+          if (((Button) control).getSelection()) {
             composerRequestBuilder.withValidationFramework((ValidationFramework) control.getData());
           }
         }
@@ -173,6 +196,31 @@ public class TreeBasedBuilderDialog extends Dialog {
       }
     });
     display();
+  }
+
+  private WindowCoordinates centerWindow() {
+    Monitor primary = shell.getDisplay().getPrimaryMonitor();
+    Rectangle bounds = primary.getBounds();
+    Rectangle rect = shell.getBounds();
+    
+    int x = bounds.x + (bounds.width - rect.width) / 2;
+    int y = bounds.y + (bounds.height - rect.height) / 2;
+    WindowCoordinates windowCoordinates = new WindowCoordinates(x, y);
+    return windowCoordinates;
+  }
+
+  private Listener createListenerThatClosesDialog() {
+    return new Listener() {
+      public void handleEvent(Event event) {
+        switch (event.detail) {
+          case SWT.TRAVERSE_ESCAPE:
+            shell.close();
+            event.detail = SWT.TRAVERSE_NONE;
+            event.doit = false;
+            break;
+        }
+      }
+    };
   }
 
   private void addResetButton(final CheckboxTreeViewer featuresTreeViewer) {
