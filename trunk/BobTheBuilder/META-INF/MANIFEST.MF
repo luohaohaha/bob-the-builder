@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: The Effective (Bob The) Builder
 Bundle-SymbolicName: BobTheBuilder;singleton:=true
-Bundle-Version: 1.0.3.snapshot
+Bundle-Version: 1.0.4.snapshot
 Bundle-Activator: org.eclipselabs.bobthebuilder.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
