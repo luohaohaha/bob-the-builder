@@ -3,6 +3,7 @@ package org.eclipselabs.bobthebuilder.handlers.analyzer;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.JavaModelException;
@@ -15,6 +16,8 @@ public class ValidationFrameworkAnalyzer {
   private final ICompilationUnit compilationUnit;
 
   public ValidationFrameworkAnalyzer(ForMethod analyzedValidateResult, ICompilationUnit compilationUnit) {
+    Validate.notNull(analyzedValidateResult, "analyzedValidateResult may not be null");
+    Validate.notNull(compilationUnit, "compilationUnit may not be null");
     this.analyzedValidateResult = analyzedValidateResult;
     this.compilationUnit = compilationUnit;
   }

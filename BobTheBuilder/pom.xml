@@ -5,11 +5,11 @@
   <parent>
     <artifactId>BobTheBuilder-project</artifactId>
     <groupId>org.eclipselabs</groupId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
   </parent>
   <groupId>org.eclipselabs</groupId>
   <artifactId>BobTheBuilder</artifactId>
-  <version>1.0.3.snapshot</version>
+  <version>1.0.4.snapshot</version>
   <packaging>eclipse-plugin</packaging>
 
   <repositories>
