@@ -6,16 +6,16 @@ import static org.mockito.Mockito.when;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.ForType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /**
  * To test {@link MethodAnalyzer}
  */
-public abstract class MethodAnalyzerTest {
+public class MethodAnalyzerTest {
 
   protected AnalyzerResult.ForType analyzedTypeResult;
 
@@ -32,46 +32,52 @@ public abstract class MethodAnalyzerTest {
   @Mock
   private IMethod anotherMethod;
 
-  protected abstract MethodAnalyzer getMethodAnalyzer(ForType analyzedTypeResult);
+  @Mock
+  private MethodPredicate methodPredicate;
 
-  protected abstract void forceFailPredicate(IMethod anotherMethod) throws JavaModelException;
-
-  protected abstract void forcePassPredicate(IMethod targetMethod) throws JavaModelException;
+  private MethodAnalyzer getMethodAnalyzer() {
+    return new MethodAnalyzer(analyzedTypeResult, methodPredicate);
+  }
 
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     analyzedTypeResult = AnalyzerResult.ForType.getPresentInstance(type);
-    forceFailPredicate(anotherMethod);
   }
 
   @Test
   public void testTypeNotPresent() throws JavaModelException {
     analyzedTypeResult = AnalyzerResult.ForType.NOT_PRESENT;
     expected = AnalyzerResult.ForMethod.NOT_PRESENT;
-    actual = getMethodAnalyzer(analyzedTypeResult).analyze();
+    actual = getMethodAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
   @Test
   public void testPredicatePasses() throws JavaModelException {
     when(type.getMethods()).thenReturn(new IMethod[] { targetMethod, anotherMethod });
-    forcePassPredicate(targetMethod);
+    Mockito.when(methodPredicate.match(targetMethod)).thenReturn(true);
     expected = AnalyzerResult.ForMethod.getPresentInstance(targetMethod);
-    actual = getMethodAnalyzer(analyzedTypeResult).analyze();
+    actual = getMethodAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
   @Test
   public void testPredicateFails() throws JavaModelException {
+    Mockito.when(methodPredicate.match(anotherMethod)).thenReturn(false);
     when(type.getMethods()).thenReturn(new IMethod[] { anotherMethod });
     expected = AnalyzerResult.ForMethod.NOT_PRESENT;
-    actual = getMethodAnalyzer(analyzedTypeResult).analyze();
+    actual = getMethodAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullAnalyzedResult() {
-    getMethodAnalyzer(null);
+    new MethodAnalyzer(null, methodPredicate);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullPredicate() {
+    new MethodAnalyzer(analyzedTypeResult, null);
   }
 }

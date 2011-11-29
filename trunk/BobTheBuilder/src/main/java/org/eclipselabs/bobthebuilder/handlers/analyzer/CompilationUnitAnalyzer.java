@@ -249,20 +249,20 @@ public class CompilationUnitAnalyzer {
           builderAnalyzerResult,
           extraFieldsInBuilder).analyze();
       ForMethod constructorWithBuilderResult =
-          new MethodAnalyzer.ConstructorWithBuilder(builderAnalyzerResult, type).analyze();
+          new ConstructorWithBuilderAnalyzer(builderAnalyzerResult, type).analyze();
       missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
       constructorWithBuilder = constructorWithBuilderResult.getElement();
       missingFieldsInConstructorWithBuilder =
-          new MethodContentAnalyzer.ConstructorWithBuilderInMainType(
+          new ConstructorWithBuilderInMainTypeAnalyzer(
               fields, constructorWithBuilderResult).analyze();
       missingBuildMethodInBuilder =
-          !new MethodAnalyzer.BuildInBuilder(builderAnalyzerResult).analyze().isPresent();
+          !new BuildInBuilderAnalyzer(builderAnalyzerResult).analyze().isPresent();
       ForMethod analyzedValidateInBuilder =
-          new MethodAnalyzer.ValidateInBuilder(builderAnalyzerResult).analyze();
+          new ValidateMethodInBuilderAnalyzer(builderAnalyzerResult).analyze();
       missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
       validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =
-          new MethodContentAnalyzer.ValidateInBuilder(
+          new ValidateInBuilderAnalyzer(
               fields, analyzedValidateInBuilder).analyze();
       validationFrameworks =
           new ValidationFrameworkAnalyzer(analyzedValidateInBuilder, compilationUnit).analyze();

@@ -8,9 +8,9 @@ import java.util.Set;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.handlers.analyzer.AnalyzerResult.ForMethod;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -20,7 +20,7 @@ import com.google.common.collect.Sets;
 /**
  * To test {@link MethodContentAnalyzer}
  */
-public abstract class MethodContentAnalyzerTest {
+public class MethodContentAnalyzerTest {
 
   private AnalyzerResult.ForMethod analyzedMethodResult;
 
@@ -54,12 +54,14 @@ public abstract class MethodContentAnalyzerTest {
   @Mock
   private IMethod method;
 
-  protected abstract MethodContentAnalyzer getMethodContentAnalyzer(
-    Set<IField> fields, ForMethod analyzedMethodResult);
+  @Mock
+  private FieldPredicate predicate;
 
-  protected abstract String getSourceToMakeAllFieldsPassPredicate(Set<IField> fields);
+  private MethodContentAnalyzer getMethodContentAnalyzer() {
+    return new MethodContentAnalyzer(fields, analyzedMethodResult, predicate);
+  }
 
-  protected abstract String getSourceToMakeAllFieldsFailPredicate(Set<IField> fields);
+  // protected abstract String getSourceToMakeAllFieldsFailPredicate(Set<IField> fields);
 
   @Before
   public void setUp() throws Exception {
@@ -72,28 +74,35 @@ public abstract class MethodContentAnalyzerTest {
     Mockito.when(field2.getTypeSignature()).thenReturn(field2Signature);
     Mockito.when(field3.getElementName()).thenReturn(field3Name);
     Mockito.when(field3.getTypeSignature()).thenReturn(field3Signature);
+    Mockito.when(method.getSource()).thenReturn("anything, really");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullFieldSet() {
-    getMethodContentAnalyzer(null, analyzedMethodResult);
+    new MethodContentAnalyzer(null, analyzedMethodResult, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testEmptyFieldSet() {
-    getMethodContentAnalyzer(Sets.<IField> newHashSet(), analyzedMethodResult);
+    new MethodContentAnalyzer(Sets.<IField> newHashSet(), analyzedMethodResult, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullFieldInSet() {
-    getMethodContentAnalyzer(Sets.<IField> newHashSet(null, field1, field2), analyzedMethodResult);
+    new MethodContentAnalyzer(
+        Sets.<IField> newHashSet(null, field1, field2), analyzedMethodResult, predicate);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullPredicate() {
+    new MethodContentAnalyzer(fields, analyzedMethodResult, null);
   }
 
   @Test
   public void testMethodIsNotPresent() throws JavaModelException {
     analyzedMethodResult = AnalyzerResult.ForMethod.NOT_PRESENT;
     expected = fields;
-    actual = getMethodContentAnalyzer(fields, analyzedMethodResult).analyze();
+    actual = getMethodContentAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
@@ -101,42 +110,46 @@ public abstract class MethodContentAnalyzerTest {
   public void testMethodHasNoSource() throws JavaModelException {
     Mockito.when(method.getSource()).thenReturn(null);
     expected = fields;
-    actual = getMethodContentAnalyzer(fields, analyzedMethodResult).analyze();
+    actual = getMethodContentAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
   @Test
   public void testAllFieldsPassPredicate() throws JavaModelException {
-    String sourceToMakeAllFieldsPassPredicate = getSourceToMakeAllFieldsPassPredicate(fields);
-    Mockito.when(method.getSource()).thenReturn(sourceToMakeAllFieldsPassPredicate);
+    Mockito.when(
+      predicate.match(Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
+        .thenReturn(true);
     expected = Sets.newHashSet();
-    actual = getMethodContentAnalyzer(fields, analyzedMethodResult).analyze();
+    actual = getMethodContentAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
   @Test
   public void testAllFieldsFailPredicate() throws JavaModelException {
-    String sourceToMakeAllFieldsFailPredicate = getSourceToMakeAllFieldsFailPredicate(fields);
-    Mockito.when(method.getSource()).thenReturn(sourceToMakeAllFieldsFailPredicate);
+    Mockito.when(
+      predicate.match(Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
+        .thenReturn(false);
     expected = fields;
-    actual = getMethodContentAnalyzer(fields, analyzedMethodResult).analyze();
+    actual = getMethodContentAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
   @Test
   public void testOneFieldsPassesPredicate() throws JavaModelException {
+    Mockito.when(
+      predicate.match(Matchers.eq(field1Name), Matchers.anyString(), Matchers.anyString()))
+        .thenReturn(true);
+    expected = fields;
+    Mockito.when(
+      predicate.match(Matchers.eq(field2Name), Matchers.anyString(), Matchers.anyString()))
+        .thenReturn(false);
+    Mockito.when(
+      predicate.match(Matchers.eq(field3Name), Matchers.anyString(), Matchers.anyString()))
+        .thenReturn(false);
+    expected = fields;
     HashSet<IField> expected = Sets.newHashSet(field2, field3);
-    String sourceToMakeOneFieldPassPredicate =
-        getSourceToMakeOneFieldPassPredicate(field1, expected);
-    Mockito.when(method.getSource()).thenReturn(
-      sourceToMakeOneFieldPassPredicate);
-    actual = getMethodContentAnalyzer(fields, analyzedMethodResult).analyze();
+    actual = getMethodContentAnalyzer().analyze();
     assertEquals(expected, actual);
   }
 
-  private String getSourceToMakeOneFieldPassPredicate(
-    IField fieldThatPasses, HashSet<IField> fieldsThatFail) {
-    return getSourceToMakeAllFieldsPassPredicate(Sets.newHashSet(field1)) +
-      getSourceToMakeAllFieldsFailPredicate(Sets.newHashSet(fieldsThatFail));
-  }
 }
