@@ -179,6 +179,23 @@ public class WithMethodsInBuilderAnalyzerTest {
         emptyFieldSet, emptyFieldSet, builderPresent, extraBuilderFields).analyze();
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testIntersectionOfMissingFieldsBuilderFields() throws JavaModelException {
+    builderFields = Sets.newHashSet(field1, field2);
+    missingBuilderFields = Sets.newHashSet(field1);
+    new WithMethodsInBuilderAnalyzer(
+      builderFields, missingBuilderFields, builderPresent, emptyFieldSet).analyze();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIntersectionOfExtraFieldsAndMissingBuilderFields() throws JavaModelException {
+    builderFields = Sets.newHashSet(field1, field3);
+    missingBuilderFields = Sets.newHashSet(field2);
+    extraBuilderFields = Sets.newHashSet(field1, field2);
+    new WithMethodsInBuilderAnalyzer(
+      builderFields, missingBuilderFields, builderPresent, extraBuilderFields).analyze();
+  }
+
   @Test
   public void testAnalyzeBuilderIsMissing() throws JavaModelException {
     missingBuilderFields = Sets.newHashSet(field1, field2);

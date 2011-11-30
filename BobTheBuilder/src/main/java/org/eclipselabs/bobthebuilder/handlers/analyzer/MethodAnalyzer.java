@@ -23,7 +23,6 @@ public class MethodAnalyzer {
       return AnalyzerResult.ForMethod.NOT_PRESENT;
     }
     for (IMethod each : analyzedTypeResult.getElement().getMethods()) {
-      // TODO use ioc to add behavior
       if (methodPredicate.match(each)) {
         return AnalyzerResult.ForMethod.getPresentInstance(each);
       }
