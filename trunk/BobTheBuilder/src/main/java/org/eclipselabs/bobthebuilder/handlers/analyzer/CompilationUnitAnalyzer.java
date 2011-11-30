@@ -258,12 +258,13 @@ public class CompilationUnitAnalyzer {
       missingBuildMethodInBuilder =
           !new BuildInBuilderAnalyzer(builderAnalyzerResult).analyze().isPresent();
       ForMethod analyzedValidateInBuilder =
-          new ValidateMethodInBuilderAnalyzer(builderAnalyzerResult).analyze();
+          new MethodAnalyzer(builderAnalyzerResult, new MethodPredicate.ValidateInBuilder())
+              .analyze();
       missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
       validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =
-          new ValidateInBuilderAnalyzer(
-              fields, analyzedValidateInBuilder).analyze();
+          new MethodContentAnalyzer(
+              fields, analyzedValidateInBuilder, new FieldPredicate.FieldValidation()).analyze();
       validationFrameworks =
           new ValidationFrameworkAnalyzer(analyzedValidateInBuilder, compilationUnit).analyze();
     }

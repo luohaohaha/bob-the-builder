@@ -46,8 +46,19 @@ public class WithMethodsInBuilderAnalyzer {
       "If there are no fields in the builder, then there should not be any extra fields");
     Validate.isTrue(builderFields.containsAll(extraFieldsInBuilder),
       "All extra builder fields should be found among the builder fields");
-    //TODO add a precondition that between missing and builder fields there should not be overlap
-    //TODO add a precondition that between missing and extra fields there should not be overlap
+    validateEmptyIntersection(builderFields, missingFieldsInBuilder,
+      "builder fields and missing fields in builder");
+    validateEmptyIntersection(extraFieldsInBuilder, missingFieldsInBuilder,
+      "extra builder fields and missing fields in builder");
+  }
+
+  private void validateEmptyIntersection(Set<IField> leftSet,
+    Set<IField> rightSet, String description) {
+    Set<IField> intersectionMissingAndBuilderFields = new HashSet<IField>();
+    intersectionMissingAndBuilderFields.addAll(leftSet);
+    intersectionMissingAndBuilderFields.retainAll(rightSet);
+    Validate.isTrue(intersectionMissingAndBuilderFields.isEmpty(),
+      "There should not be overlap between " + description);
   }
 
   public Set<IField> analyze() throws JavaModelException {
