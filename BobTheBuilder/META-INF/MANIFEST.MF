@@ -13,8 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.junit,
  org.eclipse.text;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipselabs.bobthebuilder,
- org.eclipselabs.bobthebuilder.handlers
+Export-Package: org.eclipselabs.bobthebuilder
 Bundle-Vendor: nicolas dawt capdevila at gmail dawt com
 Bundle-ClassPath: lib/commons-lang-2.6.jar,
  lib/guice-3.0.jar,
