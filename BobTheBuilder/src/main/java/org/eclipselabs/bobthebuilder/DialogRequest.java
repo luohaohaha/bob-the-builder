@@ -11,7 +11,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldDeclarationBuilder;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl;
 
 public class DialogRequest {
 
@@ -53,7 +53,7 @@ public class DialogRequest {
 
   private final BobTheBuilderTreeNode tree;
 
-  public DialogRequest(CompilationUnitAnalyzer.Analyzed analyzed) throws JavaModelException {
+  public DialogRequest(CompilationUnitAnalyzerImpl.Analyzed analyzed) throws JavaModelException {
     Validate.notNull(analyzed, "Analyzed may not be null");
     this.builderFields = analyzed.getBuilderFields();
     this.compilationUnit = analyzed.getCompilationUnit();

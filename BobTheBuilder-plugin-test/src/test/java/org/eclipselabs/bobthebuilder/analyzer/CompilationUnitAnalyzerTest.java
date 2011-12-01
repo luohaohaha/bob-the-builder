@@ -18,9 +18,9 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer.Analyzed;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl.Analyzed;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -124,7 +124,7 @@ public class CompilationUnitAnalyzerTest {
     when(withField3Method.getParameterTypes()).thenReturn(new String[] { type3 });
     when(builderType.getMethods()).thenReturn(new IMethod[] {});
     when(otherType.getElementName()).thenReturn("OtherType");
-    when(builderType.getElementName()).thenReturn(CompilationUnitAnalyzer.BUILDER_CLASS_NAME);
+    when(builderType.getElementName()).thenReturn(CompilationUnitAnalyzerImpl.BUILDER_CLASS_NAME);
     when(constructorWithBuilder.isConstructor()).thenReturn(true);
     when(constructorWithBuilder.getSignature()).thenReturn(
       MethodPredicate.ConstructorWithBuilder.CONSTRUCTOR_WITH_BUILDER_SIGNATURE);
@@ -150,7 +150,7 @@ public class CompilationUnitAnalyzerTest {
   @Test(expected = IllegalArgumentException.class)
   public void testNullRequest() throws Exception {
     ICompilationUnit compilationUnit = null;
-    new CompilationUnitAnalyzer(compilationUnit).analyze();
+    new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -158,7 +158,7 @@ public class CompilationUnitAnalyzerTest {
     types = new IType[] { interfaceType };
     when(compilationUnit.getTypes()).thenReturn(types);
     when(interfaceType.isClass()).thenReturn(false);
-    new CompilationUnitAnalyzer(compilationUnit).analyze();
+    new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -167,7 +167,7 @@ public class CompilationUnitAnalyzerTest {
     when(compilationUnit.getTypes()).thenReturn(types);
     when(interfaceType.isClass()).thenReturn(true);
     when(interfaceType.isBinary()).thenReturn(true);
-    new CompilationUnitAnalyzer(compilationUnit).analyze();
+    new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
   }
 
   @Test
@@ -176,7 +176,7 @@ public class CompilationUnitAnalyzerTest {
     when(mainType.getFields()).thenReturn(fields);
     when(mainType.getTypes()).thenReturn(new IType[] {});
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isMissingBuilder());
     assertTrue(actual.getExtraFieldsInBuilder().isEmpty());
@@ -199,7 +199,7 @@ public class CompilationUnitAnalyzerTest {
     when(mainType.getFields()).thenReturn(fields);
     when(mainType.getTypes()).thenReturn(new IType[] { otherType });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isMissingBuilder());
     assertTrue(actual.getExtraFieldsInBuilder().isEmpty());
@@ -223,7 +223,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getFields()).thenReturn(new IField[] {});
     when(builderType.getMethods()).thenReturn(new IMethod[] {});
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingBuilder());
     assertTrue(actual.getExtraFieldsInBuilder().isEmpty());
@@ -247,7 +247,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getFields()).thenReturn(new IField[] { field1, field2 });
     when(builderType.getMethods()).thenReturn(new IMethod[] { withField1Method, withField2Method });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingBuilder());
     assertTrue(actual.getExtraFieldsInBuilder().isEmpty());
@@ -276,7 +276,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getMethods()).thenReturn(
       new IMethod[] { withField1Method, withField2Method, withField3Method });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingBuilder());
     Set<IField> expectedExtraFields = new HashSet<IField>();
@@ -306,7 +306,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getFields()).thenReturn(new IField[] { field1, field3 /* extra field */});
     when(builderType.getMethods()).thenReturn(new IMethod[] { withField1Method });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingBuilder());
     Set<IField> expectedExtraFields = new HashSet<IField>();
@@ -338,7 +338,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getMethods()).thenReturn(
       new IMethod[] { withField1Method, withField2Method, withField3Method });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingBuilder());
     assertTrue(actual.getExtraFieldsInBuilder().isEmpty());
@@ -371,7 +371,7 @@ public class CompilationUnitAnalyzerTest {
         .thenReturn(new IMethod[] { constructorWithBuilder, mainTypeMethod });
     when(constructorWithBuilder.getSource()).thenReturn(null);
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingConstructorWithBuilder());
     assertEquals(expectedFields, actual.getMissingFieldsInConstructorWithBuilder());
@@ -393,7 +393,7 @@ public class CompilationUnitAnalyzerTest {
         .thenReturn(new IMethod[] { constructorWithBuilder, mainTypeMethod });
     when(constructorWithBuilder.getSource()).thenReturn("this.field1 = builder.field1;");
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingConstructorWithBuilder());
     assertEquals(expectedFields, actual.getMissingFieldsInConstructorWithBuilder());
@@ -412,7 +412,7 @@ public class CompilationUnitAnalyzerTest {
     when(constructorWithBuilder.getSource()).thenReturn(
       "this.field1 = builder.field1; this.field2 = builder.field2;");
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isMissingConstructorWithBuilder());
     assertTrue(actual.getMissingFieldsInConstructorWithBuilder().isEmpty());
@@ -431,7 +431,7 @@ public class CompilationUnitAnalyzerTest {
     when(mainType.getMethods()).thenReturn(
       new IMethod[] { constructorWithNoBuilder, mainTypeMethod });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isMissingConstructorWithBuilder());
     assertTrue(actual.isThereAnythingToDo());
@@ -445,7 +445,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getFields()).thenReturn(fields);
     when(builderType.getMethods()).thenReturn(new IMethod[] { withField1Method, withField2Method });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     Set<IField> expectedMissingWithMethodForFields = new HashSet<IField>();
     expectedMissingWithMethodForFields.add(field3);
@@ -463,7 +463,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getMethods()).thenReturn(
       new IMethod[] { withField1Method, withField2Method, buildMethod });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isThereAnythingToDo());
     assertFalse(actual.isMissingBuildMethodInBuilder());
@@ -482,7 +482,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getMethods()).thenReturn(
       new IMethod[] { withField1Method, withField2Method, buildMethod, validateMethod });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isThereAnythingToDo());
     assertFalse(actual.isMissingValidateMethodInBuilder());
@@ -503,7 +503,7 @@ public class CompilationUnitAnalyzerTest {
     when(validateMethod.getSource()).thenReturn("Validate.notNull(field1); ");
     when(compilationUnit.getImports()).thenReturn(
       new IImportDeclaration[] { commonsLang2ValidateImport });
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isThereAnythingToDo());
     assertFalse(actual.isMissingValidateMethodInBuilder());
@@ -526,7 +526,7 @@ public class CompilationUnitAnalyzerTest {
     when(validateMethod.getSource()).thenReturn("Preconditions.checkNotNull(field1); ");
     when(compilationUnit.getImports()).thenReturn(
       new IImportDeclaration[] { googlePreconditionsImport });
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.getPossibleValidationFrameworks().contains(ValidationFramework.GOOGLE_GUAVA));
     assertEquals(1, actual.getPossibleValidationFrameworks().size());
@@ -543,7 +543,7 @@ public class CompilationUnitAnalyzerTest {
     when(validateMethod.getSource()).thenReturn("Validate.notNull(field1); ");
     when(compilationUnit.getImports()).thenReturn(
       new IImportDeclaration[] { commonsLang3ValidateImport });
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.getPossibleValidationFrameworks().contains(ValidationFramework.COMMONS_LANG3));
     assertEquals(1, actual.getPossibleValidationFrameworks().size());
@@ -559,7 +559,7 @@ public class CompilationUnitAnalyzerTest {
       new IMethod[] { withField1Method, withField2Method, buildMethod, validateMethod });
     when(validateMethod.getSource()).thenReturn("MyFancyValidation.makeSureThatNotNull(field1); ");
     when(compilationUnit.getImports()).thenReturn(new IImportDeclaration[] { someRandomImport });
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(Arrays.asList(ValidationFramework.values()).containsAll(
       actual.getPossibleValidationFrameworks()));
@@ -578,7 +578,7 @@ public class CompilationUnitAnalyzerTest {
       new IMethod[] { withField1Method, withField2Method, buildMethod, validateMethod });
     when(validateMethod.getSource()).thenReturn(
       "Validate.notNull(field1); Validate.notNull(field2);");
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
     assertTrue(actual.getMissingFieldValidationsInBuilder().isEmpty());
   }
 
@@ -595,7 +595,7 @@ public class CompilationUnitAnalyzerTest {
     when(builderType.getMethods()).thenReturn(
       new IMethod[] { withField1Method, withField2Method, buildMethod, anotherValidateMethod });
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertTrue(actual.isThereAnythingToDo());
     assertTrue(actual.isMissingValidateMethodInBuilder());
@@ -616,7 +616,7 @@ public class CompilationUnitAnalyzerTest {
     when(validateMethod.getSource()).thenReturn(
       "Validate.notNull(field1); Validate.notNull(field2);");
 
-    Analyzed actual = new CompilationUnitAnalyzer(compilationUnit).analyze();
+    Analyzed actual = new CompilationUnitAnalyzerImpl().analyze(compilationUnit);
 
     assertFalse(actual.isThereAnythingToDo());
   }
