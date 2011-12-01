@@ -18,4 +18,5 @@ Bundle-Vendor: nicolas dawt capdevila at gmail dawt com
 Bundle-ClassPath: lib/commons-lang-2.6.jar,
  lib/guice-3.0.jar,
  lib/javax.inject-1.jar,
- .
+ .,
+ lib/aopalliance-1.0.jar

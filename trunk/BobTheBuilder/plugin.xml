@@ -7,7 +7,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.eclipselabs.bobthebuilder.BobTheBuilder"
+            class="org.eclipselabs.bobthebuilder.BobTheBuilderApp"
             commandId="BobTheBuilder.commands.bobTheBuilderCommand">
       </handler>
    </extension>
