@@ -14,11 +14,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
-public class TreeBasedBuilderDialogImpl {
+public class TreeBasedBuilderDialog {
 
   private static final int NUMBER_OF_COLUMNS = 3;
 
-  public TreeBasedBuilderDialogImpl() {}
+  public TreeBasedBuilderDialog() {}
 
   @SuppressWarnings("deprecation")
   public ComposerRequest show(final DialogRequest dialogRequest) {

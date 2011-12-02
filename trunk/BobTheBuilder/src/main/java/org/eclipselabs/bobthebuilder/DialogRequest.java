@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldDeclarationBuilder;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 
 public class DialogRequest {
 
@@ -56,7 +56,7 @@ public class DialogRequest {
   
   private final Shell shell;
 
-  public DialogRequest(CompilationUnitAnalyzerImpl.Analyzed analyzed, Shell shell) throws JavaModelException {
+  public DialogRequest(CompilationUnitAnalyzer.Analyzed analyzed, Shell shell) throws JavaModelException {
     Validate.notNull(analyzed, "Analyzed may not be null");
     this.builderFields = analyzed.getBuilderFields();
     this.compilationUnit = analyzed.getCompilationUnit();

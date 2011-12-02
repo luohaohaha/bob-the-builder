@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
 
-public class CompilationUnitAnalyzerImpl {
+public class CompilationUnitAnalyzer {
   public static final String BUILDER_CLASS_NAME = "Builder";
 
   public static class Analyzed {
@@ -200,9 +200,9 @@ public class CompilationUnitAnalyzerImpl {
 
   }
 
-  public CompilationUnitAnalyzerImpl() {}
+  public CompilationUnitAnalyzer() {}
 
-  public CompilationUnitAnalyzerImpl.Analyzed analyze(final ICompilationUnit compilationUnit) throws Exception {
+  public CompilationUnitAnalyzer.Analyzed analyze(final ICompilationUnit compilationUnit) throws Exception {
     Validate.notNull(compilationUnit, "Compilation Unit cannot be null");
     Set<IField> fields = new HashSet<IField>();
     Set<IField> copyOfFields = new HashSet<IField>();
