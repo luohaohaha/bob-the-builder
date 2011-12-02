@@ -139,7 +139,7 @@ public class ComposerTest {
     missingBuilderFields.add(field3);
     when(dialogRequest.getConstructorWithBuilder()).thenReturn(null);
     when(dialogRequest.isMissingBuilder()).thenReturn(false);
-    new Composer.Impl().compose(composerRequestBuilder.build(), dialogRequest);
+    new Composer().compose(composerRequestBuilder.build(), dialogRequest);
     verify(type).createMethod(
       constructorWithBuilderCaptor.capture(), eq(builderType), eq(true),
       any(IProgressMonitor.class));
@@ -173,7 +173,7 @@ public class ComposerTest {
     when(dialogRequest.getConstructorWithBuilder()).thenReturn(null);
     when(dialogRequest.isMissingBuilder()).thenReturn(true);
     when(type.getTypes()).thenReturn(new IType[] { builderType });
-    new Composer.Impl().compose(
+    new Composer().compose(
       composerRequestBuilder.build(), dialogRequest);
     verify(type).createMethod(anyString(), eq(builderType), eq(true), any(IProgressMonitor.class));
     verify(builderType).createField(
@@ -206,7 +206,7 @@ public class ComposerTest {
     int length = originalSource.length();
     when(constructorSourceRange.getLength()).thenReturn(length);
     when(constructorWithBuilder.getSource()).thenReturn(originalSource);
-    new Composer.Impl().compose(
+    new Composer().compose(
       composerRequestBuilder
           .withConstructorWithBuilder()
           .addMissingAssignmentInConstructor(field3)

@@ -10,7 +10,7 @@ public interface FieldTextBuilder {
 
     @Override
     public String createMessage(IField field) throws JavaModelException {
-      return Composer.Impl.composeFieldInBuilder(field);
+      return Composer.composeFieldInBuilder(field);
     }
     
   }
@@ -19,7 +19,7 @@ public interface FieldTextBuilder {
 
     @Override
     public String createMessage(IField field) throws JavaModelException {
-      return Composer.Impl.composeWithMethodSignature(field) + "...}";
+      return Composer.composeWithMethodSignature(field) + "...}";
     }
     
   }
@@ -28,7 +28,7 @@ public interface FieldTextBuilder {
 
     @Override
     public String createMessage(IField field) throws JavaModelException {
-      return Composer.Impl.composeSingleAssignment(field);
+      return Composer.composeSingleAssignment(field);
     }
     
   }

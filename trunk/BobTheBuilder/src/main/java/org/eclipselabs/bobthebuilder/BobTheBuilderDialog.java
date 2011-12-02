@@ -13,17 +13,18 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class BobTheBuilderDialog extends Dialog {
 
-  protected final Shell shell;
+  private final Shell shell;
 
-  protected final WindowCoordinates windowCoordinates;
+  private final WindowCoordinates windowCoordinates;
 
-  protected Image bobsImage = null;
+  private final Image bobsImage;
 
   private final Display display;
 
-  public BobTheBuilderDialog() {
-    super(new Shell(SWT.APPLICATION_MODAL | SWT.ON_TOP));
-    Shell parentShell = getParent().getShell();
+  protected abstract void show();
+  
+  public BobTheBuilderDialog(Shell parentShell) {
+    super(parentShell);
     shell = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.ON_TOP);
     windowCoordinates = centerWindow();
     shell.addListener(SWT.Traverse, createListenerThatClosesDialog());
@@ -35,10 +36,19 @@ public abstract class BobTheBuilderDialog extends Dialog {
     if (imageDescriptor != null) {
       bobsImage = new Image(shell.getDisplay(), imageDescriptor.getImageData());
     }
+    else {
+      bobsImage = null;
+    }
     shell.setImage(bobsImage);
     display = parentShell.getDisplay();
   }
 
+  protected void display() {
+    shell.setSize(200, 400);
+    shell.pack();
+    shell.open();
+  }
+  
   protected void waitAndSee() {
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch()) {
@@ -71,12 +81,6 @@ public abstract class BobTheBuilderDialog extends Dialog {
     };
   }
 
-  protected void display() {
-    shell.setSize(200, 400);
-    shell.pack();
-    shell.open();
-  }
-
   static class WindowCoordinates {
     private final int x;
 
@@ -96,4 +100,14 @@ public abstract class BobTheBuilderDialog extends Dialog {
     }
 
   }
+
+  public Shell getShell() {
+    return shell;
+  }
+
+  public Image getBobsImage() {
+    return bobsImage;
+  }
+  
+  
 }

@@ -15,7 +15,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -34,13 +33,13 @@ public class BobTheBuilderApp extends AbstractHandler {
 
   private ICompilationUnit compilationUnit;
 
-  private final TreeBasedBuilderDialog treeBasedBuilderDialog;
+  private final TreeBasedBuilderDialogImpl treeBasedBuilderDialog;
 
-  private final CompilationUnitAnalyzer compilationUnitAnalyzer;
+  private final CompilationUnitAnalyzerImpl compilationUnitAnalyzer;
 
   private final Composer composer;
 
-  private final NothingToDoDialog nothingToDoDialog;
+  private final NothingToDoDialogImpl nothingToDoDialog;
 
   public BobTheBuilderApp() {
     Injector injector = Guice.createInjector(new AppModule());
@@ -70,14 +69,14 @@ public class BobTheBuilderApp extends AbstractHandler {
     try {
       CompilationUnitAnalyzerImpl.Analyzed analyzed =
           compilationUnitAnalyzer.analyze(compilationUnit);
-      dialogRequest = new DialogRequest(analyzed);
+      dialogRequest = new DialogRequest(analyzed, shell);
     }
     catch (Exception e) {
       bark("Could not create the request to send to the dialog" + e.getClass().getName() + " "
         + e.getMessage() + " " + StringUtils.left(ExceptionUtils.getFullStackTrace(e), 100));
     }
     if (!dialogRequest.isThereAnythingToDo()) {
-      nothingToDoDialog.show();
+      nothingToDoDialog.show(shell);
       return null;
     }
     ComposerRequest composerRequest = treeBasedBuilderDialog.show(dialogRequest);
