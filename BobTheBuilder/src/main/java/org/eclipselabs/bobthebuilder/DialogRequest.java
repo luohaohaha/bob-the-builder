@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldDeclarationBuilder;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl;
 
@@ -52,8 +53,10 @@ public class DialogRequest {
   private final Collection<ValidationFramework> possibleValidationFrameworks;
 
   private final BobTheBuilderTreeNode tree;
+  
+  private final Shell shell;
 
-  public DialogRequest(CompilationUnitAnalyzerImpl.Analyzed analyzed) throws JavaModelException {
+  public DialogRequest(CompilationUnitAnalyzerImpl.Analyzed analyzed, Shell shell) throws JavaModelException {
     Validate.notNull(analyzed, "Analyzed may not be null");
     this.builderFields = analyzed.getBuilderFields();
     this.compilationUnit = analyzed.getCompilationUnit();
@@ -75,6 +78,7 @@ public class DialogRequest {
     this.possibleValidationFrameworks = analyzed.getPossibleValidationFrameworks();
     this.thereAnythingToDo = analyzed.isThereAnythingToDo();
     this.tree = createTree();
+    this.shell = shell;
   }
 
   private BobTheBuilderTreeNode createTree() throws JavaModelException {
@@ -244,6 +248,10 @@ public class DialogRequest {
 
   public BobTheBuilderTreeNode getTree() {
     return tree;
+  }
+
+  public Shell getShell() {
+    return shell;
   }
 
 }
