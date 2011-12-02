@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzerImpl;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -33,23 +33,23 @@ public class BobTheBuilderApp extends AbstractHandler {
 
   private ICompilationUnit compilationUnit;
 
-  private final TreeBasedBuilderDialogImpl treeBasedBuilderDialog;
+  private final TreeBasedBuilderDialog treeBasedBuilderDialog;
 
-  private final CompilationUnitAnalyzerImpl compilationUnitAnalyzer;
+  private final CompilationUnitAnalyzer compilationUnitAnalyzer;
 
   private final Composer composer;
 
-  private final NothingToDoDialogImpl nothingToDoDialog;
+  private final NothingToDoDialog nothingToDoDialog;
 
   public BobTheBuilderApp() {
     Injector injector = Guice.createInjector(new AppModule());
-    compilationUnitAnalyzer = injector.getInstance(CompilationUnitAnalyzerImpl.class);
+    compilationUnitAnalyzer = injector.getInstance(CompilationUnitAnalyzer.class);
     Validate.notNull(compilationUnitAnalyzer, "compilationUnitAnalyzer may not null");
-    treeBasedBuilderDialog = injector.getInstance(TreeBasedBuilderDialogImpl.class);
+    treeBasedBuilderDialog = injector.getInstance(TreeBasedBuilderDialog.class);
     Validate.notNull(treeBasedBuilderDialog, "treeBasedBuilderDialog may not null");
     composer = injector.getInstance(Composer.class);
     Validate.notNull(composer, "composer may not null");
-    nothingToDoDialog = injector.getInstance(NothingToDoDialogImpl.class);
+    nothingToDoDialog = injector.getInstance(NothingToDoDialog.class);
     Validate.notNull(nothingToDoDialog, "nothingToDoDialog may not null");
   }
 
@@ -67,7 +67,7 @@ public class BobTheBuilderApp extends AbstractHandler {
     shell = window.getShell();
     DialogRequest dialogRequest = null;
     try {
-      CompilationUnitAnalyzerImpl.Analyzed analyzed =
+      CompilationUnitAnalyzer.Analyzed analyzed =
           compilationUnitAnalyzer.analyze(compilationUnit);
       dialogRequest = new DialogRequest(analyzed, shell);
     }

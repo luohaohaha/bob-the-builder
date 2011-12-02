@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-public class NothingToDoDialogImpl {
+public class NothingToDoDialog {
 
-  public NothingToDoDialogImpl() {}
+  public NothingToDoDialog() {}
 
   public void show(Shell parentShell) {
     BobTheBuilderDialog bobTheBuilderDialog = new BobTheBuilderDialog(parentShell) {
