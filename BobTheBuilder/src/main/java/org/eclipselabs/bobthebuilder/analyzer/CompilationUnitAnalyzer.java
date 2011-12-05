@@ -41,21 +41,21 @@ public class CompilationUnitAnalyzer {
     boolean missingValidateMethodInBuilder = true;
     Collection<ValidationFramework> validationFrameworks = null;
     try {
-      type = new TypeAnalyzer(compilationUnit).analyze();
+      type = new TypeAnalyzer().analyze(compilationUnit);
       fields = new MainTypeFieldAnalyzer(type).analyze();
       // TODO if we have our own representation of the IField, we can do fancier set operations.
       copyOfFields.addAll(fields);
-      AnalyzerResult.ForType builderAnalyzerResult = new BuilderTypeAnalyzer(type).analyze();
+      AnalyzerResult.ForType builderAnalyzerResult = new BuilderTypeAnalyzer().analyze(type);
       builderType = builderAnalyzerResult.getElement();
       missingBuilder = !builderAnalyzerResult.isPresent();
-      builderFields = new BuilderTypeFieldAnalyzer(builderAnalyzerResult).analyze();
+      builderFields = new BuilderTypeFieldAnalyzer().analyze(builderAnalyzerResult);
       copyOfBuilderFields.addAll(builderFields);
       anotherCopyOfBuilderFields.addAll(builderFields);
       missingFieldsInBuilder =
-          new DifferenceBetweenFieldSetsAnalyzer(copyOfFields, builderFields).analyze();
+          new DifferenceBetweenFieldSetsAnalyzer().analyze(copyOfFields, builderFields);
       // flip-flop collections so that the subtraction of sets works
-      extraFieldsInBuilder = new DifferenceBetweenFieldSetsAnalyzer(copyOfBuilderFields, fields)
-          .analyze();
+      extraFieldsInBuilder = new DifferenceBetweenFieldSetsAnalyzer()
+          .analyze(copyOfBuilderFields, fields);
       missingWithMethodsForFields = new WithMethodsInBuilderAnalyzer(
           anotherCopyOfBuilderFields,
           missingFieldsInBuilder,
