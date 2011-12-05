@@ -13,25 +13,26 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 
 public class Composer {
 
   public void compose(ComposerRequest request,
-      DialogRequest dialogRequest) throws JavaModelException {
-    ICompilationUnit compilationUnit = dialogRequest.getCompilationUnit();
-    IType type = dialogRequest.getType();
+      DialogContent dialogRequest, CompilationUnitAnalyzer.Analyzed analyzed) throws JavaModelException {
+    ICompilationUnit compilationUnit = analyzed.getCompilationUnit();
+    IType type = analyzed.getType();
     if (request.isCreateConstructorWithBuilder()) {
       String constructorWithBuilderBuilder = composeConstructorWithBuilder(
-          request, dialogRequest, type);
-      type.createMethod(constructorWithBuilderBuilder.toString(), dialogRequest.getBuilderType(),
+          request, dialogRequest, type, analyzed);
+      type.createMethod(constructorWithBuilderBuilder.toString(), analyzed.getBuilderType(),
           true, null);
     }
     compilationUnit.commitWorkingCopy(true, null);
-    if (dialogRequest.getConstructorWithBuilder() != null &&
+    if (analyzed.getConstructorWithBuilder() != null &&
           (!request.getMissingAssignmentsInConstructor().isEmpty() ||
               !request.getExtraFieldsInBuilder().isEmpty())) {
-      IMethod originalConstructorWithBuilder = dialogRequest.getConstructorWithBuilder();
+      IMethod originalConstructorWithBuilder = analyzed.getConstructorWithBuilder();
       Validate.notNull(originalConstructorWithBuilder,
           "originalConstructorWithBuilder may not be null");
       int length = originalConstructorWithBuilder.getSourceRange().getLength();
@@ -50,14 +51,14 @@ public class Composer {
       type.createMethod(StringUtils.join(sourceLines, "\n"), null, true, null);
     }
     IType builder;
-    if (dialogRequest.isMissingBuilder()) {
+    if (analyzed.isMissingBuilder()) {
       type.createType(composeBuilder(), null, true, null);
       IType[] types = type.getTypes();
       Validate.notEmpty(types, "types may not be empty");
       builder = types[0];
     }
     else {
-      builder = dialogRequest.getBuilderType();
+      builder = analyzed.getBuilderType();
     }
     for (IField each : request.getMissingFieldsInBuilder()) {
       builder.createField(composeFieldInBuilder(each), null, true, null);
@@ -92,7 +93,7 @@ public class Composer {
           null, true, null);
     }
     else if (!request.getMissingFieldValidationsInBuild().isEmpty()) {
-      IMethod originalValidateMethod = dialogRequest.getValidateMethodInBuilder();
+      IMethod originalValidateMethod = analyzed.getValidateMethodInBuilder();
       int length = originalValidateMethod.getSourceRange().getLength();
       List<String> sourceLines = new ArrayList<String>();
       String originalSource = originalValidateMethod.getSource().substring(0, length - 1);
@@ -146,9 +147,12 @@ public class Composer {
   }
 
   private String composeConstructorWithBuilder(
-        ComposerRequest request, DialogRequest dialogRequest, IType type) {
+        ComposerRequest request,
+        DialogContent dialogRequest,
+        IType type,
+        CompilationUnitAnalyzer.Analyzed analyzed) {
     Set<IField> fieldsToAddInBuilder = new HashSet<IField>();
-    fieldsToAddInBuilder.addAll(dialogRequest.getBuilderFields());
+    fieldsToAddInBuilder.addAll(analyzed.getBuilderFields());
     fieldsToAddInBuilder.addAll(request.getMissingFieldsInBuilder());
     fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());
     List<String> sourceLines = new ArrayList<String>();

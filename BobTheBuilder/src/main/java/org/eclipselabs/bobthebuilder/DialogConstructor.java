@@ -13,18 +13,23 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 
-public class TreeBasedBuilderDialog {
+public class DialogConstructor {
 
   private static final int NUMBER_OF_COLUMNS = 3;
 
-  public TreeBasedBuilderDialog() {}
+  public DialogConstructor() {}
 
   @SuppressWarnings("deprecation")
-  public ComposerRequest show(final DialogRequest dialogRequest) {
+  public ComposerRequest show(
+      final DialogContent dialogRequest, 
+      final CompilationUnitAnalyzer.Analyzed analyzed, 
+      Shell shell) {
     Validate.notNull(dialogRequest, "dialogRequest may not be null");
     final ComposerRequest.Builder composerRequestBuilder = new ComposerRequest.Builder();
-    BobTheBuilderDialog bobTheBuilderDialog = new BobTheBuilderDialog(dialogRequest.getShell()) {
+    BobTheBuilderDialog bobTheBuilderDialog = new BobTheBuilderDialog(shell) {
 
       @Override
       protected void show() {
@@ -35,7 +40,7 @@ public class TreeBasedBuilderDialog {
 
         String title =
             "Select Actions To Perform On "
-              + dialogRequest.getCompilationUnit().getResource().getName();
+              + analyzed.getCompilationUnit().getResource().getName();
         Label titleLabel = new Label(getShell(), SWT.BORDER);
         titleLabel.setText(title);
         titleLabel.setLayoutData(createTopSectionGridData());
@@ -57,7 +62,7 @@ public class TreeBasedBuilderDialog {
         validationsGroup.setLayout(new RowLayout());
         validationsGroup.setLayoutData(createTopSectionGridData());
         boolean checked = true;
-        for (ValidationFramework each : dialogRequest.getPossibleValidationFrameworks()) {
+        for (ValidationFramework each : analyzed.getPossibleValidationFrameworks()) {
           Button validationFrameworkButton = new Button(validationsGroup, SWT.RADIO);
           validationFrameworkButton.setSelection(checked);
           checked = false;

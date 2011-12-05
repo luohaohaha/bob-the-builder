@@ -202,7 +202,7 @@ public class CompilationUnitAnalyzer {
 
   public CompilationUnitAnalyzer() {}
 
-  public CompilationUnitAnalyzer.Analyzed analyze(final ICompilationUnit compilationUnit) throws Exception {
+  public CompilationUnitAnalyzer.Analyzed analyze(final ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(compilationUnit, "Compilation Unit cannot be null");
     Set<IField> fields = new HashSet<IField>();
     Set<IField> copyOfFields = new HashSet<IField>();
