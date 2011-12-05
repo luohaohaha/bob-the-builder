@@ -30,11 +30,11 @@ public class BobTheBuilderWorker extends AbstractHandler {
 
   private Shell shell;
 
-  private BobTheBuilderSubContractor subContractor;
+  private SubContractor subContractor;
 
   public BobTheBuilderWorker() {
     Injector injector = Guice.createInjector(new AppModule());
-    subContractor = injector.getInstance(BobTheBuilderSubContractor.class);
+    subContractor = injector.getInstance(SubContractor.class);
     Validate.notNull(subContractor, "BobTheBuilderSubContractor may not null");
   }
 

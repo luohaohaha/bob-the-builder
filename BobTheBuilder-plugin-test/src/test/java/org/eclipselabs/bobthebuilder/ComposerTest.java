@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -106,7 +106,7 @@ public class ComposerTest {
   private IMethod withField1;
 
   @Mock
-  CompilationUnitAnalyzer.Analyzed analyzed;
+  Analyzed analyzed;
   
   @Before
   public void setUp() throws JavaModelException {

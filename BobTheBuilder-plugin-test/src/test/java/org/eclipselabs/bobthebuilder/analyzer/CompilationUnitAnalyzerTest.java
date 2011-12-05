@@ -20,7 +20,6 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer.Analyzed;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

@@ -13,13 +13,13 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 
 public class Composer {
 
   public void compose(ComposerRequest request,
-      DialogContent dialogRequest, CompilationUnitAnalyzer.Analyzed analyzed) throws JavaModelException {
+      DialogContent dialogRequest, Analyzed analyzed) throws JavaModelException {
     ICompilationUnit compilationUnit = analyzed.getCompilationUnit();
     IType type = analyzed.getType();
     if (request.isCreateConstructorWithBuilder()) {
@@ -150,7 +150,7 @@ public class Composer {
         ComposerRequest request,
         DialogContent dialogRequest,
         IType type,
-        CompilationUnitAnalyzer.Analyzed analyzed) {
+        Analyzed analyzed) {
     Set<IField> fieldsToAddInBuilder = new HashSet<IField>();
     fieldsToAddInBuilder.addAll(analyzed.getBuilderFields());
     fieldsToAddInBuilder.addAll(request.getMissingFieldsInBuilder());
