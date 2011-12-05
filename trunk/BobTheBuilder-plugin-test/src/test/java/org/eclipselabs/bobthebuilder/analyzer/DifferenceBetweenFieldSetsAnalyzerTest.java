@@ -73,13 +73,13 @@ public class DifferenceBetweenFieldSetsAnalyzerTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullBuilderFieldSet() {
-    new DifferenceBetweenFieldSetsAnalyzer(mainTypeFields, null);
+  public void testNullBuilderFieldSet() throws JavaModelException {
+    new DifferenceBetweenFieldSetsAnalyzer().analyze(mainTypeFields, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullMainTypeFieldSet() {
-    new DifferenceBetweenFieldSetsAnalyzer(null, builderFields);
+  public void testNullMainTypeFieldSet() throws JavaModelException {
+    new DifferenceBetweenFieldSetsAnalyzer().analyze(null, builderFields);
   }
 
   @Test
@@ -87,7 +87,7 @@ public class DifferenceBetweenFieldSetsAnalyzerTest {
     builderFields = Collections.emptySet();
     expected.addAll(mainTypeFields);
     Set<IField> actual =
-        new DifferenceBetweenFieldSetsAnalyzer(mainTypeFields, builderFields).analyze();
+        new DifferenceBetweenFieldSetsAnalyzer().analyze(mainTypeFields, builderFields);
     assertEquals(expected, actual);
   }
 
@@ -96,7 +96,7 @@ public class DifferenceBetweenFieldSetsAnalyzerTest {
     builderFields = Collections.emptySet();
     mainTypeFields = Collections.emptySet();
     Set<IField> actual =
-        new DifferenceBetweenFieldSetsAnalyzer(mainTypeFields, builderFields).analyze();
+        new DifferenceBetweenFieldSetsAnalyzer().analyze(mainTypeFields, builderFields);
     assertTrue(actual.isEmpty());
   }
 
@@ -105,7 +105,7 @@ public class DifferenceBetweenFieldSetsAnalyzerTest {
     builderFields = Sets.newHashSet(field1, field2);
     expected = Sets.newHashSet(field3);
     Set<IField> actual =
-        new DifferenceBetweenFieldSetsAnalyzer(mainTypeFields, builderFields).analyze();
+        new DifferenceBetweenFieldSetsAnalyzer().analyze(mainTypeFields, builderFields);
     assertEquals(expected, actual);
   }
 
@@ -115,14 +115,14 @@ public class DifferenceBetweenFieldSetsAnalyzerTest {
     builderFields = Sets.newHashSet(field1, field2, field3);
     expected = Sets.newHashSet(field4SimilarToField3);
     Set<IField> actual =
-        new DifferenceBetweenFieldSetsAnalyzer(mainTypeFields, builderFields).analyze();
+        new DifferenceBetweenFieldSetsAnalyzer().analyze(mainTypeFields, builderFields);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testNoDiffBetweenSets() throws JavaModelException {
     Set<IField> actual =
-        new DifferenceBetweenFieldSetsAnalyzer(mainTypeFields, builderFields).analyze();
+        new DifferenceBetweenFieldSetsAnalyzer().analyze(mainTypeFields, builderFields);
     assertTrue(actual.isEmpty());
   }
 }

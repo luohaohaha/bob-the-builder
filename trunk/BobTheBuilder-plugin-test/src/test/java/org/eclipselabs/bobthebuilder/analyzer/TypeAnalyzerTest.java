@@ -42,38 +42,38 @@ public class TypeAnalyzerTest {
   }
   
   @Test(expected = IllegalArgumentException.class)
-  public void testNullCompilationUnit() {
-    new TypeAnalyzer(null);
+  public void testNullCompilationUnit() throws JavaModelException {
+    new TypeAnalyzer().analyze(null);
   }
 
   @Test(expected = ArrayIndexOutOfBoundsException.class)
   public void testNoTypesInCompilationUnit() throws JavaModelException {
     Mockito.when(compilationUnit.getTypes()).thenReturn(new IType[]{});
-    new TypeAnalyzer(compilationUnit).analyze();
+    new TypeAnalyzer().analyze(compilationUnit);
   }
   
   @Test(expected = IllegalStateException.class)
   public void testManyTypesInCompilationUnit() throws JavaModelException {
     Mockito.when(compilationUnit.getTypes()).thenReturn(new IType[]{mainType, interfaceType});
-    new TypeAnalyzer(compilationUnit).analyze();
+    new TypeAnalyzer().analyze(compilationUnit);
   }
 
   @Test(expected = IllegalStateException.class)
   public void testNotAClassTypeInCompilationUnit() throws JavaModelException {
     Mockito.when(compilationUnit.getTypes()).thenReturn(new IType[]{interfaceType});
-    new TypeAnalyzer(compilationUnit).analyze();
+    new TypeAnalyzer().analyze(compilationUnit);
   }
 
   @Test(expected = IllegalStateException.class)
   public void testBinaryTypeInCompilationUnit() throws JavaModelException {
     Mockito.when(compilationUnit.getTypes()).thenReturn(new IType[]{binaryType});
-    new TypeAnalyzer(compilationUnit).analyze();
+    new TypeAnalyzer().analyze(compilationUnit);
   }
 
   @Test
   public void testMainTypeInCompilationUnit() throws JavaModelException {
     Mockito.when(compilationUnit.getTypes()).thenReturn(new IType[]{mainType});
-    actual = new TypeAnalyzer(compilationUnit).analyze();
+    actual = new TypeAnalyzer().analyze(compilationUnit);
     expected = mainType;
     assertEquals(expected, actual);
   }

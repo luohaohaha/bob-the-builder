@@ -8,14 +8,10 @@ public class BuilderTypeAnalyzer {
 
   static final String BUILDER_CLASS_NAME = "Builder";
 
-  private IType mainType;
+  public BuilderTypeAnalyzer() {}
 
-  public BuilderTypeAnalyzer(IType mainType) {
+  public AnalyzerResult.ForType analyze(IType mainType) throws JavaModelException {
     Validate.notNull(mainType, "main type may not be null");
-    this.mainType = mainType;
-  }
-
-  public AnalyzerResult.ForType analyze() throws JavaModelException {
     for (IType each : mainType.getTypes()) {
       if (each.getElementName().equals(BUILDER_CLASS_NAME)) {
         return AnalyzerResult.ForType.getPresentInstance(each);

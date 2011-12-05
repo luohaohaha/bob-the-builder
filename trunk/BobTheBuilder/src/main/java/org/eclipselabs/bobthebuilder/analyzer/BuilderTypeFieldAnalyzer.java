@@ -6,23 +6,19 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 
 public class BuilderTypeFieldAnalyzer {
 
-  private final AnalyzerResult.ForType  analyzedBuilderType;
-  
-  public BuilderTypeFieldAnalyzer(AnalyzerResult.ForType analyzedBuilder) {
-    Validate.notNull(analyzedBuilder, "analyzed builder may not be null");
-    this.analyzedBuilderType = analyzedBuilder;
-  }
-  
-  public Set<IField> analyze() throws JavaModelException {
-    if (analyzedBuilderType.isPresent()) {
-      return new MainTypeFieldAnalyzer(analyzedBuilderType.getElement()).analyze();
+  public BuilderTypeFieldAnalyzer() {}
+
+  public Set<IField> analyze(ForType analyzerResult) throws JavaModelException {
+    Validate.notNull(analyzerResult, "AnalyzerResult may not be null");
+    if (analyzerResult.isPresent()) {
+      return new MainTypeFieldAnalyzer(analyzerResult.getElement()).analyze();
     }
     else {
       return Collections.emptySet();
     }
   }
 }
-

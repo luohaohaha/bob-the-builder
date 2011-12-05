@@ -38,13 +38,13 @@ public class BuilderTypeAnalyzerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullMainType() throws JavaModelException {
-    new BuilderTypeAnalyzer(null);
+    new BuilderTypeAnalyzer().analyze(null);
   }
 
   @Test
   public void testNoBuilderType() throws JavaModelException {
     Mockito.when(mainType.getTypes()).thenReturn(new IType[] {});
-    ForType actual = new BuilderTypeAnalyzer(mainType).analyze();
+    ForType actual = new BuilderTypeAnalyzer().analyze(mainType);
     expected = AnalyzerResult.ForType.NOT_PRESENT;
     assertEquals(expected, actual);
   }
@@ -52,7 +52,7 @@ public class BuilderTypeAnalyzerTest {
   @Test
   public void testBuilderType() throws JavaModelException {
     Mockito.when(mainType.getTypes()).thenReturn(new IType[] { builderType });
-    ForType actual = new BuilderTypeAnalyzer(mainType).analyze();
+    ForType actual = new BuilderTypeAnalyzer().analyze(mainType);
     expected = AnalyzerResult.ForType.getPresentInstance(builderType);
     assertEquals(expected, actual);
   }
@@ -60,7 +60,7 @@ public class BuilderTypeAnalyzerTest {
   @Test
   public void testMainTypeContainsBuilderTypeAndAnotherType() throws JavaModelException {
     Mockito.when(mainType.getTypes()).thenReturn(new IType[] { builderType, anotherType });
-    ForType actual = new BuilderTypeAnalyzer(mainType).analyze();
+    ForType actual = new BuilderTypeAnalyzer().analyze(mainType);
     expected = AnalyzerResult.ForType.getPresentInstance(builderType);
     assertEquals(expected, actual);
   }
@@ -69,7 +69,7 @@ public class BuilderTypeAnalyzerTest {
   public void testMainTypeContainsAnotherType() throws JavaModelException {
     Mockito.when(mainType.getTypes()).thenReturn(new IType[] { anotherType });
     expected = AnalyzerResult.ForType.NOT_PRESENT;
-    ForType actual = new BuilderTypeAnalyzer(mainType).analyze();
+    ForType actual = new BuilderTypeAnalyzer().analyze(mainType);
     assertEquals(expected, actual);
   }
 

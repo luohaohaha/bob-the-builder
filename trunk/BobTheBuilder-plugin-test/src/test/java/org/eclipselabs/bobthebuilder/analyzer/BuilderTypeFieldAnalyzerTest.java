@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class BuilderTypeFieldAnalyzerTest {
 
-  private AnalyzerResult.ForType resultFixture;
+  private AnalyzerResult.ForType analyzerResult;
 
   @Mock
   private IField field1;
@@ -35,7 +35,7 @@ public class BuilderTypeFieldAnalyzerTest {
 
   @Mock
   private IField staticFinalField3;
-  
+
   private Set<IField> expected;
 
   @Mock
@@ -49,28 +49,29 @@ public class BuilderTypeFieldAnalyzerTest {
     MockitoAnnotations.initMocks(this);
     Mockito.when(field1.getFlags()).thenReturn(Flags.AccDefault);
     Mockito.when(finalField2.getFlags()).thenReturn(Flags.AccFinal);
-    Mockito.when(staticFinalField3.getFlags()).thenReturn(Flags.AccFinal|Flags.AccStatic);
-    Mockito.when(builderType.getFields()).thenReturn(new IField[]{field1, finalField2, staticFinalField3});
-    Mockito.when(mainType.getFields()).thenReturn(new IField[]{field1, finalField2, staticFinalField3});
+    Mockito.when(staticFinalField3.getFlags()).thenReturn(Flags.AccFinal | Flags.AccStatic);
+    Mockito.when(builderType.getFields()).thenReturn(
+      new IField[] { field1, finalField2, staticFinalField3 });
+    Mockito.when(mainType.getFields()).thenReturn(
+      new IField[] { field1, finalField2, staticFinalField3 });
     expected = ImmutableSet.of(field1, finalField2);
   }
 
   @Test
   public void testBuilderTypeNotPresent() throws JavaModelException {
-    resultFixture = AnalyzerResult.ForType.NOT_PRESENT;
-    Set<IField> actual = new BuilderTypeFieldAnalyzer(resultFixture).analyze();
+    Set<IField> actual = new BuilderTypeFieldAnalyzer().analyze(AnalyzerResult.ForType.NOT_PRESENT);
     assertTrue(actual.isEmpty());
   }
-  
+
   @Test(expected = IllegalArgumentException.class)
   public void testNullAnalyzedResult() throws Exception {
-    new BuilderTypeFieldAnalyzer(null).analyze();
+    new BuilderTypeFieldAnalyzer().analyze(analyzerResult);
   }
-  
+
   @Test
   public void testBuilderIsPresent() throws JavaModelException {
-    resultFixture = AnalyzerResult.ForType.getPresentInstance(builderType);
-    Set<IField> actual = new BuilderTypeFieldAnalyzer(resultFixture).analyze();
+    analyzerResult = AnalyzerResult.ForType.getPresentInstance(builderType);
+    Set<IField> actual = new BuilderTypeFieldAnalyzer().analyze(analyzerResult);
     assertEquals(expected, actual);
   }
 

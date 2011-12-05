@@ -7,14 +7,10 @@ import org.eclipse.jdt.core.JavaModelException;
 
 public class TypeAnalyzer {
 
-  private final ICompilationUnit compilationUnit;
-
-  public TypeAnalyzer(ICompilationUnit compilationUnit) {
-    Validate.notNull(compilationUnit, "compilationUnit may not be null");
-    this.compilationUnit = compilationUnit;
-  }
+  public TypeAnalyzer() {  }
   
-  public IType analyze() throws JavaModelException {
+  public IType analyze(ICompilationUnit compilationUnit) throws JavaModelException {
+    Validate.notNull(compilationUnit, "compilationUnit may not be null");
     IType type = null;
     IType[] topLevelTypes = compilationUnit.getTypes();
     if (topLevelTypes.length > 1) {
