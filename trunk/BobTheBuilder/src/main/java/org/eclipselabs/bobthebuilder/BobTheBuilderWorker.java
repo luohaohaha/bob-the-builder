@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -25,66 +24,40 @@ import com.google.inject.Injector;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class BobTheBuilderApp extends AbstractHandler {
+public class BobTheBuilderWorker extends AbstractHandler {
 
   private static final String BOB_THE_BUILDER = "BobTheBuilder";
 
   private Shell shell;
 
-  private ICompilationUnit compilationUnit;
+  private BobTheBuilderSubContractor subContractor;
 
-  private final TreeBasedBuilderDialog treeBasedBuilderDialog;
-
-  private final CompilationUnitAnalyzer compilationUnitAnalyzer;
-
-  private final Composer composer;
-
-  private final NothingToDoDialog nothingToDoDialog;
-
-  public BobTheBuilderApp() {
+  public BobTheBuilderWorker() {
     Injector injector = Guice.createInjector(new AppModule());
-    compilationUnitAnalyzer = injector.getInstance(CompilationUnitAnalyzer.class);
-    Validate.notNull(compilationUnitAnalyzer, "compilationUnitAnalyzer may not null");
-    treeBasedBuilderDialog = injector.getInstance(TreeBasedBuilderDialog.class);
-    Validate.notNull(treeBasedBuilderDialog, "treeBasedBuilderDialog may not null");
-    composer = injector.getInstance(Composer.class);
-    Validate.notNull(composer, "composer may not null");
-    nothingToDoDialog = injector.getInstance(NothingToDoDialog.class);
-    Validate.notNull(nothingToDoDialog, "nothingToDoDialog may not null");
+    subContractor = injector.getInstance(BobTheBuilderSubContractor.class);
+    Validate.notNull(subContractor, "BobTheBuilderSubContractor may not null");
   }
 
   public Object execute(ExecutionEvent event) throws ExecutionException {
     IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
     IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
     IJavaElement javaElement = JavaUI.getEditorInputJavaElement(activeEditor.getEditorInput());
-
+    ICompilationUnit compilationUnit;
     if (javaElement instanceof ICompilationUnit) {
       compilationUnit = (ICompilationUnit) javaElement;
     }
     else {
       bark("Expecting an ICompilationUnit, but got: " + javaElement.getClass());
+      return null;
     }
     shell = window.getShell();
-    DialogRequest dialogRequest = null;
+
     try {
-      CompilationUnitAnalyzer.Analyzed analyzed =
-          compilationUnitAnalyzer.analyze(compilationUnit);
-      dialogRequest = new DialogRequest(analyzed, shell);
+      subContractor.work(shell, compilationUnit);
     }
     catch (Exception e) {
       bark("Could not create the request to send to the dialog" + e.getClass().getName() + " "
         + e.getMessage() + " " + StringUtils.left(ExceptionUtils.getFullStackTrace(e), 100));
-    }
-    if (!dialogRequest.isThereAnythingToDo()) {
-      nothingToDoDialog.show(shell);
-      return null;
-    }
-    ComposerRequest composerRequest = treeBasedBuilderDialog.show(dialogRequest);
-    try {
-      composer.compose(composerRequest, dialogRequest);
-    }
-    catch (Exception e) {
-      bark("Encountered error upon composing." + e.getMessage());
     }
     return null;
   }

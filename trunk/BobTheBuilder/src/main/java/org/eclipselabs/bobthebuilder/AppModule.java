@@ -10,8 +10,10 @@ public class AppModule extends AbstractModule {
   protected void configure() {
     bind(Composer.class);
     bind(CompilationUnitAnalyzer.class);
-    bind(TreeBasedBuilderDialog.class);
-    bind(NothingToDoDialog.class);
+    bind(DialogConstructor.class);
+    bind(NothingToDoDialogConstructor.class);
+    bind(DialogRequestConstructor.class);
+    bind(BobTheBuilderSubContractor.class);
   }
 
 }

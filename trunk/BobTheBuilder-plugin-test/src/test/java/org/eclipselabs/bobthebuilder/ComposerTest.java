@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,7 +39,7 @@ public class ComposerTest {
   private IType builderType;
 
   @Mock
-  private DialogRequest dialogRequest;
+  private DialogContent dialogRequest;
 
   @Mock
   private ICompilationUnit compilationUnit;
@@ -104,13 +105,16 @@ public class ComposerTest {
   @Mock
   private IMethod withField1;
 
+  @Mock
+  CompilationUnitAnalyzer.Analyzed analyzed;
+  
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
-    when(dialogRequest.getType()).thenReturn(type);
-    when(dialogRequest.getBuilderType()).thenReturn(builderType);
-    when(dialogRequest.getCompilationUnit()).thenReturn(compilationUnit);
-    when(dialogRequest.getBuilderFields()).thenReturn(builderFields);
+    when(analyzed.getType()).thenReturn(type);
+    when(analyzed.getBuilderType()).thenReturn(builderType);
+    when(analyzed.getCompilationUnit()).thenReturn(compilationUnit);
+    when(analyzed.getBuilderFields()).thenReturn(builderFields);
     when(field1.getElementName()).thenReturn(field1Name);
     when(field2.getElementName()).thenReturn(field2Name);
     when(field3.getElementName()).thenReturn(field3Name);
@@ -137,9 +141,9 @@ public class ComposerTest {
     builderFields.add(field1);
     builderFields.add(field2);
     missingBuilderFields.add(field3);
-    when(dialogRequest.getConstructorWithBuilder()).thenReturn(null);
-    when(dialogRequest.isMissingBuilder()).thenReturn(false);
-    new Composer().compose(composerRequestBuilder.build(), dialogRequest);
+    when(analyzed.getConstructorWithBuilder()).thenReturn(null);
+    when(analyzed.isMissingBuilder()).thenReturn(false);
+    new Composer().compose(composerRequestBuilder.build(), dialogRequest, analyzed);
     verify(type).createMethod(
       constructorWithBuilderCaptor.capture(), eq(builderType), eq(true),
       any(IProgressMonitor.class));
@@ -170,11 +174,11 @@ public class ComposerTest {
         .addMissingFieldInBuilder(field3)
         .addMissingWithMethodInBuilder(field3);
     missingBuilderFields.add(field1);
-    when(dialogRequest.getConstructorWithBuilder()).thenReturn(null);
-    when(dialogRequest.isMissingBuilder()).thenReturn(true);
+    when(analyzed.getConstructorWithBuilder()).thenReturn(null);
+    when(analyzed.isMissingBuilder()).thenReturn(true);
     when(type.getTypes()).thenReturn(new IType[] { builderType });
     new Composer().compose(
-      composerRequestBuilder.build(), dialogRequest);
+      composerRequestBuilder.build(), dialogRequest, analyzed);
     verify(type).createMethod(anyString(), eq(builderType), eq(true), any(IProgressMonitor.class));
     verify(builderType).createField(
       anyString(), any(IJavaElement.class), eq(true), any(IProgressMonitor.class));
@@ -197,9 +201,9 @@ public class ComposerTest {
     missingBuilderFields.add(field3);
     when(builderType.getFields()).thenReturn(new IField[] { field1, field2 });
     when(builderType.getMethods()).thenReturn(new IMethod[] { withField1, withField2 });
-    when(dialogRequest.getConstructorWithBuilder()).thenReturn(constructorWithBuilder);
-    when(dialogRequest.getBuilderType()).thenReturn(builderType);
-    when(dialogRequest.isMissingBuilder()).thenReturn(false);
+    when(analyzed.getConstructorWithBuilder()).thenReturn(constructorWithBuilder);
+    when(analyzed.getBuilderType()).thenReturn(builderType);
+    when(analyzed.isMissingBuilder()).thenReturn(false);
     when(constructorWithBuilder.getSourceRange()).thenReturn(constructorSourceRange);
     String originalSource =
         "public Type(Builder builder) { this.field2 = builder.field2; this.field1 = builder.field1; }";
@@ -214,7 +218,7 @@ public class ComposerTest {
           .addMissingWithMethodInBuilder(field3)
           .addMissingFieldInBuilder(field3)
           .build(),
-        dialogRequest);
+        dialogRequest, analyzed);
     verify(constructorWithBuilder).delete(true, null);
     verify(type).createMethod(
       constructorWithBuilderCaptor.capture(), eq(builderType), eq(true),
