@@ -6,9 +6,10 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 
-public class BobTheBuilderSubContractor {
+public class SubContractor {
   private final DialogConstructor dialogConstructor;
 
   private final CompilationUnitAnalyzer compilationUnitAnalyzer;
@@ -20,7 +21,7 @@ public class BobTheBuilderSubContractor {
   private final DialogRequestConstructor dialogRequestConstructor;
 
   @Inject
-  public BobTheBuilderSubContractor(
+  public SubContractor(
       DialogConstructor dialogConstructor,
       CompilationUnitAnalyzer compilationUnitAnalyzer,
       Composer composer,
@@ -36,7 +37,7 @@ public class BobTheBuilderSubContractor {
   public void work(Shell shell, ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(shell, "shell may not be null");
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
-    CompilationUnitAnalyzer.Analyzed analyzed = compilationUnitAnalyzer.analyze(compilationUnit);
+    Analyzed analyzed = compilationUnitAnalyzer.analyze(compilationUnit);
     DialogContent dialogContent = dialogRequestConstructor.work(analyzed);
     if (!analyzed.isThereAnythingToDo()) {
       nothingToDoDialogConstructor.show(shell);

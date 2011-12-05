@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 
 public class DialogConstructor {
 
@@ -25,7 +25,7 @@ public class DialogConstructor {
   @SuppressWarnings("deprecation")
   public ComposerRequest show(
       final DialogContent dialogRequest, 
-      final CompilationUnitAnalyzer.Analyzed analyzed, 
+      final Analyzed analyzed, 
       Shell shell) {
     Validate.notNull(dialogRequest, "dialogRequest may not be null");
     final ComposerRequest.Builder composerRequestBuilder = new ComposerRequest.Builder();

@@ -13,7 +13,7 @@ public class AppModule extends AbstractModule {
     bind(DialogConstructor.class);
     bind(NothingToDoDialogConstructor.class);
     bind(DialogRequestConstructor.class);
-    bind(BobTheBuilderSubContractor.class);
+    bind(SubContractor.class);
   }
 
 }

@@ -6,7 +6,7 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldDeclarationBuilder;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer.Analyzed;
+import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 
 public class DialogRequestConstructor {
 

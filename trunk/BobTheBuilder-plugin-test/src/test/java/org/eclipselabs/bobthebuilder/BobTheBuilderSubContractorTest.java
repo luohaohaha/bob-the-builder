@@ -3,6 +3,7 @@ package org.eclipselabs.bobthebuilder;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /**
- * To test {@link BobTheBuilderSubContractor}
+ * To test {@link SubContractor}
  */
 public class BobTheBuilderSubContractorTest {
   @Mock
@@ -27,9 +28,9 @@ public class BobTheBuilderSubContractorTest {
   private NothingToDoDialogConstructor nothingToDoDialog;
 
   @Mock
-  private CompilationUnitAnalyzer.Analyzed analyzed;
+  private Analyzed analyzed;
 
-  private BobTheBuilderSubContractor subContractor;
+  private SubContractor subContractor;
 
   @Mock
   private DialogRequestConstructor dialogRequestConstructor;
@@ -49,7 +50,7 @@ public class BobTheBuilderSubContractorTest {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    subContractor = new BobTheBuilderSubContractor(
+    subContractor = new SubContractor(
         dialogConstructor,
         compilationUnitAnalyzer,
         composer,
