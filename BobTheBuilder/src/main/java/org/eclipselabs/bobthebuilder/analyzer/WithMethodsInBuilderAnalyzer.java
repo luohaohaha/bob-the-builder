@@ -8,23 +8,11 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
+import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 
 public class WithMethodsInBuilderAnalyzer {
-  private final Set<IField> fields = new HashSet<IField>();
 
-  private final AnalyzerResult.ForType builderTypeAnalyzerResult;
-
-  WithMethodsInBuilderAnalyzer(
-      Set<IField> builderFields,
-      Set<IField> missingFieldsInBuilder,
-      AnalyzerResult.ForType builderTypeAnalyzerResult,
-      Set<IField> extraFieldsInBuilder) {
-    validate(builderFields, missingFieldsInBuilder, builderTypeAnalyzerResult, extraFieldsInBuilder);
-    this.builderTypeAnalyzerResult = builderTypeAnalyzerResult;
-    this.fields.addAll(builderFields);
-    this.fields.addAll(missingFieldsInBuilder);
-    this.fields.removeAll(extraFieldsInBuilder);
-  }
+  WithMethodsInBuilderAnalyzer() {}
 
   private void validate(Set<IField> builderFields, Set<IField> missingFieldsInBuilder,
     AnalyzerResult.ForType builderTypeAnalyzerResult, Set<IField> extraFieldsInBuilder) {
@@ -61,7 +49,16 @@ public class WithMethodsInBuilderAnalyzer {
       "There should not be overlap between " + description);
   }
 
-  public Set<IField> analyze() throws JavaModelException {
+  public Set<IField> analyze(
+    Set<IField> builderFields,
+    Set<IField> missingFieldsInBuilder,
+    Set<IField> extraFieldsInBuilder,
+    ForType builderTypeAnalyzerResult) throws JavaModelException {
+    validate(builderFields, missingFieldsInBuilder, builderTypeAnalyzerResult, extraFieldsInBuilder);
+    Set<IField> fields = new HashSet<IField>();
+    fields.addAll(builderFields);
+    fields.addAll(missingFieldsInBuilder);
+    fields.removeAll(extraFieldsInBuilder);
     Set<IField> result = new HashSet<IField>();
     for (IField each : fields) {
       // use ioc instead
