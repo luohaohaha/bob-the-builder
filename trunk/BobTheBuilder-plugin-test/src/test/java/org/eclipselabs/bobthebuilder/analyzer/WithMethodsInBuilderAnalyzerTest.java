@@ -9,8 +9,6 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult;
-import org.eclipselabs.bobthebuilder.analyzer.WithMethodsInBuilderAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -18,21 +16,22 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.Sets;
+
 /**
  * To test {@link WithMethodsInBuilderAnalyzer}
  */
-//TODO parameterize the positive tests
+// TODO parameterize the positive tests
 public class WithMethodsInBuilderAnalyzerTest {
 
-  private AnalyzerResult.ForType builderPresent;
+  private AnalyzerResult.ForType builderTypeAnalyzerResult;
 
   private AnalyzerResult.ForType builderMissing;
 
   private Set<IField> builderFields;
 
-  private Set<IField> missingBuilderFields;
+  private Set<IField> missingFieldsInBuilder;
 
-  private Set<IField> extraBuilderFields;
+  private Set<IField> extraFieldsInBuilder;
 
   @Mock
   private IType builderType;
@@ -102,11 +101,11 @@ public class WithMethodsInBuilderAnalyzerTest {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    builderPresent = AnalyzerResult.ForType.getPresentInstance(builderType);
+    builderTypeAnalyzerResult = AnalyzerResult.ForType.getPresentInstance(builderType);
     builderMissing = AnalyzerResult.ForType.NOT_PRESENT;
     builderFields = Sets.newHashSet(field1, field2);
-    missingBuilderFields = Sets.newHashSet(field3);
-    extraBuilderFields = Sets.newHashSet(field4);
+    missingFieldsInBuilder = Sets.newHashSet(field3);
+    extraFieldsInBuilder = Sets.newHashSet(field4);
     when(field1.getElementName()).thenReturn(field1Name);
     when(field2.getElementName()).thenReturn(field2Name);
     when(field3.getElementName()).thenReturn(field3Name);
@@ -126,115 +125,118 @@ public class WithMethodsInBuilderAnalyzerTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullBuilderFields() {
-    new WithMethodsInBuilderAnalyzer(
-        null, missingBuilderFields, builderPresent, extraBuilderFields);
+  public void testAnalyzerWithNullBuilderFields() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(
+          null, missingFieldsInBuilder, extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullAmongBuilderFields() {
-    new WithMethodsInBuilderAnalyzer(
-        setOfFieldsWithANull, missingBuilderFields, builderPresent, extraBuilderFields);
+  public void testAnalyzerWithNullAmongBuilderFields() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(setOfFieldsWithANull, missingFieldsInBuilder,
+          extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullMissingBuilderFields() {
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, null, builderPresent, extraBuilderFields);
+  public void testAnalyzerWithNullMissingBuilderFields() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(
+          builderFields, null, extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullAmongMissingBuilderFields() {
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, setOfFieldsWithANull, builderPresent, extraBuilderFields);
+  public void testAnalyzerWithNullAmongMissingBuilderFields() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(
+          builderFields, setOfFieldsWithANull, extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullAnalyzed() {
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, missingBuilderFields, null, extraBuilderFields);
+  public void testAnalyzerWithNullAnalyzed() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(
+          builderFields, missingFieldsInBuilder, extraFieldsInBuilder, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullExtraFields() {
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, missingBuilderFields, builderPresent, null);
+  public void testAnalyzerWithNullExtraFields() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(
+          builderFields, missingFieldsInBuilder, null, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testAnalyzerWithNullAmongExtraFields() {
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, missingBuilderFields, builderPresent, setOfFieldsWithANull);
+  public void testAnalyzerWithNullAmongExtraFields() throws JavaModelException {
+    new WithMethodsInBuilderAnalyzer().analyze(
+          builderFields, missingFieldsInBuilder, setOfFieldsWithANull, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testAnalyzeBuilderMissingButBuilderFieldsNotEmpty() throws JavaModelException {
     builderFields = Sets.newHashSet(field1, field2);
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, emptyFieldSet, builderMissing, emptyFieldSet).analyze();
+    new WithMethodsInBuilderAnalyzer().analyze(
+          builderFields, missingFieldsInBuilder, extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testAnalyzeExtraFieldsNotEmptyButBuilderFieldsEmpty() throws JavaModelException {
-    extraBuilderFields = Sets.newHashSet(field1, field2);
-    new WithMethodsInBuilderAnalyzer(
-        emptyFieldSet, emptyFieldSet, builderPresent, extraBuilderFields).analyze();
+    extraFieldsInBuilder = Sets.newHashSet(field1, field2);
+    new WithMethodsInBuilderAnalyzer().analyze(
+          emptyFieldSet, missingFieldsInBuilder, extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIntersectionOfMissingFieldsBuilderFields() throws JavaModelException {
     builderFields = Sets.newHashSet(field1, field2);
-    missingBuilderFields = Sets.newHashSet(field1);
-    new WithMethodsInBuilderAnalyzer(
-      builderFields, missingBuilderFields, builderPresent, emptyFieldSet).analyze();
+    missingFieldsInBuilder = Sets.newHashSet(field1);
+    new WithMethodsInBuilderAnalyzer().analyze(
+      builderFields, missingFieldsInBuilder, extraFieldsInBuilder, builderTypeAnalyzerResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIntersectionOfExtraFieldsAndMissingBuilderFields() throws JavaModelException {
     builderFields = Sets.newHashSet(field1, field3);
-    missingBuilderFields = Sets.newHashSet(field2);
-    extraBuilderFields = Sets.newHashSet(field1, field2);
-    new WithMethodsInBuilderAnalyzer(
-      builderFields, missingBuilderFields, builderPresent, extraBuilderFields).analyze();
+    missingFieldsInBuilder = Sets.newHashSet(field2);
+    extraFieldsInBuilder = Sets.newHashSet(field1, field2);
+    new WithMethodsInBuilderAnalyzer()
+        .analyze(builderFields, missingFieldsInBuilder, extraFieldsInBuilder,
+          builderTypeAnalyzerResult);
   }
 
   @Test
   public void testAnalyzeBuilderIsMissing() throws JavaModelException {
-    missingBuilderFields = Sets.newHashSet(field1, field2);
-    actual = new WithMethodsInBuilderAnalyzer(
-        emptyFieldSet, missingBuilderFields, builderMissing, emptyFieldSet).analyze();
+    missingFieldsInBuilder = Sets.newHashSet(field1, field2);
+    actual = new WithMethodsInBuilderAnalyzer().analyze(
+      emptyFieldSet, missingFieldsInBuilder, emptyFieldSet, AnalyzerResult.ForType.NOT_PRESENT);
     assertEquals(builderFields, actual);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testAnalyzeExtraFieldsNotFoundInBuilderFields() throws JavaModelException {
-    extraBuilderFields = Sets.newHashSet(field1, field2);
+    extraFieldsInBuilder = Sets.newHashSet(field1, field2);
     builderFields = Sets.newHashSet(field1, field3);
-    new WithMethodsInBuilderAnalyzer(
-        builderFields, emptyFieldSet, builderPresent, extraBuilderFields);
+    new WithMethodsInBuilderAnalyzer().analyze(builderFields, missingFieldsInBuilder, extraFieldsInBuilder,
+      builderTypeAnalyzerResult);
   }
 
   @Test
   public void testAnalyzeBuilderPresentMissing1Withs() throws JavaModelException {
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] { method1, method2 });
     builderFields = Sets.newHashSet(field1, field2, field4);
-    missingBuilderFields = Sets.newHashSet(field3);
-    extraBuilderFields = Sets.newHashSet(field4);
-    actual = new WithMethodsInBuilderAnalyzer(
-        builderFields, missingBuilderFields, builderPresent, extraBuilderFields).analyze();
-    assertEquals(missingBuilderFields, actual);
+    missingFieldsInBuilder = Sets.newHashSet(field3);
+    extraFieldsInBuilder = Sets.newHashSet(field4);
+    actual = new WithMethodsInBuilderAnalyzer()
+        .analyze(builderFields, missingFieldsInBuilder, extraFieldsInBuilder,
+          builderTypeAnalyzerResult);
+    assertEquals(missingFieldsInBuilder, actual);
   }
 
   @Test
   public void testAnalyzeBuilderPresentMissingAllWiths() throws JavaModelException {
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] {});
     builderFields = Sets.newHashSet(field1, field2, field4);
-    missingBuilderFields = Sets.newHashSet(field3);
-    extraBuilderFields = Sets.newHashSet(field4);
-    actual = new WithMethodsInBuilderAnalyzer(
-        builderFields, missingBuilderFields, builderPresent, extraBuilderFields).analyze();
-    builderFields.addAll(missingBuilderFields);
-    builderFields.removeAll(extraBuilderFields);
+    missingFieldsInBuilder = Sets.newHashSet(field3);
+    extraFieldsInBuilder = Sets.newHashSet(field4);
+    actual = new WithMethodsInBuilderAnalyzer()
+        .analyze(builderFields, missingFieldsInBuilder, extraFieldsInBuilder,
+          builderTypeAnalyzerResult);
+    builderFields.addAll(missingFieldsInBuilder);
+    builderFields.removeAll(extraFieldsInBuilder);
     assertEquals(builderFields, actual);
   }
 }
