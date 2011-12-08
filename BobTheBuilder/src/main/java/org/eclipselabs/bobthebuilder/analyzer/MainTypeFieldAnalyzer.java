@@ -11,16 +11,11 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
 public class MainTypeFieldAnalyzer {
-  private final IType type;
-
-  public MainTypeFieldAnalyzer(IType type) {
-    Validate.notNull(type, "Type may not be null");
-    this.type = type;
-  }
 
   // TODO create a particular view of the IField instead of using eclipse's IField
   // This will help the operations with sets that are necessary in the analyzer phase
-  public Set<IField> analyze() throws JavaModelException {
+  public Set<IField> analyze(IType type) throws JavaModelException {
+    Validate.notNull(type, "Type may not be null");
     Set<IField> fields = new HashSet<IField>();
     for (IField each : type.getFields()) {
       if (isFinalStatic(each)) {

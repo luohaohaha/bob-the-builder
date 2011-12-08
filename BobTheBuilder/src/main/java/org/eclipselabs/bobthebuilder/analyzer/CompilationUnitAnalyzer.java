@@ -13,11 +13,68 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
+import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate.FieldValidation;
+import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate.ValidateInBuilder;
 
+import com.google.inject.Inject;
+
+// TODO break down this piece so that it is not so massive:
+// eg. MainTypeAnalyer and BuilderTypeAnalyzer and each are composed of a bunch of analyzers
+// TODO add tests
 public class CompilationUnitAnalyzer {
   public static final String BUILDER_CLASS_NAME = "Builder";
 
-  public CompilationUnitAnalyzer() {}
+  private final BuilderTypeAnalyzer builderTypeAnalyzer;
+
+  private final BuilderTypeFieldAnalyzer builderTypeFieldAnalyzer;
+
+  private final MainTypeFieldAnalyzer mainTypeFieldAnalyzer;
+
+  private final DifferenceBetweenFieldSetsAnalyzer differenceBetweenFieldSetsAnalyzer;
+
+  private final WithMethodsInBuilderAnalyzer withMethodsInBuilderAnalyzer;
+
+  private final ConstructorWithBuilderAnalyzer constructorWithBuilderAnalyzer;
+
+  private final ConstructorWithBuilderInMainTypeAnalyzer constructorWithBuilderInMainTypeAnalyzer;
+
+  private final BuildInBuilderAnalyzer buildInBuilderAnalyzer;
+
+  private final MethodAnalyzer methodAnalyzer;
+
+  private final MethodPredicate.ValidateInBuilder methodPredicate;
+
+  private final MethodContentAnalyzer methodContentAnalyzer;
+
+  private final FieldPredicate.FieldValidation fieldPredicate;
+
+  private final ValidationFrameworkAnalyzer validationFrameworkAnalyzer;
+
+  @Inject
+  public CompilationUnitAnalyzer(BuilderTypeAnalyzer builderTypeAnalyzer,
+      BuilderTypeFieldAnalyzer builderTypeFieldAnalyzer,
+      MainTypeFieldAnalyzer mainTypeFieldAnalyzer,
+      DifferenceBetweenFieldSetsAnalyzer differenceBetweenFieldSetsAnalyzer,
+      WithMethodsInBuilderAnalyzer withMethodsInBuilderAnalyzer,
+      ConstructorWithBuilderAnalyzer constructorWithBuilderAnalyzer,
+      ConstructorWithBuilderInMainTypeAnalyzer constructorWithBuilderInMainTypeAnalyzer,
+      BuildInBuilderAnalyzer buildInBuilderAnalyzer, MethodAnalyzer methodAnalyzer,
+      ValidateInBuilder methodPredicate, MethodContentAnalyzer methodContentAnalyzer,
+      FieldValidation fieldPredicate, ValidationFrameworkAnalyzer validationFrameworkAnalyzer) {
+    this.builderTypeAnalyzer = builderTypeAnalyzer;
+    this.builderTypeFieldAnalyzer = builderTypeFieldAnalyzer;
+    this.mainTypeFieldAnalyzer = mainTypeFieldAnalyzer;
+    this.differenceBetweenFieldSetsAnalyzer = differenceBetweenFieldSetsAnalyzer;
+    this.withMethodsInBuilderAnalyzer = withMethodsInBuilderAnalyzer;
+    this.constructorWithBuilderAnalyzer = constructorWithBuilderAnalyzer;
+    this.constructorWithBuilderInMainTypeAnalyzer = constructorWithBuilderInMainTypeAnalyzer;
+    this.buildInBuilderAnalyzer = buildInBuilderAnalyzer;
+    this.methodAnalyzer = methodAnalyzer;
+    this.methodPredicate = methodPredicate;
+    this.methodContentAnalyzer = methodContentAnalyzer;
+    this.fieldPredicate = fieldPredicate;
+    this.validationFrameworkAnalyzer = validationFrameworkAnalyzer;
+  }
 
   public Analyzed analyze(final ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(compilationUnit, "Compilation Unit cannot be null");
@@ -42,39 +99,40 @@ public class CompilationUnitAnalyzer {
     Collection<ValidationFramework> validationFrameworks = null;
     try {
       type = new TypeAnalyzer().analyze(compilationUnit);
-      fields = new MainTypeFieldAnalyzer(type).analyze();
+      fields = mainTypeFieldAnalyzer.analyze(type);
       // TODO if we have our own representation of the IField, we can do fancier set operations.
       copyOfFields.addAll(fields);
-      AnalyzerResult.ForType builderAnalyzerResult = new BuilderTypeAnalyzer().analyze(type);
+      AnalyzerResult.ForType builderAnalyzerResult = builderTypeAnalyzer.analyze(type);
       builderType = builderAnalyzerResult.getElement();
       missingBuilder = !builderAnalyzerResult.isPresent();
-      builderFields = new BuilderTypeFieldAnalyzer().analyze(builderAnalyzerResult);
+      builderFields = builderTypeFieldAnalyzer.analyze(builderAnalyzerResult);
       copyOfBuilderFields.addAll(builderFields);
       anotherCopyOfBuilderFields.addAll(builderFields);
       missingFieldsInBuilder =
-          new DifferenceBetweenFieldSetsAnalyzer().analyze(copyOfFields, builderFields);
+          differenceBetweenFieldSetsAnalyzer.analyze(copyOfFields, builderFields);
       // flip-flop collections so that the subtraction of sets works
-      extraFieldsInBuilder = new DifferenceBetweenFieldSetsAnalyzer()
+      extraFieldsInBuilder = differenceBetweenFieldSetsAnalyzer
           .analyze(copyOfBuilderFields, fields);
-      missingWithMethodsForFields = new WithMethodsInBuilderAnalyzer().analyze(
-            anotherCopyOfBuilderFields, missingFieldsInBuilder, extraFieldsInBuilder, builderAnalyzerResult);
+      missingWithMethodsForFields = withMethodsInBuilderAnalyzer.analyze(
+            anotherCopyOfBuilderFields, missingFieldsInBuilder, extraFieldsInBuilder,
+        builderAnalyzerResult);
       ForMethod constructorWithBuilderResult =
-          new ConstructorWithBuilderAnalyzer().analyze(builderAnalyzerResult, type);
+          constructorWithBuilderAnalyzer.analyze(builderAnalyzerResult, type);
       missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
       constructorWithBuilder = constructorWithBuilderResult.getElement();
       missingFieldsInConstructorWithBuilder =
-          new ConstructorWithBuilderInMainTypeAnalyzer().analyze(fields, constructorWithBuilderResult);
+          constructorWithBuilderInMainTypeAnalyzer.analyze(fields, constructorWithBuilderResult);
       missingBuildMethodInBuilder =
-          !new BuildInBuilderAnalyzer().analyze(builderAnalyzerResult).isPresent();
+          !buildInBuilderAnalyzer.analyze(builderAnalyzerResult).isPresent();
       ForMethod analyzedValidateInBuilder =
-          new MethodAnalyzer()
-              .analyze(builderAnalyzerResult, new MethodPredicate.ValidateInBuilder());
+          methodAnalyzer
+              .analyze(builderAnalyzerResult, methodPredicate);
       missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
       validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =
-          new MethodContentAnalyzer().analyze(fields, analyzedValidateInBuilder, new FieldPredicate.FieldValidation());
+          methodContentAnalyzer.analyze(fields, analyzedValidateInBuilder, fieldPredicate);
       validationFrameworks =
-          new ValidationFrameworkAnalyzer().analyze(analyzedValidateInBuilder, compilationUnit);
+          validationFrameworkAnalyzer.analyze(analyzedValidateInBuilder, compilationUnit);
     }
     catch (JavaModelException e) {
       new IllegalStateException("Something went really wrong: " + e.getMessage());
