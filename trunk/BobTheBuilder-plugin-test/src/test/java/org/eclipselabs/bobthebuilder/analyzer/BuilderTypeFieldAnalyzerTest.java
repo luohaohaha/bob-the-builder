@@ -77,12 +77,12 @@ public class BuilderTypeFieldAnalyzerTest {
 
   @Test
   public void testMainTypeFields() throws JavaModelException {
-    Set<IField> actual = new MainTypeFieldAnalyzer(mainType).analyze();
+    Set<IField> actual = new MainTypeFieldAnalyzer().analyze(mainType);
     assertEquals(expected, actual);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullMainType() throws JavaModelException {
-    new MainTypeFieldAnalyzer(null).analyze();
+    new MainTypeFieldAnalyzer().analyze(null);
   }
 }

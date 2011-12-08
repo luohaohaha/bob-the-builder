@@ -15,7 +15,7 @@ public class BuilderTypeFieldAnalyzer {
   public Set<IField> analyze(ForType analyzerResult) throws JavaModelException {
     Validate.notNull(analyzerResult, "AnalyzerResult may not be null");
     if (analyzerResult.isPresent()) {
-      return new MainTypeFieldAnalyzer(analyzerResult.getElement()).analyze();
+      return new MainTypeFieldAnalyzer().analyze(analyzerResult.getElement());
     }
     else {
       return Collections.emptySet();

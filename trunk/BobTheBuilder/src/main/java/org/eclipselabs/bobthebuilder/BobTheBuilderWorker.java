@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipselabs.bobthebuilder.analyzer.AnalyzerModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -33,7 +34,7 @@ public class BobTheBuilderWorker extends AbstractHandler {
   private SubContractor subContractor;
 
   public BobTheBuilderWorker() {
-    Injector injector = Guice.createInjector(new AppModule());
+    Injector injector = Guice.createInjector(new WorkerModule(), new AnalyzerModule());
     subContractor = injector.getInstance(SubContractor.class);
     Validate.notNull(subContractor, "BobTheBuilderSubContractor may not null");
   }
