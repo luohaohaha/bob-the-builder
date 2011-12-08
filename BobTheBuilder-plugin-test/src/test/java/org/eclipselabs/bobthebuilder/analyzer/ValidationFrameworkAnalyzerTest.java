@@ -54,20 +54,19 @@ public class ValidationFrameworkAnalyzerTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullCompilationUnit() {
-    new ValidationFrameworkAnalyzer(analyzedValidateMethod, null);
+  public void testNullCompilationUnit() throws JavaModelException {
+    new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullAnalyzedResult() {
-    new ValidationFrameworkAnalyzer(null, compilationUnit);
+  public void testNullAnalyzedResult() throws JavaModelException {
+    new ValidationFrameworkAnalyzer().analyze(null, compilationUnit);
   }
 
   @Test
   public void testAnalyzedResultNotPresent() throws JavaModelException {
     analyzedValidateMethod = AnalyzerResult.ForMethod.NOT_PRESENT;
-    Collection<ValidationFramework> actual = new ValidationFrameworkAnalyzer(
-        analyzedValidateMethod, compilationUnit).analyze();
+    Collection<ValidationFramework> actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     assertEquals(ValidationFramework.values().length, actual.size());
   }
 
@@ -75,8 +74,7 @@ public class ValidationFrameworkAnalyzerTest {
   public void testGuavaPresent() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn(
       ValidationFramework.GOOGLE_GUAVA.getCheckArgument());
-    actual = new ValidationFrameworkAnalyzer(
-        analyzedValidateMethod, compilationUnit).analyze();
+    actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     expected = Arrays.asList(ValidationFramework.GOOGLE_GUAVA);
     assertEquals(expected, actual);
   }
@@ -87,8 +85,7 @@ public class ValidationFrameworkAnalyzerTest {
       ValidationFramework.COMMONS_LANG2.getCheckArgument());
     Mockito.when(compilationUnit.getImports()).thenReturn(
       new IImportDeclaration[] { commonsLang2Import });
-    actual = new ValidationFrameworkAnalyzer(
-        analyzedValidateMethod, compilationUnit).analyze();
+    actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     expected = Arrays.asList(ValidationFramework.COMMONS_LANG2);
     assertEquals(expected, actual);
   }
@@ -99,8 +96,7 @@ public class ValidationFrameworkAnalyzerTest {
       ValidationFramework.COMMONS_LANG3.getCheckArgument());
     Mockito.when(compilationUnit.getImports()).thenReturn(
       new IImportDeclaration[] { commonsLang3Import });
-    actual = new ValidationFrameworkAnalyzer(
-        analyzedValidateMethod, compilationUnit).analyze();
+    actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     expected = Arrays.asList(ValidationFramework.COMMONS_LANG3);
     assertEquals(expected, actual);
   }
@@ -111,8 +107,7 @@ public class ValidationFrameworkAnalyzerTest {
       ValidationFramework.COMMONS_LANG2.getCheckArgument());
     Mockito.when(compilationUnit.getImports()).thenReturn(
       new IImportDeclaration[] { anotherImport });
-    actual = new ValidationFrameworkAnalyzer(
-        analyzedValidateMethod, compilationUnit).analyze();
+    actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     expected = Arrays.asList(ValidationFramework.COMMONS_LANG2);
     assertEquals(expected, actual);
   }
@@ -120,8 +115,7 @@ public class ValidationFrameworkAnalyzerTest {
   @Test
   public void testValidatePresentButNoFrameworkUsed() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn("whatever");
-    actual = new ValidationFrameworkAnalyzer(
-        analyzedValidateMethod, compilationUnit).analyze();
+    actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     assertEquals(ValidationFramework.values().length, actual.size());
   }
 }

@@ -31,15 +31,15 @@ public class ConstructorWithBuilderTest extends MethodAnalyzerTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullAnalyzedResult() {
-    new ConstructorWithBuilderAnalyzer(null, mainType);
+  public void testNullAnalyzedResult() throws JavaModelException {
+    new ConstructorWithBuilderAnalyzer().analyze(null, mainType);
   }
 
   @Test
   public void testNotPresentBuilder() throws JavaModelException {
     analyzedBuilderTypeResult = AnalyzerResult.ForType.NOT_PRESENT;
     ForMethod actual =
-        new ConstructorWithBuilderAnalyzer(analyzedBuilderTypeResult, mainType).analyze();
+        new ConstructorWithBuilderAnalyzer().analyze(analyzedBuilderTypeResult, mainType);
     expected = AnalyzerResult.ForMethod.NOT_PRESENT;
     assertEquals(expected, actual);
 

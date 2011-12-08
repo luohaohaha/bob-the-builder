@@ -8,22 +8,15 @@ import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 
 public class ConstructorWithBuilderAnalyzer {
 
-  private ForType analyzedBuilderTypeResult;
-
-  private final MethodAnalyzer methodAnalyzer;
-
-  protected ConstructorWithBuilderAnalyzer(ForType analyzedBuilderTypeResult, IType mainType) {
-    methodAnalyzer = new MethodAnalyzer(AnalyzerResult.ForType.getPresentInstance(mainType),
-        getPredicate());
+  public ForMethod analyze(ForType analyzedBuilderTypeResult, IType mainType) throws JavaModelException {
     Validate.notNull(analyzedBuilderTypeResult, "analyzedBuilderTypeResult may not be null");
-    this.analyzedBuilderTypeResult = analyzedBuilderTypeResult;
-  }
+    Validate.notNull(mainType, "main type may not be null");
+    MethodAnalyzer methodAnalyzer = new MethodAnalyzer();
 
-  public ForMethod analyze() throws JavaModelException {
     if (!analyzedBuilderTypeResult.isPresent()) {
       return AnalyzerResult.ForMethod.NOT_PRESENT;
     }
-    return methodAnalyzer.analyze();
+    return methodAnalyzer.analyze(AnalyzerResult.ForType.getPresentInstance(mainType), getPredicate());
   }
 
   private MethodPredicate getPredicate() {

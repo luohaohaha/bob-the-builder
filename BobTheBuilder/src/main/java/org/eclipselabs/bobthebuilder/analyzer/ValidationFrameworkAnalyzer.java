@@ -11,18 +11,11 @@ import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
 
 public class ValidationFrameworkAnalyzer {
-  private final AnalyzerResult.ForMethod analyzedValidateResult;
 
-  private final ICompilationUnit compilationUnit;
-
-  public ValidationFrameworkAnalyzer(ForMethod analyzedValidateResult, ICompilationUnit compilationUnit) {
+  Collection<ValidationFramework> analyze(ForMethod analyzedValidateResult,
+    ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(analyzedValidateResult, "analyzedValidateResult may not be null");
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
-    this.analyzedValidateResult = analyzedValidateResult;
-    this.compilationUnit = compilationUnit;
-  }
-
-  Collection<ValidationFramework> analyze() throws JavaModelException {
     if (!analyzedValidateResult.isPresent()) {
       return Arrays.asList(ValidationFramework.values());
     }
