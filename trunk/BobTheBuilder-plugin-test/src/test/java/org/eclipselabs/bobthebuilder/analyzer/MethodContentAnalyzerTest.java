@@ -61,7 +61,7 @@ public class MethodContentAnalyzerTest {
   private FieldPredicate predicate;
 
   private MethodContentAnalyzer getMethodContentAnalyzer() {
-    return new MethodContentAnalyzer(fields, analyzedMethodResult, predicate);
+    return new MethodContentAnalyzer();
   }
 
   // protected abstract String getSourceToMakeAllFieldsFailPredicate(Set<IField> fields);
@@ -81,31 +81,31 @@ public class MethodContentAnalyzerTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullFieldSet() {
-    new MethodContentAnalyzer(null, analyzedMethodResult, predicate);
+  public void testNullFieldSet() throws JavaModelException {
+    new MethodContentAnalyzer().analyze(null, analyzedMethodResult, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testEmptyFieldSet() {
-    new MethodContentAnalyzer(Sets.<IField> newHashSet(), analyzedMethodResult, predicate);
+  public void testEmptyFieldSet() throws JavaModelException {
+    new MethodContentAnalyzer().analyze(Sets.<IField>newHashSet(), analyzedMethodResult, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullFieldInSet() {
-    new MethodContentAnalyzer(
-        Sets.<IField> newHashSet(null, field1, field2), analyzedMethodResult, predicate);
+  public void testNullFieldInSet() throws JavaModelException {
+    new MethodContentAnalyzer().analyze(
+      Sets.<IField>newHashSet(field1, null), analyzedMethodResult, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullPredicate() {
-    new MethodContentAnalyzer(fields, analyzedMethodResult, null);
+  public void testNullPredicate() throws JavaModelException {
+    new MethodContentAnalyzer().analyze(fields, analyzedMethodResult, null);
   }
 
   @Test
   public void testMethodIsNotPresent() throws JavaModelException {
     analyzedMethodResult = AnalyzerResult.ForMethod.NOT_PRESENT;
     expected = fields;
-    actual = getMethodContentAnalyzer().analyze();
+    actual = getMethodContentAnalyzer().analyze(fields, analyzedMethodResult, predicate);
     assertEquals(expected, actual);
   }
 
@@ -113,7 +113,7 @@ public class MethodContentAnalyzerTest {
   public void testMethodHasNoSource() throws JavaModelException {
     Mockito.when(method.getSource()).thenReturn(null);
     expected = fields;
-    actual = getMethodContentAnalyzer().analyze();
+    actual = getMethodContentAnalyzer().analyze(fields, analyzedMethodResult, predicate);
     assertEquals(expected, actual);
   }
 
@@ -123,7 +123,7 @@ public class MethodContentAnalyzerTest {
       predicate.match(Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
         .thenReturn(true);
     expected = Sets.newHashSet();
-    actual = getMethodContentAnalyzer().analyze();
+    actual = getMethodContentAnalyzer().analyze(fields, analyzedMethodResult, predicate);
     assertEquals(expected, actual);
   }
 
@@ -133,7 +133,7 @@ public class MethodContentAnalyzerTest {
       predicate.match(Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
         .thenReturn(false);
     expected = fields;
-    actual = getMethodContentAnalyzer().analyze();
+    actual = getMethodContentAnalyzer().analyze(fields, analyzedMethodResult, predicate);
     assertEquals(expected, actual);
   }
 
@@ -151,7 +151,7 @@ public class MethodContentAnalyzerTest {
         .thenReturn(false);
     expected = fields;
     HashSet<IField> expected = Sets.newHashSet(field2, field3);
-    actual = getMethodContentAnalyzer().analyze();
+    actual = getMethodContentAnalyzer().analyze(fields, analyzedMethodResult, predicate);
     assertEquals(expected, actual);
   }
 

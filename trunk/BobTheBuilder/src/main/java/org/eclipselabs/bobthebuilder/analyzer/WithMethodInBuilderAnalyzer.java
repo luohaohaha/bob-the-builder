@@ -5,23 +5,17 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 
+// TODO add tests
 public class WithMethodInBuilderAnalyzer {
 
-  private final MethodAnalyzer methodAnalyzer;
-
-  private final IField field;
-
-  protected WithMethodInBuilderAnalyzer(ForType analyzedTypeResult, IField field) {
-    Validate.notNull(field, "field may not be null");
-    this.field = field;
-    this.methodAnalyzer = new MethodAnalyzer(analyzedTypeResult, getPredicate());
-  }
-
-  private MethodPredicate getPredicate() {
+  private MethodPredicate getPredicate(IField field) {
     return new MethodPredicate.WithMethodInBuilder(field);
   }
 
-  public AnalyzerResult.ForMethod analyze() throws JavaModelException {
-    return methodAnalyzer.analyze();
+  public AnalyzerResult.ForMethod analyze(ForType analyzedTypeResult, IField field) throws JavaModelException {
+    Validate.notNull(field, "field may not be null");
+    Validate.notNull(analyzedTypeResult, "analyzedTypeResult may not be null");
+    MethodAnalyzer methodAnalyzer = new MethodAnalyzer();
+    return methodAnalyzer.analyze(analyzedTypeResult, getPredicate(field));
   }
 }

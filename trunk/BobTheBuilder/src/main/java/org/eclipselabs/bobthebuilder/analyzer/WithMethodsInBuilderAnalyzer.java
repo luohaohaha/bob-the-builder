@@ -63,7 +63,8 @@ public class WithMethodsInBuilderAnalyzer {
     for (IField each : fields) {
       // use ioc instead
       ForMethod analyzed =
-          new WithMethodInBuilderAnalyzer(builderTypeAnalyzerResult, each).analyze();
+          new WithMethodInBuilderAnalyzer().analyze(
+            builderTypeAnalyzerResult, each);
       if (!analyzed.isPresent()) {
         result.add(each);
       }

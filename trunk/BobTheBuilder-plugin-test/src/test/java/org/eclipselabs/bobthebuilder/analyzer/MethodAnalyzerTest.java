@@ -39,7 +39,7 @@ public class MethodAnalyzerTest {
   private MethodPredicate methodPredicate;
 
   private MethodAnalyzer getMethodAnalyzer() {
-    return new MethodAnalyzer(analyzedTypeResult, methodPredicate);
+    return new MethodAnalyzer();
   }
 
   @Before
@@ -52,7 +52,7 @@ public class MethodAnalyzerTest {
   public void testTypeNotPresent() throws JavaModelException {
     analyzedTypeResult = AnalyzerResult.ForType.NOT_PRESENT;
     expected = AnalyzerResult.ForMethod.NOT_PRESENT;
-    actual = getMethodAnalyzer().analyze();
+    actual = getMethodAnalyzer().analyze(analyzedTypeResult, methodPredicate);
     assertEquals(expected, actual);
   }
 
@@ -61,7 +61,7 @@ public class MethodAnalyzerTest {
     when(type.getMethods()).thenReturn(new IMethod[] { targetMethod, anotherMethod });
     Mockito.when(methodPredicate.match(targetMethod)).thenReturn(true);
     expected = AnalyzerResult.ForMethod.getPresentInstance(targetMethod);
-    actual = getMethodAnalyzer().analyze();
+    actual = getMethodAnalyzer().analyze(analyzedTypeResult, methodPredicate);
     assertEquals(expected, actual);
   }
 
@@ -70,17 +70,17 @@ public class MethodAnalyzerTest {
     Mockito.when(methodPredicate.match(anotherMethod)).thenReturn(false);
     when(type.getMethods()).thenReturn(new IMethod[] { anotherMethod });
     expected = AnalyzerResult.ForMethod.NOT_PRESENT;
-    actual = getMethodAnalyzer().analyze();
+    actual = getMethodAnalyzer().analyze(analyzedTypeResult, methodPredicate);
     assertEquals(expected, actual);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullAnalyzedResult() {
-    new MethodAnalyzer(null, methodPredicate);
+  public void testNullAnalyzedResult() throws JavaModelException {
+    new MethodAnalyzer().analyze(null, methodPredicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullPredicate() {
-    new MethodAnalyzer(analyzedTypeResult, null);
+  public void testNullPredicate() throws JavaModelException {
+    new MethodAnalyzer().analyze(analyzedTypeResult, null);
   }
 }

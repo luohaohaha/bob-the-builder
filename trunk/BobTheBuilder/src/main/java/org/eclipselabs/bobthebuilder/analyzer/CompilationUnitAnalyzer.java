@@ -59,24 +59,22 @@ public class CompilationUnitAnalyzer {
       missingWithMethodsForFields = new WithMethodsInBuilderAnalyzer().analyze(
             anotherCopyOfBuilderFields, missingFieldsInBuilder, extraFieldsInBuilder, builderAnalyzerResult);
       ForMethod constructorWithBuilderResult =
-          new ConstructorWithBuilderAnalyzer(builderAnalyzerResult, type).analyze();
+          new ConstructorWithBuilderAnalyzer().analyze(builderAnalyzerResult, type);
       missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
       constructorWithBuilder = constructorWithBuilderResult.getElement();
       missingFieldsInConstructorWithBuilder =
-          new ConstructorWithBuilderInMainTypeAnalyzer(
-              fields, constructorWithBuilderResult).analyze();
+          new ConstructorWithBuilderInMainTypeAnalyzer().analyze(fields, constructorWithBuilderResult);
       missingBuildMethodInBuilder =
-          !new BuildInBuilderAnalyzer(builderAnalyzerResult).analyze().isPresent();
+          !new BuildInBuilderAnalyzer().analyze(builderAnalyzerResult).isPresent();
       ForMethod analyzedValidateInBuilder =
-          new MethodAnalyzer(builderAnalyzerResult, new MethodPredicate.ValidateInBuilder())
-              .analyze();
+          new MethodAnalyzer()
+              .analyze(builderAnalyzerResult, new MethodPredicate.ValidateInBuilder());
       missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
       validationMethod = analyzedValidateInBuilder.getElement();
       missingFieldValidationsInBuilder =
-          new MethodContentAnalyzer(
-              fields, analyzedValidateInBuilder, new FieldPredicate.FieldValidation()).analyze();
+          new MethodContentAnalyzer().analyze(fields, analyzedValidateInBuilder, new FieldPredicate.FieldValidation());
       validationFrameworks =
-          new ValidationFrameworkAnalyzer(analyzedValidateInBuilder, compilationUnit).analyze();
+          new ValidationFrameworkAnalyzer().analyze(analyzedValidateInBuilder, compilationUnit);
     }
     catch (JavaModelException e) {
       new IllegalStateException("Something went really wrong: " + e.getMessage());
