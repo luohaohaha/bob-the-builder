@@ -1,4 +1,4 @@
-package org.eclipselabs.bobthebuilder;
+package org.eclipselabs.bobthebuilder.composer;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
+import org.eclipselabs.bobthebuilder.ValidationFramework;
 
 public class ComposerRequest {
 

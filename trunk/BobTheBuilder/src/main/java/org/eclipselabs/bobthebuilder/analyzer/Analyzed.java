@@ -13,6 +13,59 @@ import org.eclipselabs.bobthebuilder.ValidationFramework;
 
 public class Analyzed {
 
+  private IType mainType;
+
+  private Set<ValidationFramework> validationFrameworks;
+
+  public static class MainType {
+    
+    private String name;
+    
+    private Set<MainTypeField> fields;
+
+    private BuilderType builderType;
+
+    private ConstructorWithBuilder constructorWithBuilder;
+
+    public static class MainTypeField {
+      private String name;
+    }
+
+    public static class ConstructorWithBuilder {
+      private Set<MainTypeField> missingFields;
+    }
+  }
+
+  public static class BuilderType {
+    private Set<BuilderField> builderFields;
+
+    private Set<BuilderField> missingFieldsInBuilder;
+
+    private Set<BuilderField> extraFieldsInBuilder;
+
+    private Set<WithMethod> WithMethods;
+
+    private BuildMethod buildMethod;
+
+    public static class BuilderField {
+      private String name;
+    }
+
+    public static class WithMethod {
+      private String name;
+    }
+
+    public static class BuildMethod {
+      private ValidateMethod validateMethod;
+    }
+
+    public static class ValidateMethod {
+      private Set<BuilderField> missingFields;
+
+      private ValidationFramework validationFramework;
+    }
+  }
+
   // TODO change from missing to isPresent. Some of this has been already
   // happening in the micro-analyzers
   // TODO audit whether all of this fields are really needed.

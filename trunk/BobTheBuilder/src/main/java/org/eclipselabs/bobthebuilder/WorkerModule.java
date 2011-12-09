@@ -1,10 +1,11 @@
 package org.eclipselabs.bobthebuilder;
 
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.composer.Composer;
 
 import com.google.inject.AbstractModule;
 
-public class AppModule extends AbstractModule {
+public class WorkerModule extends AbstractModule {
 
   @Override
   protected void configure() {

@@ -2,6 +2,7 @@ package org.eclipselabs.bobthebuilder;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipselabs.bobthebuilder.composer.Composer;
 
 public interface FieldTextBuilder {
   String createMessage(IField field) throws JavaModelException;

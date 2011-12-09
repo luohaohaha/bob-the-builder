@@ -23,6 +23,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
+import org.eclipselabs.bobthebuilder.composer.Composer;
+import org.eclipselabs.bobthebuilder.composer.ComposerRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
