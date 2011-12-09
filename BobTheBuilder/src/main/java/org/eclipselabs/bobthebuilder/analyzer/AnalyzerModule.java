@@ -6,6 +6,7 @@ public class AnalyzerModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    bind(TypeAnalyzer.class);
     bind(BuilderTypeAnalyzer.class);
     bind(BuilderTypeFieldAnalyzer.class);
     bind(MainTypeFieldAnalyzer.class);

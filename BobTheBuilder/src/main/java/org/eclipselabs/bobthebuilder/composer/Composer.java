@@ -1,4 +1,4 @@
-package org.eclipselabs.bobthebuilder;
+package org.eclipselabs.bobthebuilder.composer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,6 +13,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipselabs.bobthebuilder.DialogContent;
+import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 
@@ -170,7 +172,7 @@ public class Composer {
           .add("  " + composeSingleAssignment(each));
   }
 
-  static String composeSingleAssignment(IField field) {
+  public static String composeSingleAssignment(IField field) {
     return "this." + field.getElementName() + " = builder." + field.getElementName() + ";";
   }
 
@@ -180,7 +182,7 @@ public class Composer {
           "}" }, "\n");
   }
 
-  static String composeFieldInBuilder(IField each) throws JavaModelException {
+  public static String composeFieldInBuilder(IField each) throws JavaModelException {
     return "private " + Signature.toString(each.getTypeSignature()) + " "
         + each.getElementName() + ";";
   }
@@ -194,7 +196,7 @@ public class Composer {
             "}" }, "\n");
   }
 
-  static String composeWithMethodSignature(IField field) throws JavaModelException {
+  public static String composeWithMethodSignature(IField field) throws JavaModelException {
     return "public Builder with" + StringUtils.capitalize(field.getElementName()) + "("
         + Signature.toString(field.getTypeSignature()) + " " + field.getElementName()
         + ") {";

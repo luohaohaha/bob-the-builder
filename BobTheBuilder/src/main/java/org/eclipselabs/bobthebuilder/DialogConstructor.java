@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
+import org.eclipselabs.bobthebuilder.composer.ComposerRequest;
 
 public class DialogConstructor {
 

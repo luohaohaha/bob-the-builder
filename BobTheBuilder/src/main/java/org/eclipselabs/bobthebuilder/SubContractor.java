@@ -8,6 +8,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.composer.Composer;
+import org.eclipselabs.bobthebuilder.composer.ComposerRequest;
 
 public class SubContractor {
   private final DialogConstructor dialogConstructor;
