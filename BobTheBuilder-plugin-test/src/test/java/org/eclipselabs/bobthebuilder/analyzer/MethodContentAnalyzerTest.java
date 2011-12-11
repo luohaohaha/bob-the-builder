@@ -8,7 +8,6 @@ import java.util.Set;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 import org.eclipselabs.bobthebuilder.analyzer.MethodContentAnalyzer;
 import org.junit.Before;
@@ -25,7 +24,7 @@ import com.google.common.collect.Sets;
  */
 public class MethodContentAnalyzerTest {
 
-  private AnalyzerResult.ForMethod analyzedMethodResult;
+  private MethodResult analyzedMethodResult;
 
   private Set<IField> fields;
 
@@ -70,7 +69,7 @@ public class MethodContentAnalyzerTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     fields = Sets.newHashSet(field1, field2, field3);
-    analyzedMethodResult = AnalyzerResult.ForMethod.getPresentInstance(method);
+    analyzedMethodResult = MethodResult.getPresentInstance(method);
     Mockito.when(field1.getElementName()).thenReturn(field1Name);
     Mockito.when(field1.getTypeSignature()).thenReturn(field1Signature);
     Mockito.when(field2.getElementName()).thenReturn(field2Name);
@@ -103,7 +102,7 @@ public class MethodContentAnalyzerTest {
 
   @Test
   public void testMethodIsNotPresent() throws JavaModelException {
-    analyzedMethodResult = AnalyzerResult.ForMethod.NOT_PRESENT;
+    analyzedMethodResult = MethodResult.NOT_PRESENT;
     expected = fields;
     actual = getMethodContentAnalyzer().analyze(fields, analyzedMethodResult, predicate);
     assertEquals(expected, actual);

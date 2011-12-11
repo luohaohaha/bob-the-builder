@@ -5,7 +5,6 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
 
 public class ConstructorWithBuilderInMainTypeAnalyzer {
 
@@ -14,7 +13,7 @@ public class ConstructorWithBuilderInMainTypeAnalyzer {
     return new FieldPredicate.FieldAssignment();
   }
 
-  public Set<IField> analyze(Set<IField> mainTypeFields, ForMethod constructorWithBuilderResult) throws JavaModelException {
+  public Set<IField> analyze(Set<IField> mainTypeFields, MethodResult constructorWithBuilderResult) throws JavaModelException {
     Validate.notNull(mainTypeFields, "mainTypeFields may not be null");
     Validate.noNullElements(mainTypeFields, "There may not be nulls in mainTypeFields");
     Validate.notNull(constructorWithBuilderResult, "constructorWithBuilderResult may not be null");

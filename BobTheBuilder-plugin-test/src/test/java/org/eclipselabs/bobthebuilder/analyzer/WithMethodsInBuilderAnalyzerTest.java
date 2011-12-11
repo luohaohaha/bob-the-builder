@@ -23,9 +23,9 @@ import com.google.common.collect.Sets;
 // TODO parameterize the positive tests
 public class WithMethodsInBuilderAnalyzerTest {
 
-  private AnalyzerResult.ForType builderTypeAnalyzerResult;
+  private TypeResult builderTypeAnalyzerResult;
 
-  private AnalyzerResult.ForType builderMissing;
+  private TypeResult builderMissing;
 
   private Set<IField> builderFields;
 
@@ -101,8 +101,8 @@ public class WithMethodsInBuilderAnalyzerTest {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    builderTypeAnalyzerResult = AnalyzerResult.ForType.getPresentInstance(builderType);
-    builderMissing = AnalyzerResult.ForType.NOT_PRESENT;
+    builderTypeAnalyzerResult = TypeResult.getPresentInstance(builderType);
+    builderMissing = TypeResult.NOT_PRESENT;
     builderFields = Sets.newHashSet(field1, field2);
     missingFieldsInBuilder = Sets.newHashSet(field3);
     extraFieldsInBuilder = Sets.newHashSet(field4);
@@ -202,7 +202,7 @@ public class WithMethodsInBuilderAnalyzerTest {
   public void testAnalyzeBuilderIsMissing() throws JavaModelException {
     missingFieldsInBuilder = Sets.newHashSet(field1, field2);
     actual = new WithMethodsInBuilderAnalyzer().analyze(
-      emptyFieldSet, missingFieldsInBuilder, emptyFieldSet, AnalyzerResult.ForType.NOT_PRESENT);
+      emptyFieldSet, missingFieldsInBuilder, emptyFieldSet, TypeResult.NOT_PRESENT);
     assertEquals(builderFields, actual);
   }
 

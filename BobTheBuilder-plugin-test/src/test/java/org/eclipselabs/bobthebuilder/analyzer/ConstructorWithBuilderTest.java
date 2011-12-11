@@ -4,11 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult;
 import org.eclipselabs.bobthebuilder.analyzer.ConstructorWithBuilderAnalyzer;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -22,7 +19,7 @@ public class ConstructorWithBuilderTest extends MethodAnalyzerTest {
   @Mock
   private IType mainType;
 
-  private ForType analyzedBuilderTypeResult;
+  private TypeResult analyzedBuilderTypeResult;
 
   @Override
   public void setUp() throws Exception {
@@ -37,10 +34,10 @@ public class ConstructorWithBuilderTest extends MethodAnalyzerTest {
 
   @Test
   public void testNotPresentBuilder() throws JavaModelException {
-    analyzedBuilderTypeResult = AnalyzerResult.ForType.NOT_PRESENT;
-    ForMethod actual =
+    analyzedBuilderTypeResult = TypeResult.NOT_PRESENT;
+    MethodResult actual =
         new ConstructorWithBuilderAnalyzer().analyze(analyzedBuilderTypeResult, mainType);
-    expected = AnalyzerResult.ForMethod.NOT_PRESENT;
+    expected = MethodResult.NOT_PRESENT;
     assertEquals(expected, actual);
 
   }

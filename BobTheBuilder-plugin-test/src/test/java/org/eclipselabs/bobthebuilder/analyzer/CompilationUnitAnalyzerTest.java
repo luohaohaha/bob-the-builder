@@ -12,8 +12,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -78,7 +76,7 @@ public class CompilationUnitAnalyzerTest {
   private Set<IField> fields;
 
   @Mock
-  private ForType builderAnalyzerResult;
+  private TypeResult builderAnalyzerResult;
 
   @Mock
   private IType builderType;
@@ -104,7 +102,7 @@ public class CompilationUnitAnalyzerTest {
   private Set<IField> missingWithMethods;
 
   @Mock
-  private ForMethod constructorWithBuilderResult;
+  private MethodResult constructorWithBuilderResult;
 
   @Mock
   private IMethod constructorWithBuilder;
@@ -115,10 +113,10 @@ public class CompilationUnitAnalyzerTest {
   private Set<IField> missingFieldsInConstructor;
 
   @Mock
-  private ForMethod buildMethodResult;
+  private MethodResult buildMethodResult;
 
   @Mock
-  private ForMethod analyzedValidateResult;
+  private MethodResult analyzedValidateResult;
 
   @Mock
   private IMethod validateMethod;

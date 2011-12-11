@@ -9,7 +9,6 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult;
 import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeFieldAnalyzer;
 import org.eclipselabs.bobthebuilder.analyzer.MainTypeFieldAnalyzer;
 import org.junit.Before;
@@ -25,7 +24,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class BuilderTypeFieldAnalyzerTest {
 
-  private AnalyzerResult.ForType analyzerResult;
+  private TypeResult analyzerResult;
 
   @Mock
   private IField field1;
@@ -59,7 +58,7 @@ public class BuilderTypeFieldAnalyzerTest {
 
   @Test
   public void testBuilderTypeNotPresent() throws JavaModelException {
-    Set<IField> actual = new BuilderTypeFieldAnalyzer().analyze(AnalyzerResult.ForType.NOT_PRESENT);
+    Set<IField> actual = new BuilderTypeFieldAnalyzer().analyze(TypeResult.NOT_PRESENT);
     assertTrue(actual.isEmpty());
   }
 
@@ -70,7 +69,7 @@ public class BuilderTypeFieldAnalyzerTest {
 
   @Test
   public void testBuilderIsPresent() throws JavaModelException {
-    analyzerResult = AnalyzerResult.ForType.getPresentInstance(builderType);
+    analyzerResult = TypeResult.getPresentInstance(builderType);
     Set<IField> actual = new BuilderTypeFieldAnalyzer().analyze(analyzerResult);
     assertEquals(expected, actual);
   }

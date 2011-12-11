@@ -7,11 +7,10 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
 
 public class MethodContentAnalyzer {
 
-  public Set<IField> analyze(Set<IField> typeFields, ForMethod analyzedMethodResult,
+  public Set<IField> analyze(Set<IField> typeFields, MethodResult analyzedMethodResult,
     FieldPredicate fieldPredicate) throws JavaModelException {
     Validate.notNull(typeFields, "type fields set may not be null");
     Validate.isTrue(!typeFields.isEmpty(), "fields may not be empty");
