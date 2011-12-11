@@ -8,11 +8,10 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
 
 public class ValidationFrameworkAnalyzer {
 
-  Collection<ValidationFramework> analyze(ForMethod analyzedValidateResult,
+  Collection<ValidationFramework> analyze(MethodResult analyzedValidateResult,
     ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(analyzedValidateResult, "analyzedValidateResult may not be null");
     Validate.notNull(compilationUnit, "compilationUnit may not be null");

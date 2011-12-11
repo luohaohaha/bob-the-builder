@@ -3,6 +3,7 @@ package org.eclipselabs.bobthebuilder;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.composer.Composer;
+import org.eclipselabs.bobthebuilder.composer.ConstructorWithBuilderComposer;
 
 public interface FieldTextBuilder {
   String createMessage(IField field) throws JavaModelException;
@@ -29,7 +30,7 @@ public interface FieldTextBuilder {
 
     @Override
     public String createMessage(IField field) throws JavaModelException {
-      return Composer.composeSingleAssignment(field);
+      return new ConstructorWithBuilderComposer().composeSingleAssignment(field);
     }
     
   }

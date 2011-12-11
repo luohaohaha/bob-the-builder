@@ -10,7 +10,6 @@ import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult;
 import org.eclipselabs.bobthebuilder.analyzer.ValidationFrameworkAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +25,7 @@ public class ValidationFrameworkAnalyzerTest {
   @Mock
   private IMethod validateMethod;
 
-  private AnalyzerResult.ForMethod analyzedValidateMethod;
+  private MethodResult analyzedValidateMethod;
 
   private Collection<ValidationFramework> expected;
 
@@ -44,7 +43,7 @@ public class ValidationFrameworkAnalyzerTest {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    analyzedValidateMethod = AnalyzerResult.ForMethod.getPresentInstance(validateMethod);
+    analyzedValidateMethod = MethodResult.getPresentInstance(validateMethod);
     Mockito.when(commonsLang2Import.getElementName()).thenReturn(
       ValidationFramework.COMMONS_LANG2.getFullClassName());
     Mockito.when(commonsLang3Import.getElementName()).thenReturn(
@@ -65,7 +64,7 @@ public class ValidationFrameworkAnalyzerTest {
 
   @Test
   public void testAnalyzedResultNotPresent() throws JavaModelException {
-    analyzedValidateMethod = AnalyzerResult.ForMethod.NOT_PRESENT;
+    analyzedValidateMethod = MethodResult.NOT_PRESENT;
     Collection<ValidationFramework> actual = new ValidationFrameworkAnalyzer().analyze(analyzedValidateMethod, compilationUnit);
     assertEquals(ValidationFramework.values().length, actual.size());
   }

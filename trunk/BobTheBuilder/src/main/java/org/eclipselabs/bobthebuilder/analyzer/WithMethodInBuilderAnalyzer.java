@@ -3,7 +3,6 @@ package org.eclipselabs.bobthebuilder.analyzer;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 
 // TODO add tests
 public class WithMethodInBuilderAnalyzer {
@@ -12,7 +11,7 @@ public class WithMethodInBuilderAnalyzer {
     return new MethodPredicate.WithMethodInBuilder(field);
   }
 
-  public AnalyzerResult.ForMethod analyze(ForType analyzedTypeResult, IField field) throws JavaModelException {
+  public MethodResult analyze(TypeResult analyzedTypeResult, IField field) throws JavaModelException {
     Validate.notNull(field, "field may not be null");
     Validate.notNull(analyzedTypeResult, "analyzedTypeResult may not be null");
     MethodAnalyzer methodAnalyzer = new MethodAnalyzer();

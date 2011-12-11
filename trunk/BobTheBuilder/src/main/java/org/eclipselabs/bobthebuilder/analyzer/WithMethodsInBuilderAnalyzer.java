@@ -7,15 +7,13 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
 
 public class WithMethodsInBuilderAnalyzer {
 
   WithMethodsInBuilderAnalyzer() {}
 
   private void validate(Set<IField> builderFields, Set<IField> missingFieldsInBuilder,
-    AnalyzerResult.ForType builderTypeAnalyzerResult, Set<IField> extraFieldsInBuilder) {
+    TypeResult builderTypeAnalyzerResult, Set<IField> extraFieldsInBuilder) {
     Validate.notNull(builderFields, "builder fields may not be null");
     Validate.noNullElements(builderFields, "builder fields contains a null");
     Validate.notNull(missingFieldsInBuilder, "missing fields in builder may not be null");
@@ -53,7 +51,7 @@ public class WithMethodsInBuilderAnalyzer {
     Set<IField> builderFields,
     Set<IField> missingFieldsInBuilder,
     Set<IField> extraFieldsInBuilder,
-    ForType builderTypeAnalyzerResult) throws JavaModelException {
+    TypeResult builderTypeAnalyzerResult) throws JavaModelException {
     validate(builderFields, missingFieldsInBuilder, builderTypeAnalyzerResult, extraFieldsInBuilder);
     Set<IField> fields = new HashSet<IField>();
     fields.addAll(builderFields);
@@ -62,7 +60,7 @@ public class WithMethodsInBuilderAnalyzer {
     Set<IField> result = new HashSet<IField>();
     for (IField each : fields) {
       // use ioc instead
-      ForMethod analyzed =
+      MethodResult analyzed =
           new WithMethodInBuilderAnalyzer().analyze(
             builderTypeAnalyzerResult, each);
       if (!analyzed.isPresent()) {

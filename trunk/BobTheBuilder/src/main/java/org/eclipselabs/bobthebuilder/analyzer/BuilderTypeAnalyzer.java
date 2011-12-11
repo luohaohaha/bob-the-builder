@@ -10,13 +10,13 @@ public class BuilderTypeAnalyzer {
 
   public BuilderTypeAnalyzer() {}
 
-  public AnalyzerResult.ForType analyze(IType mainType) throws JavaModelException {
+  public TypeResult analyze(IType mainType) throws JavaModelException {
     Validate.notNull(mainType, "main type may not be null");
     for (IType each : mainType.getTypes()) {
       if (each.getElementName().equals(BUILDER_CLASS_NAME)) {
-        return AnalyzerResult.ForType.getPresentInstance(each);
+        return TypeResult.getPresentInstance(each);
       }
     }
-    return AnalyzerResult.ForType.NOT_PRESENT;
+    return TypeResult.NOT_PRESENT;
   }
 }

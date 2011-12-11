@@ -7,16 +7,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForType;
+import org.eclipselabs.bobthebuilder.AbstractResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
- * To test {@link AnalyzerResult}
+ * To test {@link AbstractResult}
  */
 public class AnalyzerResultTest {
 
@@ -33,40 +31,40 @@ public class AnalyzerResultTest {
   
   @Test
   public void testAnalyzerResultForType() {
-    ForType actual = AnalyzerResult.ForType.getPresentInstance(type);
+    TypeResult actual = TypeResult.getPresentInstance(type);
     assertEquals(type, actual.getElement());
     assertTrue(actual.isPresent());
   }
 
   @Test
   public void testAnalyzerResultForMethod() {
-    ForMethod actual = AnalyzerResult.ForMethod.getPresentInstance(method);
+    MethodResult actual = MethodResult.getPresentInstance(method);
     assertEquals(method, actual.getElement());
     assertTrue(actual.isPresent());
   }
 
   @Test
   public void testTypeIsNotPresent() {
-    ForType actual = AnalyzerResult.ForType.NOT_PRESENT;
+    TypeResult actual = TypeResult.NOT_PRESENT;
     assertNull(actual.getElement());
     assertFalse(actual.isPresent());
   }
 
   @Test
   public void testMethodIsNotPresent() {
-    ForMethod actual = AnalyzerResult.ForMethod.NOT_PRESENT;
+    MethodResult actual = MethodResult.NOT_PRESENT;
     assertNull(actual.getElement());
     assertFalse(actual.isPresent());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullType() {
-    AnalyzerResult.ForType.getPresentInstance(null);
+    TypeResult.getPresentInstance(null);
   }
   
   @Test(expected = IllegalArgumentException.class)
   public void testNullMethod() {
-    AnalyzerResult.ForMethod.getPresentInstance(null);
+    MethodResult.getPresentInstance(null);
   }
 
 }

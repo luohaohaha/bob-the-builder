@@ -12,7 +12,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerResult.ForMethod;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate.FieldValidation;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate.ValidateInBuilder;
 
@@ -106,7 +105,7 @@ public class CompilationUnitAnalyzer {
     type = typeAnalyzer.analyze(compilationUnit);
     fields = mainTypeFieldAnalyzer.analyze(type);
     copyOfFields.addAll(fields);
-    AnalyzerResult.ForType builderAnalyzerResult = builderTypeAnalyzer.analyze(type);
+    TypeResult builderAnalyzerResult = builderTypeAnalyzer.analyze(type);
     builderType = builderAnalyzerResult.getElement();
     missingBuilder = !builderAnalyzerResult.isPresent();
     builderFields = builderTypeFieldAnalyzer.analyze(builderAnalyzerResult);
@@ -120,7 +119,7 @@ public class CompilationUnitAnalyzer {
     missingWithMethodsForFields = withMethodsInBuilderAnalyzer.analyze(
             anotherCopyOfBuilderFields, missingFieldsInBuilder, extraFieldsInBuilder,
         builderAnalyzerResult);
-    ForMethod constructorWithBuilderResult =
+    MethodResult constructorWithBuilderResult =
           constructorWithBuilderAnalyzer.analyze(builderAnalyzerResult, type);
     missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
     constructorWithBuilder = constructorWithBuilderResult.getElement();
@@ -128,7 +127,7 @@ public class CompilationUnitAnalyzer {
           constructorWithBuilderInMainTypeAnalyzer.analyze(fields, constructorWithBuilderResult);
     missingBuildMethodInBuilder =
           !buildInBuilderAnalyzer.analyze(builderAnalyzerResult).isPresent();
-    ForMethod analyzedValidateInBuilder =
+    MethodResult analyzedValidateInBuilder =
           methodAnalyzer.analyze(builderAnalyzerResult, methodPredicate);
     missingValidateMethodInBuilder = !analyzedValidateInBuilder.isPresent();
     validationMethod = analyzedValidateInBuilder.getElement();
