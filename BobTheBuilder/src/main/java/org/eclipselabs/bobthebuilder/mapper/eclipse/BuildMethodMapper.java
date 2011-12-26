@@ -13,16 +13,21 @@ public class BuildMethodMapper {
 
   private final ValidateMethodInvocationMapper validateMethodInvocationMapper;
 
+  private final MethodPredicate.BuildInBuilder predicate;
+
   @Inject
-  public BuildMethodMapper(ValidateMethodInvocationMapper validateMethodInvocationMapper) {
+  public BuildMethodMapper(
+      ValidateMethodInvocationMapper validateMethodInvocationMapper,
+      MethodPredicate.BuildInBuilder methodPredicateBuildInBuilder) {
     this.validateMethodInvocationMapper = validateMethodInvocationMapper;
+    this.predicate = methodPredicateBuildInBuilder;
   }
 
   public BuildMethod map(IType builderType) throws JavaModelException {
     Validate.notNull(builderType, "builderType may not be null");
     IMethod buildMethod = null;
     for (IMethod each : builderType.getMethods()) {
-      if (getPredicate().match(each)) {
+      if (predicate.match(each)) {
         buildMethod = each;
         continue;
       }
@@ -37,7 +42,4 @@ public class BuildMethodMapper {
     return builder.build();
   }
 
-  private MethodPredicate getPredicate() {
-    return new MethodPredicate.BuildInBuilder();
-  }
 }
