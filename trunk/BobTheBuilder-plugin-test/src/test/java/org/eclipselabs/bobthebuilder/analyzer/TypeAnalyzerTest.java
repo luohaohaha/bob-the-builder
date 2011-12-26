@@ -17,6 +17,8 @@ public class TypeAnalyzerTest {
 
   @Mock
   private IType mainType;
+
+  private IType mainTypeResult;
   
   @Mock
   private IType interfaceType;
@@ -73,7 +75,7 @@ public class TypeAnalyzerTest {
   @Test
   public void testMainTypeInCompilationUnit() throws JavaModelException {
     Mockito.when(compilationUnit.getTypes()).thenReturn(new IType[]{mainType});
-    actual = new TypeAnalyzer().analyze(compilationUnit);
+    actual = new TypeAnalyzer().analyze(compilationUnit).getElement();
     expected = mainType;
     assertEquals(expected, actual);
   }

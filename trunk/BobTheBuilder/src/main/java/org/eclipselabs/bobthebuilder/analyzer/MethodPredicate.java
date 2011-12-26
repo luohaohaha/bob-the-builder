@@ -26,6 +26,7 @@ public interface MethodPredicate {
 
     static final String BUILD_METHOD_NAME = "build";
 
+    //TODO check also the return type
     @Override
     public boolean match(IMethod method) {
       Validate.notNull(method, "method may not be null");

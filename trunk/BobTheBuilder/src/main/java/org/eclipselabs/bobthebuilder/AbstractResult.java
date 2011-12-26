@@ -41,5 +41,4 @@ public abstract class AbstractResult<T> {
     return ToStringBuilder.reflectionToString(this);
   }
   
-  
 }

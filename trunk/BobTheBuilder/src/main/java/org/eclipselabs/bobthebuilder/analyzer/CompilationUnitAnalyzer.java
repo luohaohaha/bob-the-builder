@@ -19,7 +19,6 @@ import com.google.inject.Inject;
 
 // TODO break down this piece so that it is not so massive:
 // eg. MainTypeAnalyer and BuilderTypeAnalyzer and each are composed of a bunch of analyzers
-// TODO add tests
 public class CompilationUnitAnalyzer {
   public static final String BUILDER_CLASS_NAME = "Builder";
 
@@ -94,7 +93,7 @@ public class CompilationUnitAnalyzer {
     Set<IField> missingFieldValidationsInBuilder = new HashSet<IField>();
     IMethod validationMethod = null;
     IMethod constructorWithBuilder = null;
-    IType type = null;
+    TypeResult type = null;
     IType builderType = null;
     boolean missingConstructorWithBuilder = false;
     boolean missingBuilder = true;
@@ -103,9 +102,9 @@ public class CompilationUnitAnalyzer {
     Collection<ValidationFramework> validationFrameworks = null;
     // TODO if we have our own representation of the IField, we can do fancier set operations.
     type = typeAnalyzer.analyze(compilationUnit);
-    fields = mainTypeFieldAnalyzer.analyze(type);
+    fields = mainTypeFieldAnalyzer.analyze(type.getElement());
     copyOfFields.addAll(fields);
-    TypeResult builderAnalyzerResult = builderTypeAnalyzer.analyze(type);
+    TypeResult builderAnalyzerResult = builderTypeAnalyzer.analyze(type.getElement());
     builderType = builderAnalyzerResult.getElement();
     missingBuilder = !builderAnalyzerResult.isPresent();
     builderFields = builderTypeFieldAnalyzer.analyze(builderAnalyzerResult);
@@ -120,7 +119,7 @@ public class CompilationUnitAnalyzer {
             anotherCopyOfBuilderFields, missingFieldsInBuilder, extraFieldsInBuilder,
         builderAnalyzerResult);
     MethodResult constructorWithBuilderResult =
-          constructorWithBuilderAnalyzer.analyze(builderAnalyzerResult, type);
+          constructorWithBuilderAnalyzer.analyze(builderAnalyzerResult, type.getElement());
     missingConstructorWithBuilder = !constructorWithBuilderResult.isPresent();
     constructorWithBuilder = constructorWithBuilderResult.getElement();
     missingFieldsInConstructorWithBuilder =
@@ -139,7 +138,7 @@ public class CompilationUnitAnalyzer {
         compilationUnit,
         Collections.unmodifiableSet(fields),
         Collections.unmodifiableSet(builderFields),
-        type,
+        type.getElement(),
         Collections.unmodifiableSet(missingFieldsInBuilder),
         Collections.unmodifiableSet(extraFieldsInBuilder),
         missingBuilder,
