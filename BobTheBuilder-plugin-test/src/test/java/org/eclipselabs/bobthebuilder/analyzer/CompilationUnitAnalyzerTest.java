@@ -77,6 +77,9 @@ public class CompilationUnitAnalyzerTest {
 
   @Mock
   private TypeResult builderAnalyzerResult;
+  
+  @Mock
+  private TypeResult mainTypeAnalyzerResult;
 
   @Mock
   private IType builderType;
@@ -141,7 +144,8 @@ public class CompilationUnitAnalyzerTest {
     missingWithMethods = Sets.newHashSet(field4);
     missingFieldsInConstructor = Sets.newHashSet(field5);
     missingFieldValidations = Sets.newHashSet(field6);
-    Mockito.when(typeAnalyzer.analyze(compilationUnit)).thenReturn(type);
+    Mockito.when(typeAnalyzer.analyze(compilationUnit)).thenReturn(mainTypeAnalyzerResult);
+    Mockito.when(mainTypeAnalyzerResult.getElement()).thenReturn(type);
     Mockito.when(mainTypeFieldAnalyzer.analyze(type)).thenReturn(fields);
     Mockito.when(builderTypeAnalyzer.analyze(type)).thenReturn(builderAnalyzerResult);
     Mockito.when(builderAnalyzerResult.isPresent()).thenReturn(true);

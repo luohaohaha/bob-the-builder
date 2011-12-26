@@ -6,7 +6,7 @@ import org.eclipse.jdt.core.JavaModelException;
 
 public class BuilderTypeAnalyzer {
 
-  static final String BUILDER_CLASS_NAME = "Builder";
+  public static final String BUILDER_CLASS_NAME = "Builder";
 
   public BuilderTypeAnalyzer() {}
 

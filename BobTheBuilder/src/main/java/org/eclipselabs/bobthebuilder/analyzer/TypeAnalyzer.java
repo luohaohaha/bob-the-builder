@@ -9,7 +9,7 @@ public class TypeAnalyzer {
 
   public TypeAnalyzer() {  }
   
-  public IType analyze(ICompilationUnit compilationUnit) throws JavaModelException {
+  public TypeResult analyze(ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     IType type = null;
     IType[] topLevelTypes = compilationUnit.getTypes();
@@ -26,6 +26,6 @@ public class TypeAnalyzer {
     if (type.isBinary()) {
       throw new IllegalStateException("Binary types are not supported." + type.getElementName());
     }
-    return type;
+    return TypeResult.getPresentInstance(type);
   }
 }

@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
+//TODO this belongs to the mapper
 public class MainTypeFieldAnalyzer {
 
   // TODO create a particular view of the IField instead of using eclipse's IField
