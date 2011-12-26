@@ -1,6 +1,7 @@
 package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import org.eclipselabs.bobthebuilder.analyzer.MainTypeFieldAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
 
 import com.google.inject.AbstractModule;
 
@@ -18,6 +19,7 @@ public class MapperModule extends AbstractModule{
     bind(WithMethodsMapper.class);
     bind(ValidateMethodMapper.class);
     bind(ValidateFieldsMethodMapper.class);
+    bind(MethodPredicate.BuildInBuilder.class);
   }
 
 }

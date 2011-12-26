@@ -15,21 +15,27 @@ public class BuilderType {
   private final Set<WithMethod> WithMethods;
 
   // May be null
-  private BuildMethod buildMethod;
+  private final BuildMethod buildMethod;
+
+  //May be null
+  private final ValidateMethod validateMethod;
 
   private BuilderType(Builder builder) {
     this.buildMethod = builder.buildMethod;
     this.builderFields = builder.builderFields;
     this.WithMethods = builder.WithMethods;
+    this.validateMethod = builder.validateMethod;
   }
 
   public static class Builder {
 
     private Set<WithMethod> WithMethods;
 
-    private BuildMethod buildMethod;
+    private BuildMethod buildMethod = null;
 
     private Set<Field> builderFields;
+
+    private ValidateMethod validateMethod = null;
 
     public Builder withWithMethods(Set<WithMethod> WithMethods) {
       this.WithMethods = WithMethods;
@@ -46,6 +52,11 @@ public class BuilderType {
       return this;
     }
 
+    public Builder withValidateMethod(ValidateMethod validateMethod) {
+      this.validateMethod = validateMethod;
+      return this;
+    }
+    
     public BuilderType build() {
       validate();
       return new BuilderType(this);
@@ -54,10 +65,12 @@ public class BuilderType {
     private void validate() {
       Validate.notNull(WithMethods, "WithMethods may not be null");
       Validate.isTrue(!WithMethods.isEmpty(), "WithMethods may not be empty");
+      //TODO can you have withMethod if there is no corresponding field?
       Validate.notNull(buildMethod, "buildMethod may not be null");
       Validate.notNull(builderFields, "builderFields may not be null");
       Validate.isTrue(!builderFields.isEmpty(), "builderFields may not be empty");
     }
+
 
   }
 
@@ -65,8 +78,8 @@ public class BuilderType {
     return buildMethod;
   }
 
-  public void setBuildMethod(BuildMethod buildMethod) {
-    this.buildMethod = buildMethod;
+  public ValidateMethod getValidateMethod() {
+    return validateMethod;
   }
 
   public Set<Field> getBuilderFields() {

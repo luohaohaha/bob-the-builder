@@ -22,14 +22,16 @@ public class BuilderTypeMapper {
 
   private final WithMethodsMapper withMethodsMapper;
 
-  private ValidateMethodMapper validateMethodMapper;
+  private final ValidateMethodMapper validateMethodMapper;
 
   @Inject
   public BuilderTypeMapper(BuilderFieldsMapper builderFieldsMapper,
-      BuildMethodMapper buildMethodMapper, WithMethodsMapper withMethodsMapper) {
+      BuildMethodMapper buildMethodMapper, WithMethodsMapper withMethodsMapper,
+      ValidateMethodMapper validateMethodMapper) {
     this.builderFieldsMapper = builderFieldsMapper;
     this.buildMethodMapper = buildMethodMapper;
     this.withMethodsMapper = withMethodsMapper;
+    this.validateMethodMapper = validateMethodMapper;
   }
 
   public BuilderType map(IType type) throws JavaModelException {
@@ -49,9 +51,10 @@ public class BuilderTypeMapper {
     builder.withBuilderFields(builderFields);
     BuildMethod buildMethod = buildMethodMapper.map(builderType);
     builder.withBuildMethod(buildMethod);
-    Set<WithMethod> WithMethods = withMethodsMapper.map(builderType);
-    builder.withWithMethods(WithMethods);
+    Set<WithMethod> withMethods = withMethodsMapper.map(builderType);
+    builder.withWithMethods(withMethods);
     ValidateMethod validateMethod = validateMethodMapper.map(builderType);
+    builder.withValidateMethod(validateMethod);
     return builder.build();
 
   }
