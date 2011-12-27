@@ -1,6 +1,5 @@
 package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -17,16 +16,20 @@ public class ValidateMethodMapper {
 
   private final ValidateFieldsMethodMapper validatedFieldsMapper;
 
+  private final MethodPredicate.ValidateInBuilder predicate;
+
   @Inject
-  public ValidateMethodMapper(ValidateFieldsMethodMapper validatedFieldsMapper) {
+  public ValidateMethodMapper(ValidateFieldsMethodMapper validatedFieldsMapper,
+      MethodPredicate.ValidateInBuilder validateInBuilder) {
     this.validatedFieldsMapper = validatedFieldsMapper;
+    this.predicate = validateInBuilder;
   }
 
   public ValidateMethod map(IType builderType) throws JavaModelException {
     Validate.notNull(builderType, "builderType may not be null");
     IMethod validateMethod = null;
     for (IMethod each : builderType.getMethods()) {
-      if (getPredicate().match(each)) {
+      if (predicate.match(each)) {
         validateMethod = each;
         continue;
       }
@@ -39,10 +42,6 @@ public class ValidateMethodMapper {
     Set<Field> validatedFields = validatedFieldsMapper.map(builderType);
     builder.withValidatedFields(validatedFields);
     return builder.build();
-  }
-
-  private MethodPredicate getPredicate() {
-    return new MethodPredicate.ValidateInBuilder();
   }
 
 }
