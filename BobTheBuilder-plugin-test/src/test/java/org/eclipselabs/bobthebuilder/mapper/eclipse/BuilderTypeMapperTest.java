@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Set;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeAnalyzer;
@@ -62,6 +63,9 @@ public class BuilderTypeMapperTest {
   @Mock
   private WithMethod withMethod1;
 
+  @Mock
+  private ICompilationUnit compilationUnit;
+
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
@@ -75,24 +79,24 @@ public class BuilderTypeMapperTest {
     Mockito.when(buildMethodMapper.map(builderType)).thenReturn(buildMethod);
     withMethods = Sets.newHashSet(withMethod1);
     Mockito.when(withMethodsMapper.map(builderType)).thenReturn(withMethods);
-    Mockito.when(validateMethodMapper.map(builderType)).thenReturn(validateMethod);
+    Mockito.when(validateMethodMapper.map(builderType, compilationUnit)).thenReturn(validateMethod);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullBuilderType() throws JavaModelException {
-    builderTypeMapper.map(null);
+    builderTypeMapper.map(null, compilationUnit);
   }
 
   @Test
   public void testNoBuilder() throws JavaModelException {
     Mockito.when(type.getTypes()).thenReturn(new IType[] {});
-    BuilderType actual = builderTypeMapper.map(type);
+    BuilderType actual = builderTypeMapper.map(type, compilationUnit);
     assertNull(actual);
   }
 
   @Test
   public void testBuilder() throws JavaModelException {
-    BuilderType actual = builderTypeMapper.map(type);
+    BuilderType actual = builderTypeMapper.map(type, compilationUnit);
     BuilderType expected = new BuilderType.Builder().withBuilderFields(builderFields)
         .withBuildMethod(buildMethod)
         .withValidateMethod(validateMethod).withWithMethods(withMethods).build();

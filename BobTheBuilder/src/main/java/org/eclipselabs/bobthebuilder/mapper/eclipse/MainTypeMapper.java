@@ -3,6 +3,7 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.Validate;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
@@ -17,8 +18,9 @@ public class MainTypeMapper {
     this.builderTypeMapper = builderTypeMapper;
   }
 
-  public MainType map(IType type) throws JavaModelException {
+  public MainType map(IType type, ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(type, "type may not be null");
+    Validate.notNull(compilationUnit, "compilationUnit may not be null");
     if (!type.isClass()) {
       throw new IllegalStateException("The main type has to be a class."
         + type.getElementName());
@@ -28,7 +30,7 @@ public class MainTypeMapper {
     }
     MainType.Builder builder = new MainType.Builder();
     builder.withName(type.getElementName());
-    BuilderType builderType = builderTypeMapper.map(type);
+    BuilderType builderType = builderTypeMapper.map(type, compilationUnit);
     builder.withBuilderType(builderType);
     return builder.build();
   }

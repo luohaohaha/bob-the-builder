@@ -1,45 +1,37 @@
-package org.eclipselabs.bobthebuilder.analyzer;
-
-import java.util.Arrays;
-import java.util.Collection;
+package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 
-public class ValidationFrameworkAnalyzer {
+public class ValidationFrameworkMapper {
 
-  public Collection<ValidationFramework> analyze(MethodResult analyzedValidateResult,
+  public ValidationFramework map(IMethod validateMethod,
     ICompilationUnit compilationUnit) throws JavaModelException {
-    Validate.notNull(analyzedValidateResult, "analyzedValidateResult may not be null");
+    Validate.notNull(validateMethod, "validateMethod may not be null");
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
-    if (!analyzedValidateResult.isPresent()) {
-      return Arrays.asList(ValidationFramework.values());
-    }
-
-    String methodSource = analyzedValidateResult.getElement().getSource();
+    String methodSource = validateMethod.getSource();
     if (methodSource.contains(ValidationFramework.GOOGLE_GUAVA.getCheckArgument()) ||
         methodSource.contains(ValidationFramework.GOOGLE_GUAVA.getCheckNotNull())) {
-      return Arrays.asList(ValidationFramework.GOOGLE_GUAVA);
+      return ValidationFramework.GOOGLE_GUAVA;
     }
     if (methodSource.contains(ValidationFramework.COMMONS_LANG2.getCheckArgument()) ||
         methodSource.contains(ValidationFramework.COMMONS_LANG2.getCheckNotNull())) {
       for (IImportDeclaration each : compilationUnit.getImports()) {
         if (each.getElementName().equals(ValidationFramework.COMMONS_LANG2.fullClassName)) {
-          return Arrays.asList(ValidationFramework.COMMONS_LANG2);
+          return ValidationFramework.COMMONS_LANG2;
         }
         else if (each.getElementName().equals(ValidationFramework.COMMONS_LANG3.fullClassName)) {
-          return Arrays.asList(ValidationFramework.COMMONS_LANG3);
+          return ValidationFramework.COMMONS_LANG3;
         }
         else {
-          // Fall-back strategy
-          return Arrays.asList(ValidationFramework.COMMONS_LANG2);
+          return ValidationFramework.COMMONS_LANG2;
         }
       }
     }
-    return Arrays.asList(ValidationFramework.values());
+    return null;
   }
-
 }

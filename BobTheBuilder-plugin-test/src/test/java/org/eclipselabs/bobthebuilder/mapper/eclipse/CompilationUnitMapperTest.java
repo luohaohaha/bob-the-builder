@@ -52,7 +52,7 @@ public class CompilationUnitMapperTest {
     compilationUnitMapper = new CompilationUnitMapper(mainTypeMapper, mainTypeSelector,
         importStatementMapper);
     Mockito.when(mainTypeSelector.map(compilationUnit)).thenReturn(type);
-    Mockito.when(mainTypeMapper.map(type)).thenReturn(mainType);
+    Mockito.when(mainTypeMapper.map(type, compilationUnit)).thenReturn(mainType);
     Mockito.when(type.getElementName()).thenReturn(mainTypeName);
     importStatement = new ImportStatement("import name");
     imports = Sets.newHashSet(importStatement);

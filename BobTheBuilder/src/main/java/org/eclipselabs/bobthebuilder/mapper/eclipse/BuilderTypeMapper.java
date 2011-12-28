@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.Validate;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeAnalyzer;
@@ -34,7 +35,7 @@ public class BuilderTypeMapper {
     this.validateMethodMapper = validateMethodMapper;
   }
 
-  public BuilderType map(IType type) throws JavaModelException {
+  public BuilderType map(IType type, ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(type, "type may not be null");
     IType builderType = null;
     for (IType each : type.getTypes()) {
@@ -53,7 +54,7 @@ public class BuilderTypeMapper {
     builder.withBuildMethod(buildMethod);
     Set<WithMethod> withMethods = withMethodsMapper.map(builderType);
     builder.withWithMethods(withMethods);
-    ValidateMethod validateMethod = validateMethodMapper.map(builderType);
+    ValidateMethod validateMethod = validateMethodMapper.map(builderType, compilationUnit);
     builder.withValidateMethod(validateMethod);
     return builder.build();
 
