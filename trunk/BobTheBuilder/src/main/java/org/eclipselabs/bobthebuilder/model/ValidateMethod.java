@@ -50,7 +50,6 @@ public class ValidateMethod {
 
     private void validate() {
       Validate.notNull(validatedFields, "missingFields may not be null");
-      Validate.notNull(validationFramework, "validationFramework may not be null");
       Validate.isTrue(!StringUtils.isBlank(source), "source may not be blank");
     }
 

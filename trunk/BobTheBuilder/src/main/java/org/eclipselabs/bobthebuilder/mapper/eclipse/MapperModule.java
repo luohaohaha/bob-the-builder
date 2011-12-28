@@ -25,6 +25,7 @@ public class MapperModule extends AbstractModule{
     bind(WithMethodPredicate.class);
     bind(WithMethodsMapper.class);
     bind(MethodPredicate.ValidateInBuilder.class);
+    bind(ValidationFrameworkMapper.class);
   }
 
 }

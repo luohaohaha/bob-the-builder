@@ -31,7 +31,7 @@ public class CompilationUnitMapper {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     JavaClassFile.Builder javaClassFileBuilder = new JavaClassFile.Builder();
     IType type = mainTypeSelector.map(compilationUnit);
-    MainType mainType = mainTypeMapper.map(type);
+    MainType mainType = mainTypeMapper.map(type, compilationUnit);
     javaClassFileBuilder.withMainType(mainType).withName(type.getElementName());
     Set<ImportStatement> imports = importStatementMapper.map(compilationUnit);
     javaClassFileBuilder.withImports(imports);
