@@ -1,5 +1,6 @@
 package org.eclipselabs.bobthebuilder.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,8 +12,7 @@ import org.eclipselabs.bobthebuilder.ValidationFramework;
 
 public class ValidateMethod {
 
-  // This may be empty
-  private final Set<Field> validatedFields;
+  private final Set<FieldAssignment> validatedFields;
 
   private final String source;
 
@@ -27,14 +27,14 @@ public class ValidateMethod {
 
   public static class Builder {
 
-    private Set<Field> validatedFields;
+    private Set<FieldAssignment> validatedFields = new HashSet<FieldAssignment>();
 
     private ValidationFramework validationFramework;
 
     private String source;
 
-    public Builder withValidatedFields(Set<Field> validatedFields) {
-      this.validatedFields = validatedFields;
+    public Builder withValidatedFields(Set<FieldAssignment> validatedFields) {
+      this.validatedFields.addAll(validatedFields);
       return this;
     }
 
@@ -51,6 +51,8 @@ public class ValidateMethod {
     private void validate() {
       Validate.notNull(validatedFields, "missingFields may not be null");
       Validate.isTrue(!StringUtils.isBlank(source), "source may not be blank");
+      Validate.notNull(validatedFields, "validatedFields may not be null");
+      Validate.noNullElements(validatedFields, "validatedFields may not contain null elements");
     }
 
     public Builder withSource(String source) {
@@ -60,7 +62,7 @@ public class ValidateMethod {
 
   }
 
-  public Set<Field> getValidatedFields() {
+  public Set<FieldAssignment> getValidatedFields() {
     return validatedFields;
   }
 

@@ -1,10 +1,15 @@
 package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.Set;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
+import org.eclipselabs.bobthebuilder.model.ConstructorWithBuilder;
+import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.MainType;
 import org.junit.Before;
@@ -14,10 +19,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Sets;
+
 public class MainTypeMapperTest {
   @Mock
   private BuilderTypeMapper builderTypeMapper;
-
+  
+  @Mock
   private MainTypeMapper mainTypeMapper;
 
   @Mock
@@ -37,15 +45,26 @@ public class MainTypeMapperTest {
   @Mock
   private ConstructorWithBuilderMapper constructorWithBuilderMapper;
 
+  private Field field1 = new Field.Builder().withName("field1").withSignature("signature1").build();
+
+  private Field field2 = new Field.Builder().withName("field2").withSignature("signature2").build();
+  
+  private Set<Field> fields = Sets.newHashSet(field1, field2);
+
+  @Mock
+  private ConstructorWithBuilder constructorWithBuilder;
+
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
     mainTypeMapper = new MainTypeMapper(builderTypeMapper, fieldMapper,
         constructorWithBuilderMapper);
-    Mockito.when(builderTypeMapper.map(mainType, imports)).thenReturn(builderType);
-    Mockito.when(mainType.isClass()).thenReturn(true);
-    Mockito.when(mainType.isBinary()).thenReturn(false);
-    Mockito.when(mainType.getElementName()).thenReturn(typeName);
+    when(fieldMapper.map(mainType)).thenReturn(fields);
+    when(builderTypeMapper.map(mainType, imports, fields)).thenReturn(builderType);
+    when(mainType.isClass()).thenReturn(true);
+    when(mainType.isBinary()).thenReturn(false);
+    when(mainType.getElementName()).thenReturn(typeName);
+    when(constructorWithBuilderMapper.map(mainType, fields)).thenReturn(constructorWithBuilder);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -65,7 +84,6 @@ public class MainTypeMapperTest {
     mainTypeMapper.map(mainType, imports);
   }
 
-  @Ignore
   @Test
   public void testSuccess() throws JavaModelException {
     MainType actual = mainTypeMapper.map(mainType, imports);

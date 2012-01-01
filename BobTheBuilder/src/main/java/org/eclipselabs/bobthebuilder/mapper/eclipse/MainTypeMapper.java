@@ -16,11 +16,14 @@ import org.eclipselabs.bobthebuilder.model.MainType;
 public class MainTypeMapper {
 
   private final BuilderTypeMapper builderTypeMapper;
+
   private final FieldMapper fieldMapper;
+
   private final ConstructorWithBuilderMapper constructorWithBuilderMapper;
 
   @Inject
-  public MainTypeMapper(BuilderTypeMapper builderTypeMapper, FieldMapper fieldMapper, ConstructorWithBuilderMapper constructorWithBuilderMapper) {
+  public MainTypeMapper(BuilderTypeMapper builderTypeMapper, FieldMapper fieldMapper,
+      ConstructorWithBuilderMapper constructorWithBuilderMapper) {
     this.builderTypeMapper = builderTypeMapper;
     this.fieldMapper = fieldMapper;
     this.constructorWithBuilderMapper = constructorWithBuilderMapper;
@@ -38,11 +41,11 @@ public class MainTypeMapper {
     }
     MainType.Builder builder = new MainType.Builder();
     builder.withName(type.getElementName());
-    BuilderType builderType = builderTypeMapper.map(type, imports);
-    builder.withBuilderType(builderType);
-    //TODO add check for getters and pojomatics
+    // TODO add check for getters and pojomatics
     Set<Field> fields = fieldMapper.map(type);
     builder.withFields(fields);
+    BuilderType builderType = builderTypeMapper.map(type, imports, fields);
+    builder.withBuilderType(builderType);
     ConstructorWithBuilder constructorWithBuilder = constructorWithBuilderMapper.map(type, fields);
     builder.withConstructorWithBuilder(constructorWithBuilder);
     return builder.build();

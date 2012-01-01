@@ -35,7 +35,7 @@ public class BuilderTypeMapper {
     this.validateMethodMapper = validateMethodMapper;
   }
 
-  public BuilderType map(IType type, Imports imports) throws JavaModelException {
+  public BuilderType map(IType type, Imports imports, Set<Field> fields) throws JavaModelException {
     Validate.notNull(type, "type may not be null");
     Validate.notNull(imports, "imports may not be null");
     IType builderType = null;
@@ -55,7 +55,7 @@ public class BuilderTypeMapper {
     builder.withBuildMethod(buildMethod);
     Set<WithMethod> withMethods = withMethodsMapper.map(builderType);
     builder.withWithMethods(withMethods);
-    ValidateMethod validateMethod = validateMethodMapper.map(builderType, imports);
+    ValidateMethod validateMethod = validateMethodMapper.map(builderType, imports, fields);
     builder.withValidateMethod(validateMethod);
     return builder.build();
 
