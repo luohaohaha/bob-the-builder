@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.model.ImportStatement;
 import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.JavaClassFile;
 import org.eclipselabs.bobthebuilder.model.MainType;
@@ -14,8 +13,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import com.google.common.collect.Sets;
 
 public class CompilationUnitMapperTest {
 
@@ -44,8 +41,6 @@ public class CompilationUnitMapperTest {
   @Mock
   private Imports imports;
 
-  private ImportStatement importStatement;
-  
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -54,7 +49,6 @@ public class CompilationUnitMapperTest {
     Mockito.when(mainTypeSelector.map(compilationUnit)).thenReturn(type);
     Mockito.when(mainTypeMapper.map(type, imports)).thenReturn(mainType);
     Mockito.when(type.getElementName()).thenReturn(mainTypeName);
-    importStatement = new ImportStatement("import name");
     Mockito.when(importStatementMapper.map(compilationUnit)).thenReturn(imports);
   }
 
