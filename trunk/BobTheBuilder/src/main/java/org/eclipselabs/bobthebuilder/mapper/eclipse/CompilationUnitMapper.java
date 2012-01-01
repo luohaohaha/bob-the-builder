@@ -6,10 +6,9 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.model.ImportStatement;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.JavaClassFile;
 import org.eclipselabs.bobthebuilder.model.MainType;
-import java.util.Set;
 
 public class CompilationUnitMapper {
 
@@ -31,10 +30,10 @@ public class CompilationUnitMapper {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     JavaClassFile.Builder javaClassFileBuilder = new JavaClassFile.Builder();
     IType type = mainTypeSelector.map(compilationUnit);
-    MainType mainType = mainTypeMapper.map(type, compilationUnit);
-    javaClassFileBuilder.withMainType(mainType).withName(type.getElementName());
-    Set<ImportStatement> imports = importStatementMapper.map(compilationUnit);
+    Imports imports = importStatementMapper.map(compilationUnit);
     javaClassFileBuilder.withImports(imports);
+    MainType mainType = mainTypeMapper.map(type, imports);
+    javaClassFileBuilder.withMainType(mainType).withName(type.getElementName());
     return javaClassFileBuilder.build();
   }
 

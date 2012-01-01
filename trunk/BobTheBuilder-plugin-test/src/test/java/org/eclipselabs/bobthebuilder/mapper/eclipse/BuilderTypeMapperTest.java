@@ -5,13 +5,13 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Set;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeAnalyzer;
 import org.eclipselabs.bobthebuilder.model.BuildMethod;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.ValidateMethod;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
 import org.junit.Before;
@@ -25,7 +25,7 @@ import com.google.common.collect.Sets;
 public class BuilderTypeMapperTest {
 
   @Mock
-  private BuilderFieldsMapper builderFieldsMapper;
+  private FieldMapper builderFieldsMapper;
 
   @Mock
   private BuildMethodMapper buildMethodMapper;
@@ -64,7 +64,7 @@ public class BuilderTypeMapperTest {
   private WithMethod withMethod1;
 
   @Mock
-  private ICompilationUnit compilationUnit;
+  private Imports imports;
 
   @Before
   public void setUp() throws JavaModelException {
@@ -79,24 +79,24 @@ public class BuilderTypeMapperTest {
     Mockito.when(buildMethodMapper.map(builderType)).thenReturn(buildMethod);
     withMethods = Sets.newHashSet(withMethod1);
     Mockito.when(withMethodsMapper.map(builderType)).thenReturn(withMethods);
-    Mockito.when(validateMethodMapper.map(builderType, compilationUnit)).thenReturn(validateMethod);
+    Mockito.when(validateMethodMapper.map(builderType, imports)).thenReturn(validateMethod);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullBuilderType() throws JavaModelException {
-    builderTypeMapper.map(null, compilationUnit);
+    builderTypeMapper.map(null, imports);
   }
 
   @Test
   public void testNoBuilder() throws JavaModelException {
     Mockito.when(type.getTypes()).thenReturn(new IType[] {});
-    BuilderType actual = builderTypeMapper.map(type, compilationUnit);
+    BuilderType actual = builderTypeMapper.map(type, imports);
     assertNull(actual);
   }
 
   @Test
   public void testBuilder() throws JavaModelException {
-    BuilderType actual = builderTypeMapper.map(type, compilationUnit);
+    BuilderType actual = builderTypeMapper.map(type, imports);
     BuilderType expected = new BuilderType.Builder().withBuilderFields(builderFields)
         .withBuildMethod(buildMethod)
         .withValidateMethod(validateMethod).withWithMethods(withMethods).build();

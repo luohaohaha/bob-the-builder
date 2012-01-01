@@ -1,5 +1,6 @@
 package org.eclipselabs.bobthebuilder.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -11,7 +12,6 @@ public class MainType {
 
   private final String name;
 
-  // This should not be empty
   private final Set<Field> fields;
 
   // This could be null
@@ -35,7 +35,7 @@ public class MainType {
 
     private String name;
 
-    private Set<Field> fields;
+    private Set<Field> fields = new HashSet<Field>();
 
     public Builder withConstructorWithBuilder(ConstructorWithBuilder constructorWithBuilder) {
       this.constructorWithBuilder = constructorWithBuilder;
@@ -53,7 +53,7 @@ public class MainType {
     }
 
     public Builder withFields(Set<Field> fields) {
-      this.fields = fields;
+      this.fields.addAll(fields);
       return this;
     }
 
@@ -65,6 +65,8 @@ public class MainType {
     private void validate() {
       Validate.notNull(constructorWithBuilder, "constructorWithBuilder may not be null");
       Validate.notNull(builderType, "builderType may not be null");
+      Validate.notNull(fields, "fields may not be null");
+      Validate.noNullElements(fields, "fields may not contain null elements");
     }
   }
 

@@ -2,12 +2,11 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Set;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.model.ImportStatement;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.JavaClassFile;
 import org.eclipselabs.bobthebuilder.model.MainType;
 import org.junit.Before;
@@ -42,7 +41,8 @@ public class CompilationUnitMapperTest {
 
   private String mainTypeName = "main type";
 
-  private Set<ImportStatement> imports;
+  @Mock
+  private Imports imports;
 
   private ImportStatement importStatement;
   
@@ -52,10 +52,9 @@ public class CompilationUnitMapperTest {
     compilationUnitMapper = new CompilationUnitMapper(mainTypeMapper, mainTypeSelector,
         importStatementMapper);
     Mockito.when(mainTypeSelector.map(compilationUnit)).thenReturn(type);
-    Mockito.when(mainTypeMapper.map(type, compilationUnit)).thenReturn(mainType);
+    Mockito.when(mainTypeMapper.map(type, imports)).thenReturn(mainType);
     Mockito.when(type.getElementName()).thenReturn(mainTypeName);
     importStatement = new ImportStatement("import name");
-    imports = Sets.newHashSet(importStatement);
     Mockito.when(importStatementMapper.map(compilationUnit)).thenReturn(imports);
   }
 
@@ -69,7 +68,7 @@ public class CompilationUnitMapperTest {
     JavaClassFile actual = compilationUnitMapper.map(compilationUnit);
     assertEquals(mainType, actual.getMainType());
     assertEquals(mainTypeName, actual.getName());
-    assertEquals(Sets.newHashSet(importStatement), actual.getImports());
+    assertEquals(imports, actual.getImports());
   }
 
 }

@@ -1,7 +1,5 @@
 package org.eclipselabs.bobthebuilder.model;
 
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -13,7 +11,7 @@ public class JavaClassFile {
 
   private final MainType mainType;
 
-  private final Set<ImportStatement> imports;
+  private final Imports imports;
 
   private JavaClassFile(Builder builder) {
     this.name = builder.name;
@@ -27,7 +25,7 @@ public class JavaClassFile {
 
     private MainType mainType;
 
-    private Set<ImportStatement> imports;
+    private Imports imports;
 
     public Builder withName(String name) {
       this.name = name;
@@ -39,7 +37,7 @@ public class JavaClassFile {
       return this;
     }
 
-    public Builder withImports(Set<ImportStatement> imports) {
+    public Builder withImports(Imports imports) {
       this.imports = imports;
       return this;
     }
@@ -64,7 +62,7 @@ public class JavaClassFile {
     return mainType;
   }
 
-  public Set<ImportStatement> getImports() {
+  public Imports getImports() {
     return imports;
   }
 

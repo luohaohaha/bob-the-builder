@@ -8,16 +8,17 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.model.ImportStatement;
+import org.eclipselabs.bobthebuilder.model.Imports;
 
 public class ImportStatementMapper {
 
-  public Set<ImportStatement> map(ICompilationUnit compilationUnit) throws JavaModelException {
+  public Imports map(ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     Set<ImportStatement> imports = new HashSet<ImportStatement>();
     for (IImportDeclaration each : compilationUnit.getImports()) {
       imports.add(new ImportStatement(each.getElementName()));
     }
-    return imports;
+    return new Imports(imports);
   }
 
 }
