@@ -5,19 +5,19 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeAnalyzer;
 import org.eclipselabs.bobthebuilder.model.BuildMethod;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.ValidateMethod;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class BuilderTypeMapper {
 
-  private final BuilderFieldsMapper builderFieldsMapper;
+  private final FieldMapper builderFieldsMapper;
 
   private final BuildMethodMapper buildMethodMapper;
 
@@ -26,7 +26,7 @@ public class BuilderTypeMapper {
   private final ValidateMethodMapper validateMethodMapper;
 
   @Inject
-  public BuilderTypeMapper(BuilderFieldsMapper builderFieldsMapper,
+  public BuilderTypeMapper(FieldMapper builderFieldsMapper,
       BuildMethodMapper buildMethodMapper, WithMethodsMapper withMethodsMapper,
       ValidateMethodMapper validateMethodMapper) {
     this.builderFieldsMapper = builderFieldsMapper;
@@ -35,8 +35,9 @@ public class BuilderTypeMapper {
     this.validateMethodMapper = validateMethodMapper;
   }
 
-  public BuilderType map(IType type, ICompilationUnit compilationUnit) throws JavaModelException {
+  public BuilderType map(IType type, Imports imports) throws JavaModelException {
     Validate.notNull(type, "type may not be null");
+    Validate.notNull(imports, "imports may not be null");
     IType builderType = null;
     for (IType each : type.getTypes()) {
       if (each.getElementName().equals(BuilderTypeAnalyzer.BUILDER_CLASS_NAME)) {
@@ -54,7 +55,7 @@ public class BuilderTypeMapper {
     builder.withBuildMethod(buildMethod);
     Set<WithMethod> withMethods = withMethodsMapper.map(builderType);
     builder.withWithMethods(withMethods);
-    ValidateMethod validateMethod = validateMethodMapper.map(builderType, compilationUnit);
+    ValidateMethod validateMethod = validateMethodMapper.map(builderType, imports);
     builder.withValidateMethod(validateMethod);
     return builder.build();
 

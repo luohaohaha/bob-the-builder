@@ -8,7 +8,7 @@ import org.eclipselabs.bobthebuilder.model.Field;
 public class ValidateFieldsMethodMapper {
 
   public Set<Field> map(IType builderType) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated method stub>
     return null;
   }
 

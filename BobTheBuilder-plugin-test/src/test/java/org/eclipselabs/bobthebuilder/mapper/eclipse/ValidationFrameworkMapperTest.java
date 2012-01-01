@@ -3,11 +3,10 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 public class ValidationFrameworkMapperTest {
 
   @Mock
-  private ICompilationUnit compilationUnit;
+  private Imports imports;
 
   @Mock
   private IMethod validateMethod;
@@ -26,26 +25,13 @@ public class ValidationFrameworkMapperTest {
 
   private ValidationFramework actual;
 
-  @Mock
-  private IImportDeclaration commonsLang2Import;
-
-  @Mock
-  private IImportDeclaration commonsLang3Import;
-
-  @Mock
-  private IImportDeclaration anotherImport;
-
   private ValidationFrameworkMapper validationFrameworkMapper;
 
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    Mockito.when(commonsLang2Import.getElementName()).thenReturn(
-      ValidationFramework.COMMONS_LANG2.getFullClassName());
-    Mockito.when(commonsLang3Import.getElementName()).thenReturn(
-      ValidationFramework.COMMONS_LANG3.getFullClassName());
-    Mockito.when(anotherImport.getElementName()).thenReturn(
-      "org.eclipselabs.bobthebuilder.rocks");
+    Mockito.when(imports.isCommonsLang2()).thenReturn(true);
+    Mockito.when(imports.isCommonsLang3()).thenReturn(true);
     validationFrameworkMapper = new ValidationFrameworkMapper();
   }
 
@@ -56,14 +42,14 @@ public class ValidationFrameworkMapperTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullmapdResult() throws JavaModelException {
-    validationFrameworkMapper.map(null, compilationUnit);
+    validationFrameworkMapper.map(null, imports);
   }
 
   @Test
   public void testGuavaPresent() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn(
       ValidationFramework.GOOGLE_GUAVA.getCheckArgument());
-    actual = validationFrameworkMapper.map(validateMethod, compilationUnit);
+    actual = validationFrameworkMapper.map(validateMethod, imports);
     expected = ValidationFramework.GOOGLE_GUAVA;
     assertEquals(expected, actual);
   }
@@ -72,9 +58,7 @@ public class ValidationFrameworkMapperTest {
   public void testCommonsLang2Present() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn(
       ValidationFramework.COMMONS_LANG2.getCheckArgument());
-    Mockito.when(compilationUnit.getImports()).thenReturn(
-      new IImportDeclaration[] { commonsLang2Import });
-    actual = validationFrameworkMapper.map(validateMethod, compilationUnit);
+    actual = validationFrameworkMapper.map(validateMethod, imports);
     expected = ValidationFramework.COMMONS_LANG2;
     assertEquals(expected, actual);
   }
@@ -83,9 +67,8 @@ public class ValidationFrameworkMapperTest {
   public void testCommonsLang3Present() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn(
       ValidationFramework.COMMONS_LANG3.getCheckArgument());
-    Mockito.when(compilationUnit.getImports()).thenReturn(
-      new IImportDeclaration[] { commonsLang3Import });
-    actual = validationFrameworkMapper.map(validateMethod, compilationUnit);
+    Mockito.when(imports.isCommonsLang2()).thenReturn(false);
+    actual = validationFrameworkMapper.map(validateMethod, imports);
     expected = ValidationFramework.COMMONS_LANG3;
     assertEquals(expected, actual);
   }
@@ -94,9 +77,9 @@ public class ValidationFrameworkMapperTest {
   public void testDefaultCommonsLang2() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn(
       ValidationFramework.COMMONS_LANG2.getCheckArgument());
-    Mockito.when(compilationUnit.getImports()).thenReturn(
-      new IImportDeclaration[] { anotherImport });
-    actual = validationFrameworkMapper.map(validateMethod, compilationUnit);
+    Mockito.when(imports.isCommonsLang2()).thenReturn(false);
+    Mockito.when(imports.isCommonsLang3()).thenReturn(false);
+    actual = validationFrameworkMapper.map(validateMethod, imports);
     expected = ValidationFramework.COMMONS_LANG2;
     assertEquals(expected, actual);
   }
@@ -104,7 +87,7 @@ public class ValidationFrameworkMapperTest {
   @Test
   public void testValidatePresentButNoFrameworkUsed() throws JavaModelException {
     Mockito.when(validateMethod.getSource()).thenReturn("whatever");
-    actual = validationFrameworkMapper.map(validateMethod, compilationUnit);
+    actual = validationFrameworkMapper.map(validateMethod, imports);
     assertNull(actual);
   }
 }

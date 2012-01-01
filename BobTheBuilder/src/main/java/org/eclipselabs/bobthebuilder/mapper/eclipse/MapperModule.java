@@ -1,6 +1,6 @@
 package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
-import org.eclipselabs.bobthebuilder.analyzer.MainTypeFieldAnalyzer;
+import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
 import org.eclipselabs.bobthebuilder.analyzer.WithMethodPredicate;
 
@@ -13,8 +13,7 @@ public class MapperModule extends AbstractModule{
     bind(MainTypeMapper.class);
     bind(MainTypeSelector.class);
     bind(BuilderTypeMapper.class);
-    bind(BuilderFieldsMapper.class);
-    bind(MainTypeFieldAnalyzer.class);
+    bind(FieldMapper.class);
     bind(BuildMethodMapper.class);
     bind(ValidateMethodInvocationMapper.class);
     bind(WithMethodsMapper.class);
@@ -26,6 +25,10 @@ public class MapperModule extends AbstractModule{
     bind(WithMethodsMapper.class);
     bind(MethodPredicate.ValidateInBuilder.class);
     bind(ValidationFrameworkMapper.class);
+    bind(ConstructorWithBuilderMapper.class);
+    bind(MethodPredicate.ConstructorWithBuilder.class);
+    bind(FieldPredicate.FieldAssignment.class);
+    bind(FieldAssignmentInConstructorMapper.class);
   }
 
 }

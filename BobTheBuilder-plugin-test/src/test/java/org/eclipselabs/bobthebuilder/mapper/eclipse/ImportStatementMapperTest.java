@@ -3,12 +3,11 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Set;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.model.ImportStatement;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -47,14 +46,14 @@ public class ImportStatementMapperTest {
 
   @Test
   public void testCompilationUnit() throws JavaModelException {
-    Set<ImportStatement> actual = importStatementMapper.map(compilationUnit);
-    assertEquals(Sets.newHashSet(new ImportStatement(importName)), actual);
+    Imports actual = importStatementMapper.map(compilationUnit);
+    assertEquals(new Imports(Sets.newHashSet(new ImportStatement(importName))), actual);
   }
 
   @Test
   public void testCompilationUnitNoImport() throws JavaModelException {
-    Mockito.when(compilationUnit.getImports()).thenReturn(new IImportDeclaration[]{});
-    Set<ImportStatement> actual = importStatementMapper.map(compilationUnit);
-    assertTrue(actual.isEmpty());
+    Mockito.when(compilationUnit.getImports()).thenReturn(new IImportDeclaration[] {});
+    Imports actual = importStatementMapper.map(compilationUnit);
+    assertTrue(actual.getImportStatements().isEmpty());
   }
 }

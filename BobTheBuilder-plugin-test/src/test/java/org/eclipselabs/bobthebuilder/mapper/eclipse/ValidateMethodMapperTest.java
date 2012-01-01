@@ -6,12 +6,12 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Set;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.ValidateMethod;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class ValidateMethodMapperTest {
   private Field field2;
 
   @Mock
-  private ICompilationUnit compilationUnit;
+  private Imports imports;
 
   @Before
   public void setUp() throws Exception {
@@ -61,24 +61,25 @@ public class ValidateMethodMapperTest {
     fields = Sets.newHashSet(field1, field2);
     Mockito.when(validatedFieldsMapper.map(builderType)).thenReturn(fields);
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] { validateMethod });
-    validateMethodMapper = new ValidateMethodMapper(validatedFieldsMapper, predicate, validationFrameworkMapper);
+    validateMethodMapper = new ValidateMethodMapper(validatedFieldsMapper, predicate,
+        validationFrameworkMapper);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullBuilderTyper() throws JavaModelException {
-    validateMethodMapper.map(null, compilationUnit);
+    validateMethodMapper.map(null, imports);
   }
 
   @Test
   public void testNoValidateMethod() throws JavaModelException {
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] {});
-    ValidateMethod actual = validateMethodMapper.map(builderType, compilationUnit);
+    ValidateMethod actual = validateMethodMapper.map(builderType, imports);
     assertNull(actual);
   }
 
   @Test
   public void testMapValidateMethod() throws JavaModelException {
-    ValidateMethod actual = validateMethodMapper.map(builderType, compilationUnit);
+    ValidateMethod actual = validateMethodMapper.map(builderType, imports);
     assertNotNull(actual);
     assertEquals(source, actual.getSource());
     assertEquals(fields, actual.getValidatedFields());

@@ -1,0 +1,37 @@
+package org.eclipselabs.bobthebuilder.mapper.eclipse;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang.Validate;
+import org.eclipse.jdt.core.Flags;
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipselabs.bobthebuilder.model.Field;
+
+public class FieldMapper {
+
+  public Set<Field> map(IType type) throws JavaModelException {
+    Validate.notNull(type, "Type may not be null");
+    Set<Field> fields = new HashSet<Field>();
+    Field.Builder fieldBuilder = new Field.Builder();
+    for (IField each : type.getFields()) {
+      if (isFinalStatic(each)) {
+        continue;
+      }
+      fieldBuilder.withName(each.getElementName()).withSignature(each.getTypeSignature());
+      fields.add(fieldBuilder.build());
+    }
+    return Collections.unmodifiableSet(fields);
+  }
+
+  private boolean isFinalStatic(IField field) throws JavaModelException {
+    int flags = field.getFlags();
+    if (Flags.isFinal(flags) && Flags.isStatic(flags)) {
+      return true;
+    }
+    return false;
+  }
+}
