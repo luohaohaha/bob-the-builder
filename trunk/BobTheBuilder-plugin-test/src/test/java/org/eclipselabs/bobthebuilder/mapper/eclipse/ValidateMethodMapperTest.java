@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.FieldAssignment;
 import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.ValidateMethod;
 import org.junit.Before;
@@ -53,13 +54,16 @@ public class ValidateMethodMapperTest {
   @Mock
   private Imports imports;
 
+  private Set<FieldAssignment> fieldAssignments = Sets.newHashSet(new FieldAssignment("field1"),
+    new FieldAssignment("field2"));
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     Mockito.when(predicate.match(validateMethod)).thenReturn(true);
     Mockito.when(validateMethod.getSource()).thenReturn(source);
     fields = Sets.newHashSet(field1, field2);
-    Mockito.when(validatedFieldsMapper.map(builderType)).thenReturn(fields);
+    Mockito.when(validatedFieldsMapper.map(validateMethod, fields)).thenReturn(fieldAssignments);
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] { validateMethod });
     validateMethodMapper = new ValidateMethodMapper(validatedFieldsMapper, predicate,
         validationFrameworkMapper);
@@ -67,22 +71,22 @@ public class ValidateMethodMapperTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullBuilderTyper() throws JavaModelException {
-    validateMethodMapper.map(null, imports);
+    validateMethodMapper.map(null, imports, fields);
   }
 
   @Test
   public void testNoValidateMethod() throws JavaModelException {
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] {});
-    ValidateMethod actual = validateMethodMapper.map(builderType, imports);
+    ValidateMethod actual = validateMethodMapper.map(builderType, imports, fields);
     assertNull(actual);
   }
 
   @Test
   public void testMapValidateMethod() throws JavaModelException {
-    ValidateMethod actual = validateMethodMapper.map(builderType, imports);
+    ValidateMethod actual = validateMethodMapper.map(builderType, imports, fields);
     assertNotNull(actual);
     assertEquals(source, actual.getSource());
-    assertEquals(fields, actual.getValidatedFields());
+    assertEquals(fieldAssignments, actual.getValidatedFields());
     assertEquals(null, actual.getValidationFramework());
   }
 

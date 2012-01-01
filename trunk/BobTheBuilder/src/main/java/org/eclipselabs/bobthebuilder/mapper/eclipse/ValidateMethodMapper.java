@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.MethodPredicate;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.FieldAssignment;
 import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.ValidateMethod;
 
@@ -31,7 +32,7 @@ public class ValidateMethodMapper {
     this.validationFrameworkMapper = validationFrameworkMapper;
   }
 
-  public ValidateMethod map(IType builderType, Imports imports) throws JavaModelException {
+  public ValidateMethod map(IType builderType, Imports imports, Set<Field> fields) throws JavaModelException {
     Validate.notNull(builderType, "builderType may not be null");
     Validate.notNull(imports, "compilationUnit may not be null");
     IMethod validateMethod = null;
@@ -46,7 +47,7 @@ public class ValidateMethodMapper {
     }
     ValidateMethod.Builder builder = new ValidateMethod.Builder();
     builder.withSource(validateMethod.getSource());
-    Set<Field> validatedFields = validatedFieldsMapper.map(builderType);
+    Set<FieldAssignment> validatedFields = validatedFieldsMapper.map(validateMethod, fields);
     builder.withValidatedFields(validatedFields);
     //TODO add the validation framework at the field level and allow for more than one framework to be used
     ValidationFramework validationFramework = 

@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 
 public class FieldAssignmentInConstructorMapperTest {
 
-  private FieldAssignmentInConstructorMapper fieldAssignmentInConstructorMapper;
+  private FieldBasedContentInMethodMapper fieldBasedContentInMethodMapper;
 
   @Mock
   private IMethod method;
@@ -48,7 +48,7 @@ public class FieldAssignmentInConstructorMapperTest {
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
-    fieldAssignmentInConstructorMapper = new FieldAssignmentInConstructorMapper(predicate);
+    fieldBasedContentInMethodMapper = new FieldBasedContentInMethodMapper();
     field1 = new Field.Builder().withName(field1Name).withSignature(signature1).build();
     field2 = new Field.Builder().withName(field2Name).withSignature(signature2).build();
     fields.add(field1);
@@ -60,30 +60,30 @@ public class FieldAssignmentInConstructorMapperTest {
 
   @Test
   public void testMap() throws JavaModelException {
-    Set<FieldAssignment> actual = fieldAssignmentInConstructorMapper.map(method, fields);
+    Set<FieldAssignment> actual = fieldBasedContentInMethodMapper.map(method, fields, predicate);
     Set<FieldAssignment> expected = Sets.newHashSet(new FieldAssignment(field1Name));
     assertEquals(expected, actual);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullMethod() throws JavaModelException {
-    fieldAssignmentInConstructorMapper.map(null, fields);
+    fieldBasedContentInMethodMapper.map(null, fields, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullFields() throws JavaModelException {
-    fieldAssignmentInConstructorMapper.map(method, null);
+    fieldBasedContentInMethodMapper.map(method, null, predicate);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullInFields() throws JavaModelException {
-    fieldAssignmentInConstructorMapper.map(method, Sets.<Field>newHashSet((Field)null));
+    fieldBasedContentInMethodMapper.map(method, Sets.<Field> newHashSet((Field) null), predicate);
   }
 
   @Test
   public void testEmptyFields() throws JavaModelException {
-    Set<FieldAssignment> actual = 
-      fieldAssignmentInConstructorMapper.map(method, new HashSet<Field>());
+    Set<FieldAssignment> actual =
+        fieldBasedContentInMethodMapper.map(method, new HashSet<Field>(), predicate);
     assertTrue(actual.isEmpty());
   }
 }
