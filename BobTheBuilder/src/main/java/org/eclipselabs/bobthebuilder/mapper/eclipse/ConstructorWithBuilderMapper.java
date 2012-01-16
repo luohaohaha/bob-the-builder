@@ -41,8 +41,7 @@ public class ConstructorWithBuilderMapper {
     }
     ConstructorWithBuilder.Builder builder = new ConstructorWithBuilder.Builder();
     builder.withName(constructorWithBuilder.getElementName())
-        .withSource(constructorWithBuilder.getSource())
-        .withIsConstructor();
+        .withSource(constructorWithBuilder.getSource());
     Set<FieldAssignment> fieldAssignments =
         fieldAssignmentInConstructorMapper.map(constructorWithBuilder, fields);
     builder.withFieldAssignment(fieldAssignments);

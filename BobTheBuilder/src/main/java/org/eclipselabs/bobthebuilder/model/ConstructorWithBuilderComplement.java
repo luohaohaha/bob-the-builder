@@ -1,5 +1,6 @@
 package org.eclipselabs.bobthebuilder.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -8,63 +9,56 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class ConstructorWithBuilder {
+public class ConstructorWithBuilderComplement {
   private final String name;
 
-  private final Set<FieldAssignment> fieldAssignment;
+  private final Set<FieldAssignment> fieldAssignments;
 
-  private final String source;
-  
-  private ConstructorWithBuilder(Builder builder) {
-    this.fieldAssignment = builder.fieldAssignment;
+  private ConstructorWithBuilderComplement(Builder builder) {
     this.name = builder.name;
-    this.source = builder.source;
+    this.fieldAssignments = builder.fieldAssignments;
   }
 
   public static class Builder {
 
-    public String source;
-
-    private Set<FieldAssignment> fieldAssignment;
-
     private String name;
 
-    public Builder withFieldAssignment(Set<FieldAssignment> fieldAssignment) {
-      this.fieldAssignment = fieldAssignment;
-      return this;
-    }
+    private Set<FieldAssignment> fieldAssignments = new HashSet<FieldAssignment>();
 
     public Builder withName(String name) {
       this.name = name;
       return this;
     }
 
-    public Builder withSource(String source) {
-      this.source = source;
+    public Builder withFieldAssignments(Set<FieldAssignment> fieldAssignments) {
+      this.fieldAssignments = fieldAssignments;
       return this;
     }
     
-    public ConstructorWithBuilder build() {
+    public Builder addFieldAssignment(FieldAssignment fieldAssignment) {
+      this.fieldAssignments.add(fieldAssignment);
+      return this;
+    }
+
+    public ConstructorWithBuilderComplement build() {
       validate();
-      return new ConstructorWithBuilder(this);
+      return new ConstructorWithBuilderComplement(this);
     }
 
     private void validate() {
-      Validate.notNull(fieldAssignment, "fieldAssignment may not be null");
       Validate.isTrue(!StringUtils.isBlank(name), "name may not be blank");
+      Validate.notNull(fieldAssignments, "fieldAssignment may not be null");
+      Validate.noNullElements(fieldAssignments, "fieldAssignment may not contain null elements");
     }
   }
-
+  
+  
   public String getName() {
     return name;
   }
 
-  public Set<FieldAssignment> getFieldAssignment() {
-    return fieldAssignment;
-  }
-
-  public String getSource() {
-    return source;
+  public Set<FieldAssignment> getFieldAssignments() {
+    return fieldAssignments;
   }
 
   @Override
