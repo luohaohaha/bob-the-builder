@@ -26,6 +26,7 @@ public class CompilationUnitMapper {
     this.importStatementMapper = importStatementMapper;
   }
 
+  //TODO what if mainType does not contain any fields
   public JavaClassFile map(ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     JavaClassFile.Builder javaClassFileBuilder = new JavaClassFile.Builder();

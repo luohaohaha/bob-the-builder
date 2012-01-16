@@ -12,22 +12,23 @@ public class MapperModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    bind(CompilationUnitMapper.class);
     bind(MainTypeMapper.class);
     bind(MainTypeSelector.class);
+    bind(ImportStatementMapper.class);
     bind(BuilderTypeMapper.class);
     bind(FieldMapper.class);
+    bind(ConstructorWithBuilderMapper.class);
     bind(BuildMethodMapper.class);
     bind(ValidateMethodInvocationMapper.class);
     bind(WithMethodsMapper.class);
     bind(ValidateMethodMapper.class);
     bind(ValidateFieldsMethodMapper.class);
     bind(MethodPredicate.BuildInBuilder.class);
-    bind(ImportStatementMapper.class);
     bind(WithMethodPredicate.class);
     bind(WithMethodsMapper.class);
     bind(MethodPredicate.ValidateInBuilder.class);
     bind(ValidationFrameworkMapper.class);
-    bind(ConstructorWithBuilderMapper.class);
     bind(MethodPredicate.ConstructorWithBuilder.class);
     bind(FieldPredicate.class)
         .annotatedWith(ConstructorInMainType.class)
