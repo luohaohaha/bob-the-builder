@@ -1,5 +1,6 @@
 package org.eclipselabs.bobthebuilder.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -75,7 +76,7 @@ public class MainType {
   }
 
   public Set<Field> getFields() {
-    return fields;
+    return Collections.unmodifiableSet(fields);
   }
 
   public BuilderType getBuilderType() {
