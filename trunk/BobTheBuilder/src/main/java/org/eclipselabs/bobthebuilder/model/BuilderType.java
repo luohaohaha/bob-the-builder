@@ -1,5 +1,7 @@
 package org.eclipselabs.bobthebuilder.model;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -12,7 +14,7 @@ public class BuilderType {
   private final Set<Field> builderFields;
 
   // May be empty
-  private final Set<WithMethod> WithMethods;
+  private final Set<WithMethod> withMethods;
 
   // May be null
   private final BuildMethod buildMethod;
@@ -23,22 +25,22 @@ public class BuilderType {
   private BuilderType(Builder builder) {
     this.buildMethod = builder.buildMethod;
     this.builderFields = builder.builderFields;
-    this.WithMethods = builder.WithMethods;
+    this.withMethods = builder.withMethods;
     this.validateMethod = builder.validateMethod;
   }
 
   public static class Builder {
 
-    private Set<WithMethod> WithMethods;
+    private Set<WithMethod> withMethods = new HashSet<WithMethod>();
 
     private BuildMethod buildMethod = null;
 
-    private Set<Field> builderFields;
+    private Set<Field> builderFields = new HashSet<Field>();
 
     private ValidateMethod validateMethod = null;
 
-    public Builder withWithMethods(Set<WithMethod> WithMethods) {
-      this.WithMethods = WithMethods;
+    public Builder withWithMethods(Set<WithMethod> withMethods) {
+      this.withMethods.addAll(withMethods);
       return this;
     }
 
@@ -48,7 +50,7 @@ public class BuilderType {
     }
 
     public Builder withBuilderFields(Set<Field> builderFields) {
-      this.builderFields = builderFields;
+      this.builderFields.addAll(builderFields);
       return this;
     }
 
@@ -63,15 +65,13 @@ public class BuilderType {
     }
 
     private void validate() {
-      Validate.notNull(WithMethods, "WithMethods may not be null");
-      Validate.isTrue(!WithMethods.isEmpty(), "WithMethods may not be empty");
+      Validate.notNull(withMethods, "withMethods may not be null");
+      Validate.noNullElements(withMethods, "withMethods may not contain null elements");
       //TODO can you have withMethod if there is no corresponding field?
       Validate.notNull(buildMethod, "buildMethod may not be null");
       Validate.notNull(builderFields, "builderFields may not be null");
-      Validate.isTrue(!builderFields.isEmpty(), "builderFields may not be empty");
+      Validate.noNullElements(builderFields, "builderFields may not contain null elements");
     }
-
-
   }
 
   public BuildMethod getBuildMethod() {
@@ -83,11 +83,11 @@ public class BuilderType {
   }
 
   public Set<Field> getBuilderFields() {
-    return builderFields;
+    return Collections.unmodifiableSet(builderFields);
   }
 
   public Set<WithMethod> getWithMethods() {
-    return WithMethods;
+    return Collections.unmodifiableSet(withMethods);
   }
 
   @Override
