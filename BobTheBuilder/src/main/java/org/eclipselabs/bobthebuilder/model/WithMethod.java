@@ -11,7 +11,11 @@ public class WithMethod {
   private final String name;
 
   private WithMethod(Builder builder) {
-    this.name = builder.name;
+    this(builder.name);
+  }
+
+  private WithMethod(String name) {
+    this.name = name;
   }
 
   public static class Builder {
@@ -37,6 +41,10 @@ public class WithMethod {
     return name;
   }
 
+  public static WithMethod getInstanceFromField(Field field) {
+    Validate.notNull(field, "field may not be null");
+    return new WithMethod("with" + StringUtils.capitalize(field.getName()));
+  }
   @Override
   public int hashCode() {
     return HashCodeBuilder.reflectionHashCode(this);
