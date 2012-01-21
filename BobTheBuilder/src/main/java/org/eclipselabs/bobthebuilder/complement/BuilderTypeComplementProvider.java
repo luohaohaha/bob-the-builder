@@ -5,7 +5,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.Validate;
-import org.eclipselabs.bobthebuilder.model.BuildMethod;
 import org.eclipselabs.bobthebuilder.model.BuilderTypeComplement;
 import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.Imports;
@@ -44,7 +43,7 @@ public class BuilderTypeComplementProvider {
     builderTypeComplementBuilder.withBuilderFieldsComplement(builderFieldsComplement);
     Set<WithMethod> withMethodsComplement = withMethodsComplementProvider.complement(mainType);
     builderTypeComplementBuilder.withWithMethodsComplement(withMethodsComplement);
-    BuildMethod buildMethodComplement = buildMethodComplementProvider.complement(mainType.getBuilderType());
+    BuildMethodComplement buildMethodComplement = buildMethodComplementProvider.complement(mainType);
     builderTypeComplementBuilder.withBuildMethodComplement(buildMethodComplement);
     ValidateMethod validateMethodComplement = validateMethodComplementProvider.complement(mainType);
     builderTypeComplementBuilder.withValidateMethodComplement(validateMethodComplement);

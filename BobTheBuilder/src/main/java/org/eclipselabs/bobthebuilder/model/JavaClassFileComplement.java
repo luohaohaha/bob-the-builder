@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+//TODO think about deleting this class and making builderTypeComplement a member of MainTypeComplement
 public class JavaClassFileComplement {
 
   private final MainTypeComplement mainTypeComplement;

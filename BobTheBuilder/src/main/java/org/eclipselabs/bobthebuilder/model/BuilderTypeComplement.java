@@ -5,6 +5,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipselabs.bobthebuilder.complement.BuildMethodComplement;
 
 public class BuilderTypeComplement {
 
@@ -15,7 +16,7 @@ public class BuilderTypeComplement {
   private final Set<WithMethod> withMethodsComplement;
 
   // May be null
-  private final BuildMethod buildMethodComplement;
+  private final BuildMethodComplement buildMethodComplement;
 
   // May be null
   private final ValidateMethod validateMethodComplement;
@@ -32,7 +33,7 @@ public class BuilderTypeComplement {
 
     private Set<WithMethod> withMethodsComplement;
 
-    private BuildMethod buildMethodComplement;
+    private BuildMethodComplement buildMethodComplement;
 
     private ValidateMethod validateMethodComplement;
 
@@ -47,7 +48,7 @@ public class BuilderTypeComplement {
       return this;
     }
 
-    public Builder withBuildMethodComplement(BuildMethod buildMethodComplement) {
+    public Builder withBuildMethodComplement(BuildMethodComplement buildMethodComplement) {
       this.buildMethodComplement = buildMethodComplement;
       return this;
     }
@@ -71,7 +72,7 @@ public class BuilderTypeComplement {
     return withMethodsComplement;
   }
 
-  public BuildMethod getBuildMethodComplement() {
+  public BuildMethodComplement getBuildMethodComplement() {
     return buildMethodComplement;
   }
 
