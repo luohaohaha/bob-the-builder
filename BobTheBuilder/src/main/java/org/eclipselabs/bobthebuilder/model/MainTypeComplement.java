@@ -9,19 +9,29 @@ public class MainTypeComplement {
 
   private final ConstructorWithBuilderComplement constructorWithBuilderComplement;
 
+  private final BuilderTypeComplement builderTypeComplement;
+
   // TODO getters and pojomatics
 
   private MainTypeComplement(Builder builder) {
     this.constructorWithBuilderComplement = builder.constructorWithBuilderComplement;
+    this.builderTypeComplement = builder.builderTypeComplement;
   }
 
   public static class Builder {
 
     private ConstructorWithBuilderComplement constructorWithBuilderComplement;
 
+    private BuilderTypeComplement builderTypeComplement;
+
     public Builder withConstructorWithBuilderComplement(
       ConstructorWithBuilderComplement constructorWithBuilderComplement) {
       this.constructorWithBuilderComplement = constructorWithBuilderComplement;
+      return this;
+    }
+
+    public Builder withBuilderTypeComplement(BuilderTypeComplement builderTypeComplement) {
+      this.builderTypeComplement = builderTypeComplement;
       return this;
     }
 
@@ -34,10 +44,15 @@ public class MainTypeComplement {
       Validate.notNull(constructorWithBuilderComplement,
         "constructorWithBuilderComplement may not be null");
     }
+
   }
-  
+
   public ConstructorWithBuilderComplement getConstructorWithBuilderComplement() {
     return constructorWithBuilderComplement;
+  }
+
+  public BuilderTypeComplement getBuilderTypeComplement() {
+    return builderTypeComplement;
   }
 
   @Override

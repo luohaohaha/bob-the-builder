@@ -7,9 +7,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang.Validate;
 import org.eclipselabs.bobthebuilder.model.BuilderTypeComplement;
 import org.eclipselabs.bobthebuilder.model.Field;
-import org.eclipselabs.bobthebuilder.model.Imports;
 import org.eclipselabs.bobthebuilder.model.MainType;
-import org.eclipselabs.bobthebuilder.model.ValidateMethod;
+import org.eclipselabs.bobthebuilder.model.ValidateMethodComplement;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class BuilderTypeComplementProvider {
@@ -34,8 +33,7 @@ public class BuilderTypeComplementProvider {
     this.validateMethodComplementProvider = validateMethodComplementProvider;
   }
 
-  public BuilderTypeComplement complement(MainType mainType, Imports imports) {
-    Validate.notNull(imports, "imports may not be null");
+  public BuilderTypeComplement complement(MainType mainType) {
     Validate.notNull(mainType, "mainType may not be null");
     Set<Field> builderFieldsComplement =
         builderFieldsComplementProvider.complement(mainType);
@@ -43,9 +41,11 @@ public class BuilderTypeComplementProvider {
     builderTypeComplementBuilder.withBuilderFieldsComplement(builderFieldsComplement);
     Set<WithMethod> withMethodsComplement = withMethodsComplementProvider.complement(mainType);
     builderTypeComplementBuilder.withWithMethodsComplement(withMethodsComplement);
-    BuildMethodComplement buildMethodComplement = buildMethodComplementProvider.complement(mainType);
+    BuildMethodComplement buildMethodComplement = buildMethodComplementProvider
+        .complement(mainType);
     builderTypeComplementBuilder.withBuildMethodComplement(buildMethodComplement);
-    ValidateMethod validateMethodComplement = validateMethodComplementProvider.complement(mainType);
+    ValidateMethodComplement validateMethodComplement = validateMethodComplementProvider
+        .complement(mainType);
     builderTypeComplementBuilder.withValidateMethodComplement(validateMethodComplement);
     return builderTypeComplementBuilder.build();
   }

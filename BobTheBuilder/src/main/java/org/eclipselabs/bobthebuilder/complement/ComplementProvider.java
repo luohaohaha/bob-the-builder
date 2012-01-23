@@ -27,7 +27,7 @@ public class ComplementProvider {
         mainTypeComplementProvider.complement(javaClassFile.getMainType());
     BuilderTypeComplement builderTypeComplement =
         builderTypeComplementProvider.complement(
-          javaClassFile.getMainType(), javaClassFile.getImports());
+          javaClassFile.getMainType());
     JavaClassFileComplement javaClassFileComplement = new JavaClassFileComplement.Builder()
         .withMainTypeComplement(mainTypeComplement)
         .withBuilderTypeComplement(builderTypeComplement)
