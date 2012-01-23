@@ -19,7 +19,7 @@ public class BuilderTypeComplement {
   private final BuildMethodComplement buildMethodComplement;
 
   // May be null
-  private final ValidateMethod validateMethodComplement;
+  private final ValidateMethodComplement validateMethodComplement;
 
   public BuilderTypeComplement(Builder builder) {
     this.builderFieldsComplement = builder.builderFieldsComplement;
@@ -35,7 +35,7 @@ public class BuilderTypeComplement {
 
     private BuildMethodComplement buildMethodComplement;
 
-    private ValidateMethod validateMethodComplement;
+    private ValidateMethodComplement validateMethodComplement;
 
     public Builder withBuilderFieldsComplement(Set<Field> builderFieldsComplement) {
       this.builderFieldsComplement = builderFieldsComplement;
@@ -53,7 +53,7 @@ public class BuilderTypeComplement {
       return this;
     }
 
-    public Builder withValidateMethodComplement(ValidateMethod validateMethodComplement) {
+    public Builder withValidateMethodComplement(ValidateMethodComplement validateMethodComplement) {
       this.validateMethodComplement = validateMethodComplement;
       return this;
     }
@@ -76,7 +76,7 @@ public class BuilderTypeComplement {
     return buildMethodComplement;
   }
 
-  public ValidateMethod getValidateMethodComplement() {
+  public ValidateMethodComplement getValidateMethodComplement() {
     return validateMethodComplement;
   }
 
