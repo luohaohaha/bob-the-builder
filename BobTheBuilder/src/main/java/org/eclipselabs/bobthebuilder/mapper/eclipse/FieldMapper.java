@@ -15,23 +15,53 @@ public class FieldMapper {
 
   public Set<Field> map(IType type) throws JavaModelException {
     Validate.notNull(type, "Type may not be null");
-    Set<Field> fields = new HashSet<Field>();
-    Field.Builder fieldBuilder = new Field.Builder();
-    for (IField each : type.getFields()) {
-      if (isFinalStatic(each)) {
-        continue;
-      }
-      fieldBuilder.withName(each.getElementName()).withSignature(each.getTypeSignature());
-      fields.add(fieldBuilder.build());
-    }
-    return Collections.unmodifiableSet(fields);
+    return new MappedFieldCollector().collect(type);
   }
 
-  private boolean isFinalStatic(IField field) throws JavaModelException {
+  private static boolean isFinalStatic(IField field) throws JavaModelException {
     int flags = field.getFlags();
     if (Flags.isFinal(flags) && Flags.isStatic(flags)) {
       return true;
     }
     return false;
+  }
+  
+  static abstract class FieldCollector<T> {
+
+    protected abstract T createElement(IField each) throws JavaModelException;
+    
+    Set<T> collect (IType typeWithFields) throws JavaModelException {
+      Validate.notNull(typeWithFields, "typeWithFields may not be null");
+      Set<T> result = new HashSet<T>();
+      for (IField each : typeWithFields.getFields()) {
+        if (isFinalStatic(each)) {
+          continue;
+        }
+        T element = createElement(each);
+        result.add(element);
+      }
+      return Collections.unmodifiableSet(result);
+    }
+  }
+  
+  static class MappedFieldCollector extends FieldCollector<Field> {
+
+    @Override
+    protected Field createElement(IField each) throws JavaModelException {
+      return new Field.Builder()
+      .withName(each.getElementName())
+      .withSignature(each.getTypeSignature())
+      .build();
+    }
+    
+  }
+  static class RawFieldCollector extends FieldCollector<IField> {
+
+    @Override
+    protected IField createElement(IField each) throws JavaModelException {
+      return each;
+    }
+
+    
   }
 }

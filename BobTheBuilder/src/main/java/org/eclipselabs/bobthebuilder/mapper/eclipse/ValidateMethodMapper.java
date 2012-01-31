@@ -35,13 +35,7 @@ public class ValidateMethodMapper {
   public ValidateMethod map(IType builderType, Imports imports, Set<Field> fields) throws JavaModelException {
     Validate.notNull(builderType, "builderType may not be null");
     Validate.notNull(imports, "compilationUnit may not be null");
-    IMethod validateMethod = null;
-    for (IMethod each : builderType.getMethods()) {
-      if (predicate.match(each)) {
-        validateMethod = each;
-        continue;
-      }
-    }
+    IMethod validateMethod = findValidateMethod(builderType);
     if (validateMethod == null) {
       return null;
     }
@@ -54,6 +48,18 @@ public class ValidateMethodMapper {
       validationFrameworkMapper.map(validateMethod, imports);
     builder.withValidationFramework(validationFramework);
     return builder.build();
+  }
+
+  public IMethod findValidateMethod(IType builderType) throws JavaModelException {
+    Validate.notNull(builderType, "builderType may not be null");
+    IMethod validateMethod = null;
+    for (IMethod each : builderType.getMethods()) {
+      if (predicate.match(each)) {
+        validateMethod = each;
+        continue;
+      }
+    }
+    return validateMethod;
   }
 
 }

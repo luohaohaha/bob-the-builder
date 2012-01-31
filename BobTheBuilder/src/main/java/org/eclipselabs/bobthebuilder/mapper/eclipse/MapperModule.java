@@ -37,6 +37,7 @@ public class MapperModule extends AbstractModule {
         .annotatedWith(ValidateMethodInBuilder.class)
         .to(FieldPredicate.FieldValidation.class);
     bind(FieldAssignmentInConstructorMapper.class);
+    bind(CompilationUnitFlattener.class);
   }
 
 }

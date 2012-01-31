@@ -29,13 +29,7 @@ public class ConstructorWithBuilderMapper {
     Validate.notNull(type, "type may not be null");
     Validate.notNull(fields, "fields may not be null");
     Validate.noNullElements(fields, "fields may not contain null elements");
-    IMethod constructorWithBuilder = null;
-    for (IMethod each : type.getMethods()) {
-      if (methodPredicate.match(each)) {
-        constructorWithBuilder = each;
-        break;
-      }
-    }
+    IMethod constructorWithBuilder = findConstructorWithBuilder(type);
     if (constructorWithBuilder == null) {
       return null;
     }
@@ -46,5 +40,17 @@ public class ConstructorWithBuilderMapper {
         fieldAssignmentInConstructorMapper.map(constructorWithBuilder, fields);
     builder.withFieldAssignment(fieldAssignments);
     return builder.build();
+  }
+
+  public IMethod findConstructorWithBuilder(IType type) throws JavaModelException {
+    Validate.notNull(type, "type may not be null");
+    IMethod constructorWithBuilder = null;
+    for (IMethod each : type.getMethods()) {
+      if (methodPredicate.match(each)) {
+        constructorWithBuilder = each;
+        break;
+      }
+    }
+    return constructorWithBuilder;
   }
 }

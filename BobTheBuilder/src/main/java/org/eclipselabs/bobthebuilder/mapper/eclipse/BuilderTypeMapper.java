@@ -38,13 +38,7 @@ public class BuilderTypeMapper {
   public BuilderType map(IType type, Imports imports, Set<Field> fields) throws JavaModelException {
     Validate.notNull(type, "type may not be null");
     Validate.notNull(imports, "imports may not be null");
-    IType builderType = null;
-    for (IType each : type.getTypes()) {
-      if (each.getElementName().equals(BuilderTypeAnalyzer.BUILDER_CLASS_NAME)) {
-        builderType = each;
-        continue;
-      }
-    }
+    IType builderType = findBuilderType(type);
     if (builderType == null) {
       return null;
     }
@@ -59,6 +53,18 @@ public class BuilderTypeMapper {
     builder.withValidateMethod(validateMethod);
     return builder.build();
 
+  }
+
+  public IType findBuilderType(IType type) throws JavaModelException {
+    Validate.notNull(type, "type may not be null");
+    IType builderType = null;
+    for (IType each : type.getTypes()) {
+      if (each.getElementName().equals(BuilderTypeAnalyzer.BUILDER_CLASS_NAME)) {
+        builderType = each;
+        continue;
+      }
+    }
+    return builderType;
   }
 
 }
