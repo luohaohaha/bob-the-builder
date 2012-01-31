@@ -25,13 +25,7 @@ public class BuildMethodMapper {
 
   public BuildMethod map(IType builderType) throws JavaModelException {
     Validate.notNull(builderType, "builderType may not be null");
-    IMethod buildMethod = null;
-    for (IMethod each : builderType.getMethods()) {
-      if (predicate.match(each)) {
-        buildMethod = each;
-        continue;
-      }
-    }
+    IMethod buildMethod = findBuildMethod(builderType);
     if (buildMethod == null) {
       return null;
     }
@@ -40,6 +34,18 @@ public class BuildMethodMapper {
     builder.withValidateMethodInvocation(validateMethodInvocation);
     builder.withSource(buildMethod.getSource());
     return builder.build();
+  }
+
+  public IMethod findBuildMethod(IType builderType) throws JavaModelException {
+    Validate.notNull(builderType, "builderType may not be null");
+    IMethod buildMethod = null;
+    for (IMethod each : builderType.getMethods()) {
+      if (predicate.match(each)) {
+        buildMethod = each;
+        continue;
+      }
+    }
+    return buildMethod;
   }
 
 }
