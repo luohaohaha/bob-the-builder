@@ -1,6 +1,5 @@
 package org.eclipselabs.bobthebuilder.supplement;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.BuilderTypeMapper;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.FieldMapper;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
 import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.MainType;
@@ -19,9 +19,13 @@ import org.eclipselabs.bobthebuilder.model.MainType;
 public class BuilderFieldsSupplementProvider {
   private final BuilderTypeMapper builderTypeMapper;
 
+  private final FieldMapper fieldMapper;
+
   @Inject
-  public BuilderFieldsSupplementProvider(BuilderTypeMapper builderTypeMapper) {
+  public BuilderFieldsSupplementProvider(BuilderTypeMapper builderTypeMapper,
+      FieldMapper fieldMapper) {
     this.builderTypeMapper = builderTypeMapper;
+    this.fieldMapper = fieldMapper;
   }
 
   public Collection<Field> supplement(MainType mainType) throws JavaModelException {
@@ -29,7 +33,7 @@ public class BuilderFieldsSupplementProvider {
   }
 
   public Collection<IField> supplement(IType mainType) throws JavaModelException {
-    return new RawFieldSupplementor(builderTypeMapper).findSupplement(mainType);
+    return new RawFieldSupplementor(builderTypeMapper, fieldMapper).findSupplement(mainType);
   }
 
   static class MappedFieldSupplementor extends FieldSupplementor<MainType, BuilderType, Field> {
@@ -55,18 +59,21 @@ public class BuilderFieldsSupplementProvider {
 
     private final BuilderTypeMapper builderTypeMapper;
 
-    public RawFieldSupplementor(BuilderTypeMapper builderTypeMapper) {
+    private final FieldMapper fieldMapper;
+
+    public RawFieldSupplementor(BuilderTypeMapper builderTypeMapper, FieldMapper fieldMapper) {
       this.builderTypeMapper = builderTypeMapper;
+      this.fieldMapper = fieldMapper;
     }
 
     @Override
     protected Collection<IField> getMainTypeFields(IType mainType) throws JavaModelException {
-      return Arrays.asList(mainType.getFields());
+      return fieldMapper.findFields(mainType);
     }
 
     @Override
     protected Collection<IField> getBuilderFields(IType builderType) throws JavaModelException {
-      return Arrays.asList(builderType.getFields());
+      return fieldMapper.findFields(builderType);
     }
 
     @Override
