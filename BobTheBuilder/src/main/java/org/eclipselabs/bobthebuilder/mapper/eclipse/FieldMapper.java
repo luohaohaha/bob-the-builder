@@ -14,8 +14,11 @@ import org.eclipselabs.bobthebuilder.model.Field;
 public class FieldMapper {
 
   public Set<Field> map(IType type) throws JavaModelException {
-    Validate.notNull(type, "Type may not be null");
     return new MappedFieldCollector().collect(type);
+  }
+
+  public Set<IField> findFields(IType type) throws JavaModelException {
+    return new RawFieldCollector().collect(type);
   }
 
   private static boolean isFinalStatic(IField field) throws JavaModelException {
@@ -55,6 +58,7 @@ public class FieldMapper {
     }
     
   }
+  
   static class RawFieldCollector extends FieldCollector<IField> {
 
     @Override

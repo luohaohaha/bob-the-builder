@@ -44,6 +44,9 @@ public class WithMethodsMapperTest {
 
   private String method1Name = "withField1";
 
+  @Mock
+  private FieldMapper fieldMapper;
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -51,17 +54,17 @@ public class WithMethodsMapperTest {
     Mockito.when(withMethodPredicate.match(field2, method3)).thenReturn(false);
     Mockito.when(withMethodPredicate.match(field1, method3)).thenReturn(false);
     Mockito.when(withMethodPredicate.match(field2, method1)).thenReturn(false);
-    Mockito.when(builderType.getFields()).thenReturn(new IField[] { field1, field2 });
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] { method1, method3 });
     Mockito.when(method1.getElementName()).thenReturn(method1Name);
-    withMethodsMapper = new WithMethodsMapper(withMethodPredicate);
+    Mockito.when(fieldMapper.findFields(builderType)).thenReturn(Sets.newHashSet(field1, field2));
+    withMethodsMapper = new WithMethodsMapper(withMethodPredicate, fieldMapper);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullType() throws JavaModelException {
     withMethodsMapper.map(null);
   }
-  
+
   @Test
   public void testNoMatches() throws JavaModelException {
     Mockito.when(builderType.getFields()).thenReturn(new IField[] { field2 });
@@ -75,7 +78,7 @@ public class WithMethodsMapperTest {
     Set<WithMethod> actual = withMethodsMapper.map(builderType);
     assertFalse(actual.isEmpty());
     Set<WithMethod> expected = Sets.newHashSet(
-      new WithMethod.Builder().withName(method1Name).build());
+        new WithMethod.Builder().withName(method1Name).build());
     assertEquals(expected, actual);
   }
 }

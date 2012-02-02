@@ -1,14 +1,13 @@
 package org.eclipselabs.bobthebuilder.supplement;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.BuilderTypeMapper;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.FieldMapper;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
 import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.MainType;
@@ -45,10 +44,13 @@ public class BuilderFieldsSupplementProviderTest {
   @Mock
   private BuilderTypeMapper builderTypeMapper;
 
+  @Mock
+  private FieldMapper fieldMapper;
+
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    builderFieldsSupplementProvider = new BuilderFieldsSupplementProvider(builderTypeMapper);
+    builderFieldsSupplementProvider = new BuilderFieldsSupplementProvider(builderTypeMapper, fieldMapper);
     mainTypeFields = Sets.newHashSet(field1);
     builderTypeFields = Sets.newHashSet(field1, field2, field3);
     Mockito.when(mainType.getFields()).thenReturn(mainTypeFields);
