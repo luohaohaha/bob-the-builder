@@ -25,21 +25,26 @@ public class CompilationUnitFlattener {
   private final ValidateMethodMapper validateMethodMapper;
 
   private final BuildMethodMapper buildMethodMapper;
-  
+
   private final BuilderFieldsSupplementProvider builderFieldsSupplementProvider;
-  
+
+  private final WithMethodsMapper withMethodsMapper;
+
   @Inject
   public CompilationUnitFlattener(MainTypeSelector mainTypeSelector,
       ConstructorWithBuilderMapper constructorWithBuilderMapper,
-      BuilderTypeMapper builderTypeMapper, ValidateMethodMapper validateMethodMapper,
+      BuilderTypeMapper builderTypeMapper,
+      ValidateMethodMapper validateMethodMapper,
       BuildMethodMapper buildMethodMapper,
-      BuilderFieldsSupplementProvider builderFieldsSupplementProvider) {
+      BuilderFieldsSupplementProvider builderFieldsSupplementProvider,
+      WithMethodsMapper withMethodsMapper) {
     this.mainTypeSelector = mainTypeSelector;
     this.constructorWithBuilderMapper = constructorWithBuilderMapper;
     this.builderTypeMapper = builderTypeMapper;
     this.validateMethodMapper = validateMethodMapper;
     this.buildMethodMapper = buildMethodMapper;
     this.builderFieldsSupplementProvider = builderFieldsSupplementProvider;
+    this.withMethodsMapper = withMethodsMapper;
   }
 
   public FlattenedICompilationUnit flatten(ICompilationUnit compilationUnit) throws JavaModelException {
@@ -62,7 +67,15 @@ public class CompilationUnitFlattener {
     Collection<IField> extraBuilderFields = builderFieldsSupplementProvider.supplement(type);
     Set<IField> extraBuilderFieldsInSet = new HashSet<IField>();
     extraBuilderFieldsInSet.addAll(extraBuilderFields);
+    if (extraBuilderFieldsInSet.isEmpty()) {
+      return result.build(); //If there are no extra fields there should not be extra withMethods
+    }
     result.withExtraFields(extraBuilderFieldsInSet);
+    Set<IMethod> extraWithMethods = withMethodsMapper.findExtraWithMethods(builderType);
+    Set<IMethod> extraWithMethodsInSet = new HashSet<IMethod>();
+    extraWithMethodsInSet.addAll(extraWithMethods);
+    result.withExtraWithMethods(extraWithMethodsInSet);
     return result.build();
   }
+
 }
