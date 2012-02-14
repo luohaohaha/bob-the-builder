@@ -28,7 +28,7 @@ public class CompilationUnitFlattener {
 
   private final BuilderFieldsSupplementProvider builderFieldsSupplementProvider;
 
-  private final WithMethodsMapper withMethodsMapper;
+  private final WithMethodsSupplementProvider withMethodsSupplementProvider;
 
   @Inject
   public CompilationUnitFlattener(MainTypeSelector mainTypeSelector,
@@ -37,25 +37,25 @@ public class CompilationUnitFlattener {
       ValidateMethodMapper validateMethodMapper,
       BuildMethodMapper buildMethodMapper,
       BuilderFieldsSupplementProvider builderFieldsSupplementProvider,
-      WithMethodsMapper withMethodsMapper) {
+      WithMethodsSupplementProvider withMethodsSupplementProvider) {
     this.mainTypeSelector = mainTypeSelector;
     this.constructorWithBuilderMapper = constructorWithBuilderMapper;
     this.builderTypeMapper = builderTypeMapper;
     this.validateMethodMapper = validateMethodMapper;
     this.buildMethodMapper = buildMethodMapper;
     this.builderFieldsSupplementProvider = builderFieldsSupplementProvider;
-    this.withMethodsMapper = withMethodsMapper;
+    this.withMethodsSupplementProvider = withMethodsSupplementProvider;
   }
 
   public FlattenedICompilationUnit flatten(ICompilationUnit compilationUnit) throws JavaModelException {
     Validate.notNull(compilationUnit, "compilationUnit may not be null");
     FlattenedICompilationUnit.Builder result = new FlattenedICompilationUnit.Builder();
     result.withCompilationUnit(compilationUnit);
-    IType type = mainTypeSelector.map(compilationUnit);
-    result.withMainType(type);
-    IMethod constructorWithBuilder = constructorWithBuilderMapper.findConstructorWithBuilder(type);
+    IType mainType = mainTypeSelector.map(compilationUnit);
+    result.withMainType(mainType);
+    IMethod constructorWithBuilder = constructorWithBuilderMapper.findConstructorWithBuilder(mainType);
     result.withConstructorWithBuilder(constructorWithBuilder);
-    IType builderType = builderTypeMapper.findBuilderType(type);
+    IType builderType = builderTypeMapper.findBuilderType(mainType);
     if (builderType == null) {
       return result.build();
     }
@@ -64,14 +64,14 @@ public class CompilationUnitFlattener {
     result.withValidateMethod(validateMethod);
     IMethod buildMethod = buildMethodMapper.findBuildMethod(builderType);
     result.withBuildMethod(buildMethod);
-    Collection<IField> extraBuilderFields = builderFieldsSupplementProvider.supplement(type);
+    Collection<IField> extraBuilderFields = builderFieldsSupplementProvider.supplement(mainType);
     Set<IField> extraBuilderFieldsInSet = new HashSet<IField>();
     extraBuilderFieldsInSet.addAll(extraBuilderFields);
     if (extraBuilderFieldsInSet.isEmpty()) {
       return result.build(); //If there are no extra fields there should not be extra withMethods
     }
     result.withExtraFields(extraBuilderFieldsInSet);
-    Set<IMethod> extraWithMethods = withMethodsMapper.findExtraWithMethods(builderType);
+    Set<IMethod> extraWithMethods = withMethodsSupplementProvider.findExtra(mainType);
     Set<IMethod> extraWithMethodsInSet = new HashSet<IMethod>();
     extraWithMethodsInSet.addAll(extraWithMethods);
     result.withExtraWithMethods(extraWithMethodsInSet);

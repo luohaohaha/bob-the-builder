@@ -42,7 +42,7 @@ public class CompilationUnitFlattenerTest {
   private BuilderFieldsSupplementProvider builderFieldsSupplementProvider;
 
   @Mock
-  private WithMethodsMapper withMethodsMapper;
+  private WithMethodsSupplementProvider withMethodsSupplementProvider;
 
   private CompilationUnitFlattener compilationUnitFlattener;
 
@@ -86,7 +86,7 @@ public class CompilationUnitFlattenerTest {
         validateMethodMapper,
         buildMethodMapper,
         builderFieldsSupplementProvider,
-        withMethodsMapper);
+        withMethodsSupplementProvider);
     when(mainTypeSelector.map(iCompilationUnit)).thenReturn(mainType);
     when(constructorWithBuilderMapper.findConstructorWithBuilder(mainType)).thenReturn(
       constructorWithBuilder);
@@ -96,7 +96,7 @@ public class CompilationUnitFlattenerTest {
     extraBuilderFields.add(extraField);
     when(builderFieldsSupplementProvider.supplement(mainType)).thenReturn(extraBuilderFields);
     extraWithMethods.add(extraWithMethod);
-    when(withMethodsMapper.findExtraWithMethods(builderType)).thenReturn(extraWithMethods);
+    when(withMethodsSupplementProvider.findExtra(mainType)).thenReturn(extraWithMethods);
     expectedFlattenedICompilationUnitBuilder = new FlattenedICompilationUnit.Builder()
         .withCompilationUnit(iCompilationUnit)
         .withMainType(mainType)
