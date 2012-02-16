@@ -47,9 +47,6 @@ public class WithMethodsMapperTest {
   @Mock
   private FieldMapper fieldMapper;
 
-  @Mock
-  private BuilderTypeMapper builderTypeMapper;
-
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -60,7 +57,7 @@ public class WithMethodsMapperTest {
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] { method1, method3 });
     Mockito.when(method1.getElementName()).thenReturn(method1Name);
     Mockito.when(fieldMapper.findFields(builderType)).thenReturn(Sets.newHashSet(field1, field2));
-    withMethodsMapper = new WithMethodsMapper(withMethodPredicate, fieldMapper, builderTypeMapper);
+    withMethodsMapper = new WithMethodsMapper(withMethodPredicate, fieldMapper);
   }
 
   @Test(expected = IllegalArgumentException.class)

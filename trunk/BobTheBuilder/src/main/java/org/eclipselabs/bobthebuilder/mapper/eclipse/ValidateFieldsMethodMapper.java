@@ -14,13 +14,13 @@ import org.eclipselabs.bobthebuilder.model.ValidateMethodInBuilder;
 
 public class ValidateFieldsMethodMapper {
 
-  private final FieldPredicate.FieldAssignment predicate;
+  private final FieldPredicate predicate;
 
   private final FieldBasedContentInMethodMapper fieldBaseContentInMethodMapper;
 
   @Inject
   public ValidateFieldsMethodMapper(
-      @ValidateMethodInBuilder FieldPredicate.FieldAssignment fieldAssignmentInConstructorMapper,
+      @ValidateMethodInBuilder FieldPredicate fieldAssignmentInConstructorMapper,
       FieldBasedContentInMethodMapper fieldBaseContentInMethodMapper) {
     this.predicate = fieldAssignmentInConstructorMapper;
     this.fieldBaseContentInMethodMapper = fieldBaseContentInMethodMapper;

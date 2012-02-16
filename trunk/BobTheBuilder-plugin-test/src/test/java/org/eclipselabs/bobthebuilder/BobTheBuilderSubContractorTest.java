@@ -1,12 +1,19 @@
 package org.eclipselabs.bobthebuilder;
 
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
+import org.eclipselabs.bobthebuilder.complement.MainTypeComplementProvider;
 import org.eclipselabs.bobthebuilder.composer.Composer;
 import org.eclipselabs.bobthebuilder.composer.ComposerRequest;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitFlattener;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitMapper;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
+import org.eclipselabs.bobthebuilder.model.JavaClassFile;
+import org.eclipselabs.bobthebuilder.supplement.BuilderTypeSupplementProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -49,6 +56,27 @@ public class BobTheBuilderSubContractorTest {
   @Mock
   private ComposerRequest composerRequest;
 
+  @Mock
+  private CompilationUnitMapper compilationUnitMapper;
+
+  @Mock
+  private CompilationUnitFlattener compilationUnitFlattener;
+  
+  @Mock
+  private MainTypeComplementProvider mainTypeComplementProvider;
+  
+  @Mock
+  private BuilderTypeSupplementProvider builderTypeSupplementProvider;
+  
+  @Mock
+  private JavaClassFile javaClassFile;
+  
+  @Mock
+  private FlattenedICompilationUnit flattenedICompilationUnit;
+
+  @Mock
+  private IType mainType;
+  
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -57,7 +85,15 @@ public class BobTheBuilderSubContractorTest {
         compilationUnitAnalyzer,
         composer,
         nothingToDoDialog,
-        dialogRequestConstructor);
+        dialogRequestConstructor,
+        compilationUnitMapper,
+        compilationUnitFlattener,
+        mainTypeComplementProvider,
+        builderTypeSupplementProvider);
+    Mockito.when(compilationUnitMapper.map(compilationUnit)).thenReturn(javaClassFile);
+    Mockito.when(compilationUnitFlattener.flatten(compilationUnit))
+      .thenReturn(flattenedICompilationUnit);
+    Mockito.when(flattenedICompilationUnit.getMainType()).thenReturn(mainType);
   }
 
   @Test(expected = IllegalArgumentException.class)
