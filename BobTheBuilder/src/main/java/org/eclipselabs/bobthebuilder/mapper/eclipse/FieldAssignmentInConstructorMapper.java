@@ -14,13 +14,13 @@ import org.eclipselabs.bobthebuilder.model.FieldAssignment;
 
 public class FieldAssignmentInConstructorMapper {
 
-  private final FieldPredicate.FieldAssignment predicate;
+  private final FieldPredicate predicate;
 
   private final FieldBasedContentInMethodMapper fieldBaseContentInMethodMapper;
 
   @Inject
   public FieldAssignmentInConstructorMapper(
-      @ConstructorInMainType FieldPredicate.FieldAssignment fieldAssignmentInConstructorMapper,
+      @ConstructorInMainType FieldPredicate fieldAssignmentInConstructorMapper,
       FieldBasedContentInMethodMapper fieldBaseContentInMethodMapper) {
     this.predicate = fieldAssignmentInConstructorMapper;
     this.fieldBaseContentInMethodMapper = fieldBaseContentInMethodMapper;

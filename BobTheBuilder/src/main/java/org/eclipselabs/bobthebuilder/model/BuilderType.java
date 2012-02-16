@@ -68,7 +68,6 @@ public class BuilderType {
       Validate.notNull(withMethods, "withMethods may not be null");
       Validate.noNullElements(withMethods, "withMethods may not contain null elements");
       //TODO can you have withMethod if there is no corresponding field?
-      Validate.notNull(buildMethod, "buildMethod may not be null");
       Validate.notNull(builderFields, "builderFields may not be null");
       Validate.noNullElements(builderFields, "builderFields may not contain null elements");
     }

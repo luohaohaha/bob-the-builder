@@ -20,16 +20,12 @@ public class WithMethodsMapper {
 
   private final FieldMapper fieldMapper;
 
-  private final BuilderTypeMapper builderTypeMapper;
-
   @Inject
   public WithMethodsMapper(
       WithMethodPredicate withMethodPredicate,
-      FieldMapper fieldMapper,
-      BuilderTypeMapper builderTypeMapper) {
+      FieldMapper fieldMapper) {
     this.withMethodPredicate = withMethodPredicate;
     this.fieldMapper = fieldMapper;
-    this.builderTypeMapper = builderTypeMapper;
   }
 
   public Set<WithMethod> map(IType builderType) throws JavaModelException {
@@ -37,15 +33,13 @@ public class WithMethodsMapper {
   }
 
   public Set<IMethod> findWithMethods(IType builderType) throws JavaModelException {
-    return new RawWithMethodsCollector(fieldMapper, withMethodPredicate, builderTypeMapper)
+    return new RawWithMethodsCollector(fieldMapper, withMethodPredicate)
         .collect(builderType);
   }
 
   static class RawWithMethodsCollector extends WithMethodsCollector<IMethod> {
 
-
-    public RawWithMethodsCollector(FieldMapper fieldMapper,
-        WithMethodPredicate withMethodPredicate, BuilderTypeMapper buildTMapper) {
+    public RawWithMethodsCollector(FieldMapper fieldMapper, WithMethodPredicate withMethodPredicate) {
       super(fieldMapper, withMethodPredicate);
     }
 
