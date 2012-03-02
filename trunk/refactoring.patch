@@ -1,0 +1,1058 @@
+Index: BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/mapper/eclipse/ValidateMethodMapperTest.java
+===================================================================
+--- BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/mapper/eclipse/ValidateMethodMapperTest.java	(revision 42)
++++ BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/mapper/eclipse/ValidateMethodMapperTest.java	(working copy)
+@@ -54,8 +54,8 @@
+   @Mock
+   private Imports imports;
+ 
+-  private Set<FieldAssignment> fieldAssignments = Sets.newHashSet(new FieldAssignment("field1"),
+-    new FieldAssignment("field2"));
++  private Set<FieldAssignment> fieldAssignments = Sets.newHashSet(new FieldAssignment(field1),
++    new FieldAssignment(field2));
+ 
+   @Before
+   public void setUp() throws Exception {
+Index: BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/mapper/eclipse/FieldAssignmentInConstructorMapperTest.java
+===================================================================
+--- BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/mapper/eclipse/FieldAssignmentInConstructorMapperTest.java	(revision 42)
++++ BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/mapper/eclipse/FieldAssignmentInConstructorMapperTest.java	(working copy)
+@@ -61,7 +61,7 @@
+   @Test
+   public void testMap() throws JavaModelException {
+     Set<FieldAssignment> actual = fieldBasedContentInMethodMapper.map(method, fields, predicate);
+-    Set<FieldAssignment> expected = Sets.newHashSet(new FieldAssignment(field1Name));
++    Set<FieldAssignment> expected = Sets.newHashSet(new FieldAssignment(field1));
+     assertEquals(expected, actual);
+   }
+ 
+Index: BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/BobTheBuilderSubContractorTest.java
+===================================================================
+--- BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/BobTheBuilderSubContractorTest.java	(revision 55)
++++ BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/BobTheBuilderSubContractorTest.java	(working copy)
+@@ -12,7 +12,9 @@
+ import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitFlattener;
+ import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitMapper;
+ import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
++import org.eclipselabs.bobthebuilder.model.BuilderTypeSupplement;
+ import org.eclipselabs.bobthebuilder.model.JavaClassFile;
++import org.eclipselabs.bobthebuilder.model.MainTypeComplement;
+ import org.eclipselabs.bobthebuilder.supplement.BuilderTypeSupplementProvider;
+ import org.junit.Before;
+ import org.junit.Test;
+@@ -76,6 +78,12 @@
+ 
+   @Mock
+   private IType mainType;
++
++  @Mock
++  private MainTypeComplement mainTypeComplement;
++
++  @Mock
++  private BuilderTypeSupplement builderTypeSupplement;
+   
+   @Before
+   public void setUp() throws Exception {
+@@ -116,7 +124,7 @@
+   @Test(expected = Exception.class)
+   public void testDialogConstructorThrowsException() throws Exception {
+     Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit)).thenReturn(analyzed);
+-    Mockito.when(dialogRequestConstructor.work(analyzed))
++    Mockito.when(dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement))
+         .thenThrow(new RuntimeException("BUGGER"));
+     subContractor.work(shell, compilationUnit);
+   }
+@@ -124,7 +132,7 @@
+   @Test
+   public void testNothingToDo() throws Exception {
+     Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit)).thenReturn(analyzed);
+-    Mockito.when(dialogRequestConstructor.work(analyzed)).thenReturn(dialogContent);
++    Mockito.when(dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement)).thenReturn(dialogContent);
+     Mockito.when(analyzed.isThereAnythingToDo()).thenReturn(false);
+     subContractor.work(shell, compilationUnit);
+     Mockito.verify(nothingToDoDialog).show(shell);
+@@ -135,7 +143,7 @@
+   @Test
+   public void testSuccess() throws JavaModelException {
+     Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit)).thenReturn(analyzed);
+-    Mockito.when(dialogRequestConstructor.work(analyzed)).thenReturn(dialogContent);
++    Mockito.when(dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement)).thenReturn(dialogContent);
+     Mockito.when(analyzed.isThereAnythingToDo()).thenReturn(true);
+     Mockito.when(dialogConstructor.show(dialogContent, analyzed, shell)).thenReturn(composerRequest);
+     subContractor.work(shell, compilationUnit);
+Index: BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/complement/ValidateMethodComplementProviderTest.java
+===================================================================
+--- BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/complement/ValidateMethodComplementProviderTest.java	(revision 48)
++++ BobTheBuilder-plugin-test/src/test/java/org/eclipselabs/bobthebuilder/complement/ValidateMethodComplementProviderTest.java	(working copy)
+@@ -59,9 +59,9 @@
+   @Before
+   public void setUp() {
+     MockitoAnnotations.initMocks(this);
+-    fieldAssignment1 = new FieldAssignment(field1Name);
+-    fieldAssignment2 = new FieldAssignment(field2Name);
+-    fieldAssignment3 = new FieldAssignment(field3Name);
++    fieldAssignment1 = new FieldAssignment(field1);
++    fieldAssignment2 = new FieldAssignment(field2);
++    fieldAssignment3 = new FieldAssignment(field3);
+     fieldAssignments = Sets.newHashSet(fieldAssignment1, fieldAssignment2);
+     validateMethodComplementProvider = new ValidateMethodComplementProvider();
+     Mockito.when(mainType.getBuilderType()).thenReturn(builderType);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FieldTextBuilder.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FieldTextBuilder.java	(revision 36)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FieldTextBuilder.java	(working copy)
+@@ -4,14 +4,15 @@
+ import org.eclipse.jdt.core.JavaModelException;
+ import org.eclipselabs.bobthebuilder.composer.Composer;
+ import org.eclipselabs.bobthebuilder.composer.ConstructorWithBuilderComposer;
++import org.eclipselabs.bobthebuilder.model.Field;
+ 
+ public interface FieldTextBuilder {
+-  String createMessage(IField field) throws JavaModelException;
++  String createMessage(Field field) throws JavaModelException;
+   
+   public static class FieldDeclarationBuilder implements FieldTextBuilder {
+ 
+     @Override
+-    public String createMessage(IField field) throws JavaModelException {
++    public String createMessage(Field field) throws JavaModelException {
+       return Composer.composeFieldInBuilder(field);
+     }
+     
+@@ -20,7 +21,7 @@
+   public static class WithMethodBuilder implements FieldTextBuilder {
+ 
+     @Override
+-    public String createMessage(IField field) throws JavaModelException {
++    public String createMessage(Field field) throws JavaModelException {
+       return Composer.composeWithMethodSignature(field) + "...}";
+     }
+     
+@@ -29,7 +30,7 @@
+   public static class FieldAssignmentBuilder implements FieldTextBuilder {
+ 
+     @Override
+-    public String createMessage(IField field) throws JavaModelException {
++    public String createMessage(Field field) throws JavaModelException {
+       return new ConstructorWithBuilderComposer().composeSingleAssignment(field);
+     }
+     
+@@ -44,7 +45,7 @@
+     }
+     
+     @Override
+-    public String createMessage(IField field) throws JavaModelException {
++    public String createMessage(Field field) throws JavaModelException {
+       return validationFramework.composeFieldValidation(field);
+     }
+     
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/mapper/eclipse/FieldBasedContentInMethodMapper.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/mapper/eclipse/FieldBasedContentInMethodMapper.java	(revision 42)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/mapper/eclipse/FieldBasedContentInMethodMapper.java	(working copy)
+@@ -24,7 +24,7 @@
+       boolean found =
+           fieldPredicate.match(fieldName, method.getSource(), each.getSignature());
+       if (found) {
+-        result.add(new FieldAssignment(fieldName));
++        result.add(new FieldAssignment(each));
+       }
+     }
+     return Collections.unmodifiableSet(result);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/NoChildTreeNode.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/NoChildTreeNode.java	(revision 28)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/NoChildTreeNode.java	(working copy)
+@@ -2,9 +2,9 @@
+ 
+ import java.util.Set;
+ 
+-import org.eclipse.jdt.core.IField;
++import org.eclipselabs.bobthebuilder.model.Field;
+ 
+-public class NoChildTreeNode implements TreeNode<IField, Void, Void> {
++public class NoChildTreeNode implements TreeNode<Field, Void, Void> {
+ 
+   @Override
+   public Set<? extends TreeNode<Void, Void, ?>> getChildren() {
+@@ -22,7 +22,7 @@
+   }
+ 
+   @Override
+-  public <PT extends TreeNode<?, IField, Void>> PT getParent() {
++  public <PT extends TreeNode<?, Field, Void>> PT getParent() {
+     return null;
+   }
+ 
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/composer/ConstructorWithBuilderComposer.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/composer/ConstructorWithBuilderComposer.java	(revision 36)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/composer/ConstructorWithBuilderComposer.java	(working copy)
+@@ -13,6 +13,7 @@
+ import org.eclipse.jdt.core.JavaModelException;
+ import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
+ import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
++import org.eclipselabs.bobthebuilder.model.Field;
+ 
+ public class ConstructorWithBuilderComposer {
+ 
+@@ -60,7 +61,7 @@
+     return "  " + composeSingleAssignment(field);
+   }
+ 
+-  public String composeSingleAssignment(IField field) {
+-    return "this." + field.getElementName() + " = builder." + field.getElementName() + ";";
++  public String composeSingleAssignment(Field field) {
++    return "this." + field.getName() + " = builder." + field.getName() + ";";
+   }
+ }
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/composer/Composer.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/composer/Composer.java	(revision 35)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/composer/Composer.java	(working copy)
+@@ -17,6 +17,8 @@
+ import org.eclipselabs.bobthebuilder.ValidationFramework;
+ import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
+ import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
++import org.eclipselabs.bobthebuilder.model.Field;
++import org.eclipselabs.bobthebuilder.model.WithMethod;
+ 
+ public class Composer {
+ 
+@@ -182,11 +184,18 @@
+           "}" }, "\n");
+   }
+ 
+-  public static String composeFieldInBuilder(IField each) throws JavaModelException {
+-    return "private " + Signature.toString(each.getTypeSignature()) + " "
+-        + each.getElementName() + ";";
++  public static String composeFieldInBuilder(IField field) throws JavaModelException {
++    return composeFieldInBuilder(field.getTypeSignature(), field.getElementName());
+   }
+ 
++  public static String composeFieldInBuilder(Field field) throws JavaModelException {
++    return composeFieldInBuilder(field.getSignature(), field.getName());
++  }
++
++  private static String composeFieldInBuilder(String signature, String name) throws JavaModelException {
++    return "private " + Signature.toString(signature) + " " + name + ";";
++  }
++
+   private String composeWithMethodInBuilder(IField each) throws JavaModelException {
+     return StringUtils.join(
+         new String[] {
+@@ -197,11 +206,28 @@
+   }
+ 
+   public static String composeWithMethodSignature(IField field) throws JavaModelException {
+-    return "public Builder with" + StringUtils.capitalize(field.getElementName()) + "("
+-        + Signature.toString(field.getTypeSignature()) + " " + field.getElementName()
+-        + ") {";
++    return composeWithMethodSignature(field.getElementName(), field.getTypeSignature());
+   }
+ 
++  public static String composeWithMethodSignature(Field field) throws JavaModelException {
++    return composeWithMethodSignature(field.getName(), field.getSignature());
++  }
++
++  private static String composeWithMethodSignature(String name, String signature) throws JavaModelException {
++    return composeWithMethodSignature( "with"+ StringUtils.capitalize(name), signature, name);
++  }
++
++  public static String composeWithMethodSignature(WithMethod withMethod) throws JavaModelException {
++    return composeWithMethodSignature(
++      withMethod.getName(), withMethod.getField().getSignature(), withMethod.getField().getName());
++  }
++
++  private static String composeWithMethodSignature(String methodName, String fieldSignature, String fieldName) throws JavaModelException {
++    return "public Builder " + methodName + "("
++    + Signature.toString(fieldSignature) + " " + fieldName
++    + ") {";
++  }
++
+   static String composeValidation(IField field, ValidationFramework validationFramework) {
+     switch (validationFramework) {
+       case COMMONS_LANG2:
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/ValidationFramework.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/ValidationFramework.java	(revision 28)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/ValidationFramework.java	(working copy)
+@@ -2,9 +2,9 @@
+ 
+ import org.apache.commons.lang.StringUtils;
+ import org.apache.commons.lang.Validate;
+-import org.eclipse.jdt.core.IField;
+ import org.eclipse.jdt.core.JavaModelException;
+ import org.eclipse.jdt.core.Signature;
++import org.eclipselabs.bobthebuilder.model.Field;
+ 
+ //TODO StringUtils import needs to be added as well
+ public enum ValidationFramework {
+@@ -59,10 +59,10 @@
+     return StringUtils.lowerCase(this.name()).replace('_', ' ');
+   }
+   
+-  public String composeFieldValidation(IField field) throws JavaModelException {
++  public String composeFieldValidation(Field field) throws JavaModelException {
+     Validate.notNull(field, "field may not be null");
+-    String signature = field.getTypeSignature();
+-    String fieldName = field.getElementName();
++    String signature = field.getSignature();
++    String fieldName = field.getName();
+     if (signature.equals(Signature.SIG_BYTE)) {
+       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0");
+     }
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FieldTreeNode.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FieldTreeNode.java	(revision 28)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FieldTreeNode.java	(working copy)
+@@ -2,13 +2,13 @@
+ 
+ import java.util.Set;
+ 
+-import org.eclipse.jdt.core.IField;
++import org.eclipselabs.bobthebuilder.model.Field;
+ 
+-public class FieldTreeNode implements TreeNode<Feature, IField, Void> {
++public class FieldTreeNode implements TreeNode<Feature, Field, Void> {
+ 
+   private final FeatureTreeNode parent;
+ 
+-  private final IField data;
++  private final Field data;
+ 
+   private final String text;
+ 
+@@ -23,7 +23,7 @@
+   }
+ 
+   @Override
+-  public IField getData() {
++  public Field getData() {
+     return data;
+   }
+ 
+@@ -41,13 +41,13 @@
+ 
+   public static class Builder {
+ 
+-    private IField data;
++    private Field data;
+ 
+     private FeatureTreeNode parent;
+ 
+     private String text;
+ 
+-    public Builder withData(IField data) {
++    public Builder withData(Field data) {
+       this.data = data;
+       return this;
+     }
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/DialogRequestConstructor.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/DialogRequestConstructor.java	(revision 30)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/DialogRequestConstructor.java	(working copy)
+@@ -1,24 +1,37 @@
+ package org.eclipselabs.bobthebuilder;
+ 
++import java.util.HashSet;
+ import java.util.Set;
+ 
+ import org.apache.commons.lang.Validate;
+-import org.eclipse.jdt.core.IField;
+ import org.eclipse.jdt.core.JavaModelException;
++import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldAssignmentBuilder;
+ import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldDeclarationBuilder;
+-import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
++import org.eclipselabs.bobthebuilder.FieldTextBuilder.ValidationBuilder;
++import org.eclipselabs.bobthebuilder.FieldTextBuilder.WithMethodBuilder;
++import org.eclipselabs.bobthebuilder.complement.BuildMethodComplement;
++import org.eclipselabs.bobthebuilder.model.BuilderTypeComplement;
++import org.eclipselabs.bobthebuilder.model.BuilderTypeSupplement;
++import org.eclipselabs.bobthebuilder.model.Field;
++import org.eclipselabs.bobthebuilder.model.FieldAssignment;
++import org.eclipselabs.bobthebuilder.model.MainTypeComplement;
++import org.eclipselabs.bobthebuilder.model.WithMethod;
+ 
+ public class DialogRequestConstructor {
+ 
+-  public DialogContent work(Analyzed analyzed) throws JavaModelException {
+-    Validate.notNull(analyzed, "Analyzed may not be null");
++  public DialogContent work(
++    MainTypeComplement mainTypeComplement,
++    BuilderTypeSupplement builderTypeSupplement) throws JavaModelException {
++    Validate.notNull(mainTypeComplement, "mainTypeComplement may not be null");
++    Validate.notNull(builderTypeSupplement, "builderTypeSupplement may not be null");
+     BobTheBuilderTreeNode tree = new BobTheBuilderTreeNode.Builder().build();
++    BuilderTypeComplement builderTypeComplement = mainTypeComplement.getBuilderTypeComplement();
+     tree.addChild(
+           new FeatureTreeNode.Builder()
+               .withData(Feature.MISSING_BUILDER)
+               .withParent(tree)
+               .withText(
+-                analyzed.isMissingBuilder()
++                builderTypeComplement.isCompleteComplement()
+                     ? "A builder will be created"
+                     : "The existing builder will be modified")
+               .build());
+@@ -26,55 +39,63 @@
+           convertToTree(
+             Feature.MISSING_FIELDS,
+             "Select missing fields to add to the builder class",
+-            analyzed.getMissingFieldsInBuilder(),
++            builderTypeComplement.getBuilderFieldsComplement(),
+             new FieldDeclarationBuilder(),
+             tree));
+     tree.addChild(
+           convertToTree(
+             Feature.EXTRA_FIELDS,
+             "Select existing extra fields to remove from the Builder",
+-            analyzed.getExtraFieldsInBuilder(),
++            builderTypeSupplement.getExtraFields(),
+             new FieldDeclarationBuilder(),
+             tree));
+     tree.addChild(
+           convertToTree(
+             Feature.MISSING_WITHS,
+             "Select with-methods to add to the Builder",
+-            analyzed.getMissingWithMethodsForFields(),
++            builderTypeComplement.getWithMethodsComplement(),
+             new FieldTextBuilder.WithMethodBuilder(),
+             tree));
++    boolean constructorCompleteComplement = mainTypeComplement
++        .getConstructorWithBuilderComplement()
++        .isCompleteComplement();
+     tree.addChild(
+           new FeatureTreeNode.Builder()
+-              .withData(analyzed.isMissingConstructorWithBuilder()
+-                  ? Feature.MISSING_CONSTRUCTOR
+-                  : Feature.NONE)
++              .withData(constructorCompleteComplement
++                  ? Feature.NONE
++                  : Feature.MISSING_CONSTRUCTOR)
+               .withParent(tree)
+-              .withText(analyzed.isMissingConstructorWithBuilder()
+-                  ? "A private constructor will be created"
+-                  : "A private constructor with Builder already exists")
++              .withText(
++                constructorCompleteComplement
++                    ? "A private constructor will be created"
++                    : "A private constructor with Builder already exists")
+               .build());
+     tree.addChild(
+           convertToTree(
+             Feature.MISSING_ASSIGNMENTS,
+             "Select assignments to add to the private constructor",
+-            analyzed.getMissingFieldsInConstructorWithBuilder(),
++            mainTypeComplement.getConstructorWithBuilderComplement().getFieldAssignments(),
+             new FieldTextBuilder.FieldAssignmentBuilder(),
+             tree));
++    BuildMethodComplement buildMethodComplement = builderTypeComplement.getBuildMethodComplement();
++    boolean buildMethodcompleteComplement =
++        buildMethodComplement.isCompleteComplement();
+     tree.addChild(new FeatureTreeNode.Builder()
+-          .withData(analyzed.isMissingBuildMethodInBuilder()
+-              ? Feature.MISSING_BUILD
+-              : Feature.NONE)
++          .withData(buildMethodcompleteComplement
++              ? Feature.NONE
++              : Feature.MISSING_BUILD)
+           .withParent(tree)
+-          .withText(analyzed.isMissingBuildMethodInBuilder()
+-              ? "A build() method will be created in the Builder"
+-              : "The build() method already exists in the Builder")
++          .withText(buildMethodcompleteComplement
++              ? "The build() method already exists in the Builder"
++              : "A build() method will be created in the Builder")
+           .build());
++    boolean validateMethodComplement = buildMethodComplement.isValidateMethodComplement();
+     tree.addChild(new FeatureTreeNode.Builder()
+-          .withData(analyzed.isMissingValidateMethodInBuilder()
++          .withData(validateMethodComplement
+               ? Feature.MISSING_VALIDATE
+               : Feature.NONE)
+           .withParent(tree)
+-          .withText(analyzed.isMissingValidateMethodInBuilder()
++          .withText(validateMethodComplement
+               ? "A validate() method will be created in the Builder"
+               : "The validate() method already exists in the Builder")
+             .build());
+@@ -82,29 +103,67 @@
+           convertToTree(
+             Feature.MISSING_VALIDATIONS,
+             "Select the validation to add to the validate method in the Builder",
+-            analyzed.getMissingFieldValidationsInBuilder(),
+-            new FieldTextBuilder.ValidationBuilder(
+-                analyzed.getPossibleValidationFrameworks().iterator().next()),
+-              tree));
++            builderTypeComplement.getValidateMethodComplement().getFieldAssignments(),
++              new FieldTextBuilder.ValidationBuilder(ValidationFramework.GOOGLE_GUAVA),
++            tree));
+     return new DialogContent(tree);
+   }
+ 
+   private FeatureTreeNode convertToTree(
+-    Feature activateFeature,
++    Feature feature,
+     String featureText,
+-    Set<IField> missingFieldsInBuilder,
++    Set<WithMethod> withMethodComplement,
++    WithMethodBuilder withMethodBuilder,
++    BobTheBuilderTreeNode tree) throws JavaModelException {
++    Set<Field> fields = new HashSet<Field>();
++    for (WithMethod each : withMethodComplement) {
++      fields.add(each.getField());
++    }
++    return convertToTree(feature, featureText, fields, withMethodBuilder, tree);
++  }
++
++  private FeatureTreeNode convertToTree(
++    Feature feature,
++    String featureText,
++    Set<FieldAssignment> fieldAssignmentComplement,
++    ValidationBuilder validationBuilder,
++    BobTheBuilderTreeNode tree) throws JavaModelException {
++    Set<Field> fields = new HashSet<Field>();
++    for (FieldAssignment each : fieldAssignmentComplement) {
++      fields.add(each.getField());
++    }
++    return convertToTree(feature, featureText, fields, validationBuilder, tree);
++  }
++
++  private FeatureTreeNode convertToTree(
++    Feature feature,
++    String featureText,
++    Set<FieldAssignment> fieldAssignmentComplement,
++    FieldAssignmentBuilder fieldTextBuilder,
++    BobTheBuilderTreeNode tree) throws JavaModelException {
++    Set<Field> fields = new HashSet<Field>();
++    for (FieldAssignment each : fieldAssignmentComplement) {
++      fields.add(each.getField());
++    }
++    return convertToTree(feature, featureText, fields, fieldTextBuilder, tree);
++  }
++
++  private FeatureTreeNode convertToTree(
++    Feature feature,
++    String featureText,
++    Set<Field> fields,
+     FieldTextBuilder fieldTextBuilder,
+     BobTheBuilderTreeNode tree) throws JavaModelException {
+     FeatureTreeNode parent = new FeatureTreeNode.Builder()
+-        .withData(activateFeature)
++        .withData(feature)
+         .withText(featureText)
+         .withParent(tree)
+         .build();
+-    for (IField each : missingFieldsInBuilder) {
++    for (Field each : fields) {
+       FieldTreeNode child = new FieldTreeNode.Builder()
+           .withData(each)
+           .withParent(parent)
+-          .withText(fieldTextBuilder.createMessage(each))
++          .withText(each.getName())
+           .build();
+       parent.addChild(child);
+     }
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/BuilderTypeSupplement.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/BuilderTypeSupplement.java	(revision 54)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/BuilderTypeSupplement.java	(working copy)
+@@ -31,6 +31,10 @@
+     return Collections.unmodifiableSet(extraWithMethods);
+   }
+ 
++  public boolean isEmptySupplement() {
++    return getExtraFields().isEmpty() && getExtraWithMethods().isEmpty();
++  }
++  
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/MainTypeComplement.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/MainTypeComplement.java	(revision 48)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/MainTypeComplement.java	(working copy)
+@@ -41,8 +41,9 @@
+     }
+ 
+     private void validate() {
+-      Validate.notNull(constructorWithBuilderComplement,
+-        "constructorWithBuilderComplement may not be null");
++      Validate.notNull(builderTypeComplement, "builderTypeComplement may not be null");
++      Validate.notNull(
++        constructorWithBuilderComplement, "constructorWithBuilderComplement may not be null");
+     }
+ 
+   }
+@@ -55,6 +56,11 @@
+     return builderTypeComplement;
+   }
+ 
++  public boolean isEmptyComplement() {
++    return constructorWithBuilderComplement.isCompleteComplement() &&
++      builderTypeComplement.isCompleteComplement();
++  }
++
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/BuilderTypeComplement.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/BuilderTypeComplement.java	(revision 48)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/BuilderTypeComplement.java	(working copy)
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Set;
+ 
++import org.apache.commons.lang.Validate;
+ import org.apache.commons.lang.builder.EqualsBuilder;
+ import org.apache.commons.lang.builder.HashCodeBuilder;
+ import org.apache.commons.lang.builder.ToStringBuilder;
+@@ -9,23 +10,22 @@
+ 
+ public class BuilderTypeComplement {
+ 
+-  // May be empty
+   private final Set<Field> builderFieldsComplement;
+ 
+-  // May be empty
+   private final Set<WithMethod> withMethodsComplement;
+ 
+-  // May be null
+   private final BuildMethodComplement buildMethodComplement;
+ 
+-  // May be null
+   private final ValidateMethodComplement validateMethodComplement;
+ 
++  private final boolean completeComplement;
++
+   public BuilderTypeComplement(Builder builder) {
+     this.builderFieldsComplement = builder.builderFieldsComplement;
+     this.withMethodsComplement = builder.withMethodsComplement;
+     this.buildMethodComplement = builder.buildMethodComplement;
+     this.validateMethodComplement = builder.validateMethodComplement;
++    this.completeComplement = builder.completeComplement;
+   }
+ 
+   public static class Builder {
+@@ -37,6 +37,8 @@
+ 
+     private ValidateMethodComplement validateMethodComplement;
+ 
++    private boolean completeComplement = false;
++
+     public Builder withBuilderFieldsComplement(Set<Field> builderFieldsComplement) {
+       this.builderFieldsComplement = builderFieldsComplement;
+       return this;
+@@ -58,10 +60,27 @@
+       return this;
+     }
+ 
++    public Builder withCompleteComplement() {
++      this.completeComplement = true;
++      return this;
++    }
++
+     public BuilderTypeComplement build() {
++      validate();
+       return new BuilderTypeComplement(this);
+     }
+ 
++    private void validate() {
++      Validate.notNull(builderFieldsComplement, "builderFieldsComplement may not be null");
++      Validate.noNullElements(builderFieldsComplement,
++        "builderFieldsComplement may not contain null elements");
++      Validate.notNull(withMethodsComplement, "withMethodsComplement may not be null");
++      Validate.noNullElements(withMethodsComplement,
++        "withMethodsComplement may not contain null elements");
++      Validate.notNull(buildMethodComplement, "buildMethodComplement may not be null");
++      Validate.notNull(validateMethodComplement, "validateMethodComplement may not be null");
++    }
++
+   }
+ 
+   public Set<Field> getBuilderFieldsComplement() {
+@@ -80,6 +99,17 @@
+     return validateMethodComplement;
+   }
+ 
++  public boolean isCompleteComplement() {
++    return completeComplement;
++  }
++
++  public boolean isEmptyComplement() {
++    return builderFieldsComplement.isEmpty()
++      && withMethodsComplement.isEmpty()
++      && buildMethodComplement.isEmptyComplement()
++      && validateMethodComplement.isEmptyComplement();
++  }
++
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/FieldAssignment.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/FieldAssignment.java	(revision 37)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/FieldAssignment.java	(working copy)
+@@ -6,16 +6,20 @@
+ 
+ public class FieldAssignment {
+ 
+-  private final String name;
++  private final Field field;
+   
+-  public FieldAssignment(String name) {
+-    this.name = name;
++  public FieldAssignment(Field field) {
++    this.field = field;
+   }
+ 
+   public String getName() {
+-    return name;
++    return field.getName();
+   }
+ 
++  public Field getField() {
++    return field;
++  }
++
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/WithMethod.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/WithMethod.java	(revision 46)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/WithMethod.java	(working copy)
+@@ -10,23 +10,29 @@
+ 
+   private final String name;
+ 
++  private final Field field;
++
+   private WithMethod(Builder builder) {
+-    this(builder.name);
++    this.name = builder.name;
++    this.field = builder.field;
+   }
+ 
+-  private WithMethod(String name) {
+-    this.name = name;
+-  }
+-
+   public static class Builder {
+ 
+     private String name;
+ 
++    private Field field;
++
+     public Builder withName(String name) {
+       this.name = name;
+       return this;
+     }
+ 
++    public Builder withField(Field field) {
++      this.field = field;
++      return this;
++    }
++
+     public WithMethod build() {
+       validate();
+       return new WithMethod(this);
+@@ -34,6 +40,7 @@
+ 
+     private void validate() {
+       Validate.isTrue(!StringUtils.isBlank(name), "name may not be blank");
++      Validate.notNull(field, "field may not be null");
+     }
+   }
+ 
+@@ -41,10 +48,18 @@
+     return name;
+   }
+ 
++  public Field getField() {
++    return field;
++  }
++
+   public static WithMethod getInstanceFromField(Field field) {
+     Validate.notNull(field, "field may not be null");
+-    return new WithMethod("with" + StringUtils.capitalize(field.getName()));
++    return new WithMethod.Builder()
++        .withName("with" + StringUtils.capitalize(field.getName()))
++        .withField(field)
++        .build();
+   }
++
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/ConstructorWithBuilderComplement.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/ConstructorWithBuilderComplement.java	(revision 44)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/ConstructorWithBuilderComplement.java	(working copy)
+@@ -14,9 +14,12 @@
+ 
+   private final Set<FieldAssignment> fieldAssignments;
+ 
++  private final boolean completeComplement;
++
+   private ConstructorWithBuilderComplement(Builder builder) {
+     this.name = builder.name;
+     this.fieldAssignments = builder.fieldAssignments;
++    this.completeComplement = builder.completeComplement;
+   }
+ 
+   public static class Builder {
+@@ -25,6 +28,8 @@
+ 
+     private Set<FieldAssignment> fieldAssignments = new HashSet<FieldAssignment>();
+ 
++    private boolean completeComplement = false;
++
+     public Builder withName(String name) {
+       this.name = name;
+       return this;
+@@ -39,6 +44,11 @@
+       this.fieldAssignments.add(fieldAssignment);
+       return this;
+     }
++    
++    public Builder withCompleteCompletement() {
++      this.completeComplement = true;
++      return this;
++    }
+ 
+     public ConstructorWithBuilderComplement build() {
+       validate();
+@@ -61,6 +71,14 @@
+     return fieldAssignments;
+   }
+ 
++  public boolean isCompleteComplement() {
++    return completeComplement;
++  }
++  
++  public boolean isEmptyComplement() {
++    return getFieldAssignments().isEmpty();
++  }
++
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/ValidateMethodComplement.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/ValidateMethodComplement.java	(revision 48)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/model/ValidateMethodComplement.java	(working copy)
+@@ -11,17 +11,30 @@
+ public class ValidateMethodComplement {
+ 
+   private final Set<FieldAssignment> fieldAssignments;
++  
++  private final boolean completeComplement;
+ 
+-  public ValidateMethodComplement(Set<FieldAssignment> fieldAssignments) {
++  public ValidateMethodComplement(Set<FieldAssignment> fieldAssignments, boolean completeComplement) {
+     Validate.notNull(fieldAssignments, "fieldAssignments may not be null");
+     Validate.noNullElements(fieldAssignments, "fieldAssignments may not contain null elements");
++    Validate.isTrue((fieldAssignments.isEmpty() && !completeComplement) || !fieldAssignments.isEmpty(),
++      "if there are no missing field assigments then the complement cannot be complete");
+     this.fieldAssignments = Collections.unmodifiableSet(fieldAssignments);
++    this.completeComplement = completeComplement;
+   }
+ 
+   public Set<FieldAssignment> getFieldAssignments() {
+     return fieldAssignments;
+   }
+ 
++  public boolean isCompleteComplement() {
++    return completeComplement;
++  }
++  
++  public boolean isEmptyComplement() {
++    return getFieldAssignments().isEmpty();
++  }
++
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FeatureTreeNode.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FeatureTreeNode.java	(revision 28)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/FeatureTreeNode.java	(working copy)
+@@ -4,9 +4,9 @@
+ import java.util.Set;
+ 
+ import org.apache.commons.lang.Validate;
+-import org.eclipse.jdt.core.IField;
++import org.eclipselabs.bobthebuilder.model.Field;
+ 
+-public class FeatureTreeNode implements TreeNode<String, Feature, IField> {
++public class FeatureTreeNode implements TreeNode<String, Feature, Field> {
+ 
+   private final Set<FieldTreeNode> children = new HashSet<FieldTreeNode>();
+ 
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/BuildMethodComplement.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/BuildMethodComplement.java	(revision 47)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/BuildMethodComplement.java	(working copy)
+@@ -4,14 +4,15 @@
+ import org.apache.commons.lang.builder.HashCodeBuilder;
+ import org.apache.commons.lang.builder.ToStringBuilder;
+ 
+-//TODO this feels like an enum
++// TODO this feels like an enum
+ public class BuildMethodComplement {
+ 
+   public static final BuildMethodComplement NOTHING_TO_DO = new BuildMethodComplement(null);
+ 
+-  public static final BuildMethodComplement NEEDS_VALIDATE_INVOCATION = new BuildMethodComplement(false);
++  public static final BuildMethodComplement NEEDS_VALIDATE_INVOCATION = new BuildMethodComplement(
++      true);
+ 
+-  public static final BuildMethodComplement ENTIRE_METHOD = new BuildMethodComplement(true);
++  public static final BuildMethodComplement ENTIRE_METHOD = new BuildMethodComplement(false);
+ 
+   private final Boolean validateMethodInvocation;
+ 
+@@ -19,10 +20,18 @@
+     this.validateMethodInvocation = validateMethodInvocation;
+   }
+ 
+-  public boolean isValidateMethodInvocation() {
++  public boolean isValidateMethodComplement() {
+     return validateMethodInvocation;
+   }
+ 
++  public boolean isCompleteComplement() {
++    return this.equals(ENTIRE_METHOD);
++  }
++
++  public boolean isEmptyComplement() {
++    return this.equals(NOTHING_TO_DO);
++  }
++  
+   @Override
+   public int hashCode() {
+     return HashCodeBuilder.reflectionHashCode(this);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/ConstructorWithBuilderComplementProvider.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/ConstructorWithBuilderComplementProvider.java	(revision 44)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/ConstructorWithBuilderComplementProvider.java	(working copy)
+@@ -13,8 +13,9 @@
+     ConstructorWithBuilderComplement.Builder builder = new ConstructorWithBuilderComplement.Builder();
+     builder.withName(mainType.getName());
+     if (mainType.getConstructorWithBuilder() == null) {
++      builder.withCompleteCompletement();
+       for (Field each : mainType.getFields()) {
+-        builder.addFieldAssignment(new FieldAssignment(each.getName()));
++        builder.addFieldAssignment(new FieldAssignment(each));
+       }
+     }
+     else {
+@@ -27,7 +28,7 @@
+           }
+         }
+         if (!found) {
+-          builder.addFieldAssignment(new FieldAssignment(eachField.getName()));
++          builder.addFieldAssignment(new FieldAssignment(eachField));
+         }
+       }
+     }
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/BuilderTypeComplementProvider.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/BuilderTypeComplementProvider.java	(revision 48)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/BuilderTypeComplementProvider.java	(working copy)
+@@ -35,9 +35,12 @@
+ 
+   public BuilderTypeComplement complement(MainType mainType) {
+     Validate.notNull(mainType, "mainType may not be null");
++    BuilderTypeComplement.Builder builderTypeComplementBuilder = new BuilderTypeComplement.Builder();
++    if (mainType.getBuilderType() == null) {
++      builderTypeComplementBuilder.withCompleteComplement();
++    }
+     Set<Field> builderFieldsComplement =
+         builderFieldsComplementProvider.complement(mainType);
+-    BuilderTypeComplement.Builder builderTypeComplementBuilder = new BuilderTypeComplement.Builder();
+     builderTypeComplementBuilder.withBuilderFieldsComplement(builderFieldsComplement);
+     Set<WithMethod> withMethodsComplement = withMethodsComplementProvider.complement(mainType);
+     builderTypeComplementBuilder.withWithMethodsComplement(withMethodsComplement);
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/ValidateMethodComplementProvider.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/ValidateMethodComplementProvider.java	(revision 48)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/complement/ValidateMethodComplementProvider.java	(working copy)
+@@ -18,14 +18,14 @@
+     BuilderType builderType = mainType.getBuilderType();
+     Set<FieldAssignment> fields = new HashSet<FieldAssignment>();
+     for (Field eachField : mainType.getFields()) {
+-      fields.add(new FieldAssignment(eachField.getName()));
++      fields.add(new FieldAssignment(eachField));
+     }
+     if (builderType == null || builderType.getValidateMethod() == null) {
+-      return new ValidateMethodComplement(Collections.unmodifiableSet(fields));
++      return new ValidateMethodComplement(Collections.unmodifiableSet(fields), true);
+     }
+     else {
+       fields.removeAll(builderType.getValidateMethod().getValidatedFields());
+-      return new ValidateMethodComplement(Collections.unmodifiableSet(fields));
++      return new ValidateMethodComplement(Collections.unmodifiableSet(fields), false);
+     }
+   }
+ 
+Index: BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/SubContractor.java
+===================================================================
+--- BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/SubContractor.java	(revision 55)
++++ BobTheBuilder/src/main/java/org/eclipselabs/bobthebuilder/SubContractor.java	(working copy)
+@@ -14,6 +14,7 @@
+ import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitFlattener;
+ import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitMapper;
+ import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
++import org.eclipselabs.bobthebuilder.model.BuilderTypeSupplement;
+ import org.eclipselabs.bobthebuilder.model.JavaClassFile;
+ import org.eclipselabs.bobthebuilder.model.MainType;
+ import org.eclipselabs.bobthebuilder.model.MainTypeComplement;
+@@ -29,15 +30,15 @@
+   private final NothingToDoDialogConstructor nothingToDoDialogConstructor;
+ 
+   private final DialogRequestConstructor dialogRequestConstructor;
+-  
++
+   private final CompilationUnitMapper compilationUnitMapper;
+ 
+   private final CompilationUnitFlattener compilationUnitFlattener;
+-  
++
+   private final MainTypeComplementProvider mainTypeComplementProvider;
+-  
++
+   private final BuilderTypeSupplementProvider builderTypeSupplementProvider;
+-  
++
+   @Inject
+   public SubContractor(
+       DialogConstructor dialogConstructor,
+@@ -65,14 +66,19 @@
+     Validate.notNull(shell, "shell may not be null");
+     Validate.notNull(compilationUnit, "compilationUnit may not be null");
+     JavaClassFile javaClassFile = compilationUnitMapper.map(compilationUnit);
+-    FlattenedICompilationUnit flattenedICompilationUnit = compilationUnitFlattener.flatten(compilationUnit);
++    FlattenedICompilationUnit flattenedICompilationUnit =
++        compilationUnitFlattener.flatten(compilationUnit);
+     MainType mainType = javaClassFile.getMainType();
+     MainTypeComplement mainTypeComplement = mainTypeComplementProvider.complement(mainType);
+-    builderTypeSupplementProvider.provideSupplement(mainType, flattenedICompilationUnit.getMainType());
++    BuilderTypeSupplement builderTypeSupplement = builderTypeSupplementProvider.provideSupplement(mainType,
++      flattenedICompilationUnit.getMainType());
++
++    Analyzed analyzed = compilationUnitAnalyzer.analyze(compilationUnit);
+     
+-    Analyzed analyzed = compilationUnitAnalyzer.analyze(compilationUnit);
+-    DialogContent dialogContent = dialogRequestConstructor.work(analyzed);
+-    if (!analyzed.isThereAnythingToDo()) {
++    DialogContent dialogContent = 
++      dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement);
++    
++    if (mainTypeComplement.isEmptyComplement() && builderTypeSupplement.isEmptySupplement()) {
+       nothingToDoDialogConstructor.show(shell);
+       return;
+     }
