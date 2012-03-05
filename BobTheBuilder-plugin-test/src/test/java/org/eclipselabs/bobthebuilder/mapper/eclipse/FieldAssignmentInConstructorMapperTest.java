@@ -61,7 +61,7 @@ public class FieldAssignmentInConstructorMapperTest {
   @Test
   public void testMap() throws JavaModelException {
     Set<FieldAssignment> actual = fieldBasedContentInMethodMapper.map(method, fields, predicate);
-    Set<FieldAssignment> expected = Sets.newHashSet(new FieldAssignment(field1Name));
+    Set<FieldAssignment> expected = Sets.newHashSet(new FieldAssignment(field1));
     assertEquals(expected, actual);
   }
 

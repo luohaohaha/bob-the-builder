@@ -14,9 +14,12 @@ public class ConstructorWithBuilderComplement {
 
   private final Set<FieldAssignment> fieldAssignments;
 
+  private final boolean completeComplement;
+
   private ConstructorWithBuilderComplement(Builder builder) {
     this.name = builder.name;
     this.fieldAssignments = builder.fieldAssignments;
+    this.completeComplement = builder.completeComplement;
   }
 
   public static class Builder {
@@ -24,6 +27,8 @@ public class ConstructorWithBuilderComplement {
     private String name;
 
     private Set<FieldAssignment> fieldAssignments = new HashSet<FieldAssignment>();
+
+    private boolean completeComplement = false;
 
     public Builder withName(String name) {
       this.name = name;
@@ -37,6 +42,11 @@ public class ConstructorWithBuilderComplement {
     
     public Builder addFieldAssignment(FieldAssignment fieldAssignment) {
       this.fieldAssignments.add(fieldAssignment);
+      return this;
+    }
+    
+    public Builder withCompleteCompletement() {
+      this.completeComplement = true;
       return this;
     }
 
@@ -59,6 +69,14 @@ public class ConstructorWithBuilderComplement {
 
   public Set<FieldAssignment> getFieldAssignments() {
     return fieldAssignments;
+  }
+
+  public boolean isCompleteComplement() {
+    return completeComplement;
+  }
+  
+  public boolean isEmptyComplement() {
+    return getFieldAssignments().isEmpty();
   }
 
   @Override

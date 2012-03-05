@@ -54,8 +54,8 @@ public class ValidateMethodMapperTest {
   @Mock
   private Imports imports;
 
-  private Set<FieldAssignment> fieldAssignments = Sets.newHashSet(new FieldAssignment("field1"),
-    new FieldAssignment("field2"));
+  private Set<FieldAssignment> fieldAssignments = Sets.newHashSet(new FieldAssignment(field1),
+    new FieldAssignment(field2));
 
   @Before
   public void setUp() throws Exception {

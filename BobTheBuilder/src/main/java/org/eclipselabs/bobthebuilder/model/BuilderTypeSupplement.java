@@ -31,6 +31,10 @@ public class BuilderTypeSupplement {
     return Collections.unmodifiableSet(extraWithMethods);
   }
 
+  public boolean isEmptySupplement() {
+    return getExtraFields().isEmpty() && getExtraWithMethods().isEmpty();
+  }
+  
   @Override
   public int hashCode() {
     return HashCodeBuilder.reflectionHashCode(this);

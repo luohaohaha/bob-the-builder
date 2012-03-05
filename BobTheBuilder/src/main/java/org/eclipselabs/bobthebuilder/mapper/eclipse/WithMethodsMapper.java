@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.WithMethodPredicate;
+import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class WithMethodsMapper {
@@ -58,8 +59,15 @@ public class WithMethodsMapper {
     }
 
     @Override
-    protected WithMethod transform(IField eachField, IMethod eachMethod) {
-      return new WithMethod.Builder().withName(eachMethod.getElementName()).build();
+    protected WithMethod transform(IField eachField, IMethod eachMethod) throws JavaModelException {
+      return new WithMethod.Builder()
+          .withName(eachMethod.getElementName())
+          .withField(
+            new Field.Builder()
+                .withName(eachField.getElementName())
+                .withSignature(eachField.getTypeSignature())
+                .build())
+          .build();
     }
 
   }
@@ -88,6 +96,6 @@ public class WithMethodsMapper {
       return Collections.unmodifiableSet(withMethods);
     }
 
-    protected abstract T transform(IField eachField, IMethod eachMethod);
+    protected abstract T transform(IField eachField, IMethod eachMethod) throws JavaModelException;
   }
 }

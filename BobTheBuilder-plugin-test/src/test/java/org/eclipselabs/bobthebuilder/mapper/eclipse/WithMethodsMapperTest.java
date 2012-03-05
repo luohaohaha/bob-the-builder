@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.WithMethodPredicate;
+import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +48,14 @@ public class WithMethodsMapperTest {
   @Mock
   private FieldMapper fieldMapper;
 
+  private String field1Name = "field1";
+
+  private String field1Signature = "signature1";
+
+  private String field2Name = "field1";
+
+  private String field2Signature = "signature2";
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -57,6 +66,10 @@ public class WithMethodsMapperTest {
     Mockito.when(builderType.getMethods()).thenReturn(new IMethod[] { method1, method3 });
     Mockito.when(method1.getElementName()).thenReturn(method1Name);
     Mockito.when(fieldMapper.findFields(builderType)).thenReturn(Sets.newHashSet(field1, field2));
+    Mockito.when(field1.getElementName()).thenReturn(field1Name);
+    Mockito.when(field1.getTypeSignature()).thenReturn(field1Signature);
+    Mockito.when(field2.getElementName()).thenReturn(field2Name);
+    Mockito.when(field2.getTypeSignature()).thenReturn(field2Signature);
     withMethodsMapper = new WithMethodsMapper(withMethodPredicate, fieldMapper);
   }
 
@@ -78,7 +91,11 @@ public class WithMethodsMapperTest {
     Set<WithMethod> actual = withMethodsMapper.map(builderType);
     assertFalse(actual.isEmpty());
     Set<WithMethod> expected = Sets.newHashSet(
-        new WithMethod.Builder().withName(method1Name).build());
+        new WithMethod.Builder()
+            .withName(method1Name)
+            .withField(
+              new Field.Builder().withName(field1Name).withSignature(field1Signature).build())
+            .build());
     assertEquals(expected, actual);
   }
 }

@@ -2,9 +2,9 @@ package org.eclipselabs.bobthebuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipselabs.bobthebuilder.model.Field;
 
 //TODO StringUtils import needs to be added as well
 public enum ValidationFramework {
@@ -59,10 +59,10 @@ public enum ValidationFramework {
     return StringUtils.lowerCase(this.name()).replace('_', ' ');
   }
   
-  public String composeFieldValidation(IField field) throws JavaModelException {
+  public String composeFieldValidation(Field field) throws JavaModelException {
     Validate.notNull(field, "field may not be null");
-    String signature = field.getTypeSignature();
-    String fieldName = field.getElementName();
+    String signature = field.getSignature();
+    String fieldName = field.getName();
     if (signature.equals(Signature.SIG_BYTE)) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0");
     }

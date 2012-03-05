@@ -41,8 +41,9 @@ public class MainTypeComplement {
     }
 
     private void validate() {
-      Validate.notNull(constructorWithBuilderComplement,
-        "constructorWithBuilderComplement may not be null");
+      Validate.notNull(builderTypeComplement, "builderTypeComplement may not be null");
+      Validate.notNull(
+        constructorWithBuilderComplement, "constructorWithBuilderComplement may not be null");
     }
 
   }
@@ -53,6 +54,11 @@ public class MainTypeComplement {
 
   public BuilderTypeComplement getBuilderTypeComplement() {
     return builderTypeComplement;
+  }
+
+  public boolean isEmptyComplement() {
+    return constructorWithBuilderComplement.isCompleteComplement() &&
+      builderTypeComplement.isCompleteComplement();
   }
 
   @Override

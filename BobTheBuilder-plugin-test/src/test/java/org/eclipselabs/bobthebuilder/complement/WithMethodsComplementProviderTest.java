@@ -64,14 +64,14 @@ public class WithMethodsComplementProviderTest {
     Mockito.when(field1.getName()).thenReturn(NAME1);
     Mockito.when(field2.getName()).thenReturn(NAME2);
     Mockito.when(field3.getName()).thenReturn(NAME3);
-    withMethod1 = new WithMethod.Builder().withName(WITH_NAME1).build();
+    withMethod1 = new WithMethod.Builder().withName(WITH_NAME1).withField(field1).build();
     builderWithMethods = Sets.newHashSet(withMethod1);
     Mockito.when(mainType.getFields()).thenReturn(Sets.newHashSet(field1, field2, field3));
     Mockito.when(mainType.getBuilderType()).thenReturn(builderType);
     Mockito.when(builderType.getWithMethods()).thenReturn(builderWithMethods);
     withMethodsComplementProvider = new WithMethodsComplementProvider();
-    withMethod2 = new WithMethod.Builder().withName(WITH_NAME2).build();
-    withMethod3 = new WithMethod.Builder().withName(WITH_NAME3).build();
+    withMethod2 = new WithMethod.Builder().withName(WITH_NAME2).withField(field2).build();
+    withMethod3 = new WithMethod.Builder().withName(WITH_NAME3).withField(field3).build();
   }
 
   @Test(expected = IllegalArgumentException.class)

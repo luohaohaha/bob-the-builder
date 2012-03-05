@@ -71,7 +71,8 @@ public class CompilationUnitFlattener {
       return result.build(); //If there are no extra fields there should not be extra withMethods
     }
     result.withExtraFields(extraBuilderFieldsInSet);
-    Set<IMethod> extraWithMethods = withMethodsSupplementProvider.findExtra(mainType);
+    Set<IMethod> extraWithMethods = new HashSet<IMethod>();
+    extraWithMethods.addAll(withMethodsSupplementProvider.findExtra(mainType).values());
     Set<IMethod> extraWithMethodsInSet = new HashSet<IMethod>();
     extraWithMethodsInSet.addAll(extraWithMethods);
     result.withExtraWithMethods(extraWithMethodsInSet);

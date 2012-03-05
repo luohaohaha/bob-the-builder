@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Sets;
+
 public class BuilderTypeComplementProviderTest {
 
   @Mock
@@ -34,11 +36,14 @@ public class BuilderTypeComplementProviderTest {
 
   private BuilderTypeComplementProvider builderTypeComplementProvider;
 
-  @Mock
-  private Set<Field> builderFieldsComplement;
+  private Field field1 = new Field.Builder().withName("field1").withSignature("signature1").build();
+  
+  private Set<Field> builderFieldsComplement = Sets.newHashSet(field1);
 
-  @Mock
-  private Set<WithMethod> withMethodsComplement;
+  private WithMethod withMethod1 = 
+    new WithMethod.Builder().withField(field1).withName("withField1").build();
+
+  private Set<WithMethod> withMethodsComplement = Sets.newHashSet(withMethod1);
 
   @Mock
   private BuildMethodComplement buildMethodComplement;

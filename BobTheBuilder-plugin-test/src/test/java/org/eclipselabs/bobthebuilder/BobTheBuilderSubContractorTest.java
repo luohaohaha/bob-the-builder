@@ -4,15 +4,16 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
-import org.eclipselabs.bobthebuilder.analyzer.CompilationUnitAnalyzer;
 import org.eclipselabs.bobthebuilder.complement.MainTypeComplementProvider;
 import org.eclipselabs.bobthebuilder.composer.Composer;
 import org.eclipselabs.bobthebuilder.composer.ComposerRequest;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitFlattener;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.CompilationUnitMapper;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
+import org.eclipselabs.bobthebuilder.model.BuilderTypeSupplement;
 import org.eclipselabs.bobthebuilder.model.JavaClassFile;
+import org.eclipselabs.bobthebuilder.model.MainType;
+import org.eclipselabs.bobthebuilder.model.MainTypeComplement;
 import org.eclipselabs.bobthebuilder.supplement.BuilderTypeSupplementProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,16 +29,10 @@ public class BobTheBuilderSubContractorTest {
   private DialogConstructor dialogConstructor;
 
   @Mock
-  private CompilationUnitAnalyzer compilationUnitAnalyzer;
-
-  @Mock
   private Composer composer;
 
   @Mock
   private NothingToDoDialogConstructor nothingToDoDialog;
-
-  @Mock
-  private Analyzed analyzed;
 
   private SubContractor subContractor;
 
@@ -61,28 +56,36 @@ public class BobTheBuilderSubContractorTest {
 
   @Mock
   private CompilationUnitFlattener compilationUnitFlattener;
-  
+
   @Mock
   private MainTypeComplementProvider mainTypeComplementProvider;
-  
+
   @Mock
   private BuilderTypeSupplementProvider builderTypeSupplementProvider;
-  
+
   @Mock
   private JavaClassFile javaClassFile;
-  
+
   @Mock
   private FlattenedICompilationUnit flattenedICompilationUnit;
 
   @Mock
   private IType mainType;
-  
+
+  @Mock
+  private MainTypeComplement mainTypeComplement;
+
+  @Mock
+  private BuilderTypeSupplement builderTypeSupplement;
+
+  @Mock
+  private MainType mappedMainType;
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     subContractor = new SubContractor(
         dialogConstructor,
-        compilationUnitAnalyzer,
         composer,
         nothingToDoDialog,
         dialogRequestConstructor,
@@ -92,7 +95,7 @@ public class BobTheBuilderSubContractorTest {
         builderTypeSupplementProvider);
     Mockito.when(compilationUnitMapper.map(compilationUnit)).thenReturn(javaClassFile);
     Mockito.when(compilationUnitFlattener.flatten(compilationUnit))
-      .thenReturn(flattenedICompilationUnit);
+        .thenReturn(flattenedICompilationUnit);
     Mockito.when(flattenedICompilationUnit.getMainType()).thenReturn(mainType);
   }
 
@@ -107,25 +110,35 @@ public class BobTheBuilderSubContractorTest {
   }
 
   @Test(expected = RuntimeException.class)
-  public void testAnalyzerThrowsException() throws Exception {
-    Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit))
+  public void testFlattenerThrowsException() throws Exception {
+    Mockito.when(compilationUnitFlattener.flatten(compilationUnit))
         .thenThrow(new RuntimeException("BUGGER"));
     subContractor.work(shell, compilationUnit);
   }
 
   @Test(expected = Exception.class)
   public void testDialogConstructorThrowsException() throws Exception {
-    Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit)).thenReturn(analyzed);
-    Mockito.when(dialogRequestConstructor.work(analyzed))
+    Mockito.when(compilationUnitFlattener.flatten(compilationUnit)).thenReturn(
+      flattenedICompilationUnit);
+    Mockito.when(dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement))
         .thenThrow(new RuntimeException("BUGGER"));
     subContractor.work(shell, compilationUnit);
   }
 
   @Test
   public void testNothingToDo() throws Exception {
-    Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit)).thenReturn(analyzed);
-    Mockito.when(dialogRequestConstructor.work(analyzed)).thenReturn(dialogContent);
-    Mockito.when(analyzed.isThereAnythingToDo()).thenReturn(false);
+    Mockito.when(compilationUnitMapper.map(compilationUnit)).thenReturn(javaClassFile);
+    Mockito.when(compilationUnitFlattener.flatten(compilationUnit)).thenReturn(
+      flattenedICompilationUnit);
+    Mockito.when(dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement))
+        .thenReturn(dialogContent);
+    Mockito.when(javaClassFile.getMainType()).thenReturn(mappedMainType);
+    Mockito.when(mainTypeComplementProvider.complement(mappedMainType)).thenReturn(
+      mainTypeComplement);
+    Mockito.when(builderTypeSupplementProvider.provideSupplement(mappedMainType, mainType))
+        .thenReturn(builderTypeSupplement);
+    Mockito.when(mainTypeComplement.isEmptyComplement()).thenReturn(true);
+    Mockito.when(builderTypeSupplement.isEmptySupplement()).thenReturn(true);
     subContractor.work(shell, compilationUnit);
     Mockito.verify(nothingToDoDialog).show(shell);
     Mockito.verifyZeroInteractions(dialogConstructor);
@@ -134,11 +147,20 @@ public class BobTheBuilderSubContractorTest {
 
   @Test
   public void testSuccess() throws JavaModelException {
-    Mockito.when(compilationUnitAnalyzer.analyze(compilationUnit)).thenReturn(analyzed);
-    Mockito.when(dialogRequestConstructor.work(analyzed)).thenReturn(dialogContent);
-    Mockito.when(analyzed.isThereAnythingToDo()).thenReturn(true);
-    Mockito.when(dialogConstructor.show(dialogContent, analyzed, shell)).thenReturn(composerRequest);
+    Mockito.when(compilationUnitMapper.map(compilationUnit)).thenReturn(javaClassFile);
+    Mockito.when(compilationUnitFlattener.flatten(compilationUnit)).thenReturn(
+      flattenedICompilationUnit);
+    Mockito.when(dialogRequestConstructor.work(mainTypeComplement, builderTypeSupplement))
+        .thenReturn(dialogContent);
+    Mockito.when(javaClassFile.getMainType()).thenReturn(mappedMainType);
+    Mockito.when(mainTypeComplementProvider.complement(mappedMainType)).thenReturn(
+      mainTypeComplement);
+    Mockito.when(builderTypeSupplementProvider.provideSupplement(mappedMainType, mainType))
+        .thenReturn(builderTypeSupplement);
+    Mockito.when(mainTypeComplement.isEmptyComplement()).thenReturn(false);
+    Mockito.when(dialogConstructor.show(dialogContent, flattenedICompilationUnit, shell))
+        .thenReturn(composerRequest);
     subContractor.work(shell, compilationUnit);
-    Mockito.verify(composer).compose(composerRequest, dialogContent, analyzed);
+    Mockito.verify(composer).compose(composerRequest, dialogContent, flattenedICompilationUnit);
   }
 }

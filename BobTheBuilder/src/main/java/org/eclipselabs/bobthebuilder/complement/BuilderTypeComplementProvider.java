@@ -35,9 +35,12 @@ public class BuilderTypeComplementProvider {
 
   public BuilderTypeComplement complement(MainType mainType) {
     Validate.notNull(mainType, "mainType may not be null");
+    BuilderTypeComplement.Builder builderTypeComplementBuilder = new BuilderTypeComplement.Builder();
+    if (mainType.getBuilderType() == null) {
+      builderTypeComplementBuilder.withCompleteComplement();
+    }
     Set<Field> builderFieldsComplement =
         builderFieldsComplementProvider.complement(mainType);
-    BuilderTypeComplement.Builder builderTypeComplementBuilder = new BuilderTypeComplement.Builder();
     builderTypeComplementBuilder.withBuilderFieldsComplement(builderFieldsComplement);
     Set<WithMethod> withMethodsComplement = withMethodsComplementProvider.complement(mainType);
     builderTypeComplementBuilder.withWithMethodsComplement(withMethodsComplement);
