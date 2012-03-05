@@ -39,7 +39,7 @@ public class WithMethodTest {
   }
   @Test
   public void testBuilder() {
-    WithMethod actual = new WithMethod.Builder().withName(NAME).build();
+    WithMethod actual = new WithMethod.Builder().withName(NAME).withField(field).build();
     assertEquals(NAME, actual.getName());
     
   }

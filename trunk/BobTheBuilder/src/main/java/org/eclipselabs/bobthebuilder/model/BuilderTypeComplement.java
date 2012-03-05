@@ -2,6 +2,7 @@ package org.eclipselabs.bobthebuilder.model;
 
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -9,23 +10,22 @@ import org.eclipselabs.bobthebuilder.complement.BuildMethodComplement;
 
 public class BuilderTypeComplement {
 
-  // May be empty
   private final Set<Field> builderFieldsComplement;
 
-  // May be empty
   private final Set<WithMethod> withMethodsComplement;
 
-  // May be null
   private final BuildMethodComplement buildMethodComplement;
 
-  // May be null
   private final ValidateMethodComplement validateMethodComplement;
+
+  private final boolean completeComplement;
 
   public BuilderTypeComplement(Builder builder) {
     this.builderFieldsComplement = builder.builderFieldsComplement;
     this.withMethodsComplement = builder.withMethodsComplement;
     this.buildMethodComplement = builder.buildMethodComplement;
     this.validateMethodComplement = builder.validateMethodComplement;
+    this.completeComplement = builder.completeComplement;
   }
 
   public static class Builder {
@@ -36,6 +36,8 @@ public class BuilderTypeComplement {
     private BuildMethodComplement buildMethodComplement;
 
     private ValidateMethodComplement validateMethodComplement;
+
+    private boolean completeComplement = false;
 
     public Builder withBuilderFieldsComplement(Set<Field> builderFieldsComplement) {
       this.builderFieldsComplement = builderFieldsComplement;
@@ -58,8 +60,25 @@ public class BuilderTypeComplement {
       return this;
     }
 
+    public Builder withCompleteComplement() {
+      this.completeComplement = true;
+      return this;
+    }
+
     public BuilderTypeComplement build() {
+      validate();
       return new BuilderTypeComplement(this);
+    }
+
+    private void validate() {
+      Validate.notNull(builderFieldsComplement, "builderFieldsComplement may not be null");
+      Validate.noNullElements(builderFieldsComplement,
+        "builderFieldsComplement may not contain null elements");
+      Validate.notNull(withMethodsComplement, "withMethodsComplement may not be null");
+      Validate.noNullElements(withMethodsComplement,
+        "withMethodsComplement may not contain null elements");
+      Validate.notNull(buildMethodComplement, "buildMethodComplement may not be null");
+      Validate.notNull(validateMethodComplement, "validateMethodComplement may not be null");
     }
 
   }
@@ -78,6 +97,17 @@ public class BuilderTypeComplement {
 
   public ValidateMethodComplement getValidateMethodComplement() {
     return validateMethodComplement;
+  }
+
+  public boolean isCompleteComplement() {
+    return completeComplement;
+  }
+
+  public boolean isEmptyComplement() {
+    return builderFieldsComplement.isEmpty()
+      && withMethodsComplement.isEmpty()
+      && buildMethodComplement.isEmptyComplement()
+      && validateMethodComplement.isEmptyComplement();
   }
 
   @Override

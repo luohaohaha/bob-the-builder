@@ -10,20 +10,26 @@ public class WithMethod {
 
   private final String name;
 
-  private WithMethod(Builder builder) {
-    this(builder.name);
-  }
+  private final Field field;
 
-  private WithMethod(String name) {
-    this.name = name;
+  private WithMethod(Builder builder) {
+    this.name = builder.name;
+    this.field = builder.field;
   }
 
   public static class Builder {
 
     private String name;
 
+    private Field field;
+
     public Builder withName(String name) {
       this.name = name;
+      return this;
+    }
+
+    public Builder withField(Field field) {
+      this.field = field;
       return this;
     }
 
@@ -34,6 +40,7 @@ public class WithMethod {
 
     private void validate() {
       Validate.isTrue(!StringUtils.isBlank(name), "name may not be blank");
+      Validate.notNull(field, "field may not be null");
     }
   }
 
@@ -41,10 +48,18 @@ public class WithMethod {
     return name;
   }
 
+  public Field getField() {
+    return field;
+  }
+
   public static WithMethod getInstanceFromField(Field field) {
     Validate.notNull(field, "field may not be null");
-    return new WithMethod("with" + StringUtils.capitalize(field.getName()));
+    return new WithMethod.Builder()
+        .withName("with" + StringUtils.capitalize(field.getName()))
+        .withField(field)
+        .build();
   }
+
   @Override
   public int hashCode() {
     return HashCodeBuilder.reflectionHashCode(this);

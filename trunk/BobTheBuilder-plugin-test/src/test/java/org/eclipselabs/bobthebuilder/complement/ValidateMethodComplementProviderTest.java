@@ -59,9 +59,9 @@ public class ValidateMethodComplementProviderTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    fieldAssignment1 = new FieldAssignment(field1Name);
-    fieldAssignment2 = new FieldAssignment(field2Name);
-    fieldAssignment3 = new FieldAssignment(field3Name);
+    fieldAssignment1 = new FieldAssignment(field1);
+    fieldAssignment2 = new FieldAssignment(field2);
+    fieldAssignment3 = new FieldAssignment(field3);
     fieldAssignments = Sets.newHashSet(fieldAssignment1, fieldAssignment2);
     validateMethodComplementProvider = new ValidateMethodComplementProvider();
     Mockito.when(mainType.getBuilderType()).thenReturn(builderType);

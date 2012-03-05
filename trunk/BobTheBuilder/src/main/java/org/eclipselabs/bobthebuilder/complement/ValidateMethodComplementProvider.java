@@ -18,14 +18,14 @@ public class ValidateMethodComplementProvider {
     BuilderType builderType = mainType.getBuilderType();
     Set<FieldAssignment> fields = new HashSet<FieldAssignment>();
     for (Field eachField : mainType.getFields()) {
-      fields.add(new FieldAssignment(eachField.getName()));
+      fields.add(new FieldAssignment(eachField));
     }
     if (builderType == null || builderType.getValidateMethod() == null) {
-      return new ValidateMethodComplement(Collections.unmodifiableSet(fields));
+      return new ValidateMethodComplement(Collections.unmodifiableSet(fields), true);
     }
     else {
       fields.removeAll(builderType.getValidateMethod().getValidatedFields());
-      return new ValidateMethodComplement(Collections.unmodifiableSet(fields));
+      return new ValidateMethodComplement(Collections.unmodifiableSet(fields), false);
     }
   }
 

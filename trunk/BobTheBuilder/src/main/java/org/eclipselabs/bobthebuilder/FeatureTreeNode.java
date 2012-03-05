@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.core.IField;
+import org.eclipselabs.bobthebuilder.model.Field;
 
-public class FeatureTreeNode implements TreeNode<String, Feature, IField> {
+public class FeatureTreeNode implements TreeNode<String, Feature, Field> {
 
   private final Set<FieldTreeNode> children = new HashSet<FieldTreeNode>();
 

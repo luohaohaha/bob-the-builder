@@ -1,7 +1,6 @@
 package org.eclipselabs.bobthebuilder;
 
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -14,8 +13,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.composer.ComposerRequest;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
+import org.eclipselabs.bobthebuilder.model.Field;
 
 public class DialogConstructor {
 
@@ -23,10 +23,9 @@ public class DialogConstructor {
 
   public DialogConstructor() {}
 
-  @SuppressWarnings("deprecation")
-  public ComposerRequest show(
+  @SuppressWarnings("deprecation") ComposerRequest show(
       final DialogContent dialogRequest, 
-      final Analyzed analyzed, 
+      final FlattenedICompilationUnit flattenedICompilationUnit, 
       Shell shell) {
     Validate.notNull(dialogRequest, "dialogRequest may not be null");
     final ComposerRequest.Builder composerRequestBuilder = new ComposerRequest.Builder();
@@ -41,7 +40,7 @@ public class DialogConstructor {
 
         String title =
             "Select Actions To Perform On "
-              + analyzed.getCompilationUnit().getResource().getName();
+              + flattenedICompilationUnit.getCompilationUnit().getResource().getName();
         Label titleLabel = new Label(getShell(), SWT.BORDER);
         titleLabel.setText(title);
         titleLabel.setLayoutData(createTopSectionGridData());
@@ -63,7 +62,7 @@ public class DialogConstructor {
         validationsGroup.setLayout(new RowLayout());
         validationsGroup.setLayoutData(createTopSectionGridData());
         boolean checked = true;
-        for (ValidationFramework each : analyzed.getPossibleValidationFrameworks()) {
+        for (ValidationFramework each : ValidationFramework.values()) {
           Button validationFrameworkButton = new Button(validationsGroup, SWT.RADIO);
           validationFrameworkButton.setSelection(checked);
           checked = false;
@@ -91,22 +90,22 @@ public class DialogConstructor {
                 FieldTreeNode eachFieldNode = (FieldTreeNode) each;
                 switch ((Feature) eachFieldNode.getParent().getData()) {
                   case MISSING_FIELDS:
-                    composerRequestBuilder.addMissingFieldInBuilder((IField) eachFieldNode
+                    composerRequestBuilder.addMissingFieldInBuilder((Field) eachFieldNode
                         .getData());
                     break;
                   case EXTRA_FIELDS:
-                    composerRequestBuilder.addExtraFieldInBuilder((IField) eachFieldNode.getData());
+                    composerRequestBuilder.addExtraFieldInBuilder((Field) eachFieldNode.getData());
                     break;
                   case MISSING_WITHS:
                     composerRequestBuilder.addMissingWithMethodInBuilder(
-                        (IField) eachFieldNode.getData());
+                        (Field) eachFieldNode.getData());
                     break;
                   case MISSING_ASSIGNMENTS:
                     composerRequestBuilder.addMissingAssignmentInConstructor(
-                        (IField) eachFieldNode.getData());
+                        (Field) eachFieldNode.getData());
                     break;
                   case MISSING_VALIDATIONS:
-                    composerRequestBuilder.addMissingValidationInBuild((IField) eachFieldNode
+                    composerRequestBuilder.addMissingValidationInBuild((Field) eachFieldNode
                         .getData());
                 }
               }

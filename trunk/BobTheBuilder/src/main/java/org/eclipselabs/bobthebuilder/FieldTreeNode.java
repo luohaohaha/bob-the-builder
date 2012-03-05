@@ -2,13 +2,13 @@ package org.eclipselabs.bobthebuilder;
 
 import java.util.Set;
 
-import org.eclipse.jdt.core.IField;
+import org.eclipselabs.bobthebuilder.model.Field;
 
-public class FieldTreeNode implements TreeNode<Feature, IField, Void> {
+public class FieldTreeNode implements TreeNode<Feature, Field, Void> {
 
   private final FeatureTreeNode parent;
 
-  private final IField data;
+  private final Field data;
 
   private final String text;
 
@@ -23,7 +23,7 @@ public class FieldTreeNode implements TreeNode<Feature, IField, Void> {
   }
 
   @Override
-  public IField getData() {
+  public Field getData() {
     return data;
   }
 
@@ -41,13 +41,13 @@ public class FieldTreeNode implements TreeNode<Feature, IField, Void> {
 
   public static class Builder {
 
-    private IField data;
+    private Field data;
 
     private FeatureTreeNode parent;
 
     private String text;
 
-    public Builder withData(IField data) {
+    public Builder withData(Field data) {
       this.data = data;
       return this;
     }

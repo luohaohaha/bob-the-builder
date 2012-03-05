@@ -6,14 +6,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class FieldAssignment {
 
-  private final String name;
+  private final Field field;
   
-  public FieldAssignment(String name) {
-    this.name = name;
+  public FieldAssignment(Field field) {
+    this.field = field;
   }
 
   public String getName() {
-    return name;
+    return field.getName();
+  }
+
+  public Field getField() {
+    return field;
   }
 
   @Override

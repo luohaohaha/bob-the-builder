@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IField;
@@ -58,6 +59,10 @@ public class WithMethodsSupplementProviderTest {
 
   private String method1Name = "withMethod1";
 
+  private String field1Name = "field1";
+
+  private String field1Signature = "field1Signature";
+
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
@@ -73,6 +78,8 @@ public class WithMethodsSupplementProviderTest {
     when(withMethodPredicate.match(field1, anotherMethod)).thenReturn(false);
     when(withMethodPredicate.match(field2, withMethod1)).thenReturn(false);
     when(withMethodPredicate.match(field2, anotherMethod)).thenReturn(false);
+    when(field1.getElementName()).thenReturn(field1Name);
+    when(field1.getTypeSignature()).thenReturn(field1Signature);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -89,7 +96,7 @@ public class WithMethodsSupplementProviderTest {
   public void testEmptyExtraFields() throws Exception {
     when(builderFieldsSupplementProvider.supplement(mainType)).thenReturn(
       Sets.<IField> newHashSet());
-    Set<IMethod> actual = withMethodsSupplementProvider.findExtra(mainType);
+    Map<IField, IMethod> actual = withMethodsSupplementProvider.findExtra(mainType);
     assertTrue(actual.isEmpty());
   }
 
@@ -103,9 +110,9 @@ public class WithMethodsSupplementProviderTest {
 
   @Test
   public void testSomeExtraFields() throws Exception {
-    Set<IMethod> actual = withMethodsSupplementProvider.findExtra(mainType);
+    Map<IField, IMethod> actual = withMethodsSupplementProvider.findExtra(mainType);
     assertEquals(1, actual.size());
-    assertEquals(withMethod1, actual.iterator().next());
+    assertEquals(withMethod1, actual.values().iterator().next());
   }
 
   @Test

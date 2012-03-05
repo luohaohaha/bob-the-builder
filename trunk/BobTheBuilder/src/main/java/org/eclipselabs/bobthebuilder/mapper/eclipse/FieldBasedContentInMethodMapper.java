@@ -24,7 +24,7 @@ public class FieldBasedContentInMethodMapper {
       boolean found =
           fieldPredicate.match(fieldName, method.getSource(), each.getSignature());
       if (found) {
-        result.add(new FieldAssignment(fieldName));
+        result.add(new FieldAssignment(each));
       }
     }
     return Collections.unmodifiableSet(result);

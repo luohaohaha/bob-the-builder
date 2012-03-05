@@ -15,71 +15,74 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.DialogContent;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
-import org.eclipselabs.bobthebuilder.analyzer.Analyzed;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
+import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
+import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class Composer {
 
   public void compose(ComposerRequest request,
-      DialogContent dialogRequest, Analyzed analyzed) throws JavaModelException {
-    ICompilationUnit compilationUnit = analyzed.getCompilationUnit();
-    IType type = analyzed.getType();
+      DialogContent dialogRequest, 
+      FlattenedICompilationUnit flattenedICompilationUnit) throws JavaModelException {
+    ICompilationUnit compilationUnit = flattenedICompilationUnit.getCompilationUnit();
+    IType type = flattenedICompilationUnit.getMainType();
     if (request.isCreateConstructorWithBuilder()) {
       String constructorWithBuilderBuilder = composeConstructorWithBuilder(
-          request, dialogRequest, type, analyzed);
-      type.createMethod(constructorWithBuilderBuilder.toString(), analyzed.getBuilderType(),
+          request, dialogRequest, type);
+      type.createMethod(constructorWithBuilderBuilder.toString(), flattenedICompilationUnit.getBuilderType(),
           true, null);
     }
     compilationUnit.commitWorkingCopy(true, null);
-    if (analyzed.getConstructorWithBuilder() != null &&
+    if (flattenedICompilationUnit.getConstructorWithBuilder() != null &&
           (!request.getMissingAssignmentsInConstructor().isEmpty() ||
               !request.getExtraFieldsInBuilder().isEmpty())) {
-      IMethod originalConstructorWithBuilder = analyzed.getConstructorWithBuilder();
+      IMethod originalConstructorWithBuilder = flattenedICompilationUnit.getConstructorWithBuilder();
       Validate.notNull(originalConstructorWithBuilder,
           "originalConstructorWithBuilder may not be null");
       int length = originalConstructorWithBuilder.getSourceRange().getLength();
       List<String> sourceLines = new ArrayList<String>();
       String originalSource = originalConstructorWithBuilder.getSource().substring(0, length - 1);
-      for (IField each : request.getExtraFieldsInBuilder()) {
+      for (Field each : request.getExtraFieldsInBuilder()) {
         originalSource = originalSource.replaceAll(
-            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getElementName()), "");
+            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getName()), "");
       }
       sourceLines.add(originalSource);
       originalConstructorWithBuilder.delete(true, null);
-      for (IField each : request.getMissingAssignmentsInConstructor()) {
+      for (Field each : request.getMissingAssignmentsInConstructor()) {
         composeAssignmentsInConstructorWithBuilder(sourceLines, each);
       }
       sourceLines.add("}");
       type.createMethod(StringUtils.join(sourceLines, "\n"), null, true, null);
     }
     IType builder;
-    if (analyzed.isMissingBuilder()) {
+    if (flattenedICompilationUnit.getBuilderType() ==  null) {
       type.createType(composeBuilder(), null, true, null);
       IType[] types = type.getTypes();
       Validate.notEmpty(types, "types may not be empty");
       builder = types[0];
     }
     else {
-      builder = analyzed.getBuilderType();
+      builder = flattenedICompilationUnit.getBuilderType();
     }
-    for (IField each : request.getMissingFieldsInBuilder()) {
+    for (Field each : request.getMissingFieldsInBuilder()) {
       builder.createField(composeFieldInBuilder(each), null, true, null);
     }
     compilationUnit.commitWorkingCopy(true, null);
-    for (IField each : request.getExtraFieldsInBuilder()) {
+    for (Field each : request.getExtraFieldsInBuilder()) {
       for (IField eachBuilderField : builder.getFields()) {
-        if (eachBuilderField.getElementName().equals(each.getElementName())) {
+        if (eachBuilderField.getElementName().equals(each.getName())) {
           eachBuilderField.delete(true, null);
         }
       }
       for (IMethod eachBuilderMethod : builder.getMethods()) {
         if (eachBuilderMethod.getElementName().equals(
-            "with" + StringUtils.capitalize(each.getElementName()))) {
+            "with" + StringUtils.capitalize(each.getName()))) {
           eachBuilderMethod.delete(true, null);
         }
       }
     }
-    for (IField each : request.getMissingWithMethodsInBuilder()) {
+    for (Field each : request.getMissingWithMethodsInBuilder()) {
       builder.createMethod(
           composeWithMethodInBuilder(each), null, true, null);
     }
@@ -95,17 +98,17 @@ public class Composer {
           null, true, null);
     }
     else if (!request.getMissingFieldValidationsInBuild().isEmpty()) {
-      IMethod originalValidateMethod = analyzed.getValidateMethodInBuilder();
+      IMethod originalValidateMethod = flattenedICompilationUnit.getValidateMethod();
       int length = originalValidateMethod.getSourceRange().getLength();
       List<String> sourceLines = new ArrayList<String>();
       String originalSource = originalValidateMethod.getSource().substring(0, length - 1);
-      for (IField each : request.getExtraFieldsInBuilder()) {
+      for (Field each : request.getExtraFieldsInBuilder()) {
         originalSource = originalSource.replaceAll(
-            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getElementName()), "");
+            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getName()), "");
       }
       sourceLines.add(originalSource);
       originalValidateMethod.delete(true, null);
-      for (IField each : request.getMissingFieldValidationsInBuild()) {
+      for (Field each : request.getMissingFieldValidationsInBuild()) {
         sourceLines.add(request.getValidationFramework().composeFieldValidation(each));
       }
       sourceLines.add("}");
@@ -120,11 +123,11 @@ public class Composer {
   }
 
   private String composeValidateMethodInBuilder(
-      Set<IField> missingFieldValidationsInBuild,
+      Set<Field> missingFieldValidationsInBuild,
       ValidationFramework validationFramework) throws JavaModelException {
     ArrayList<String> listOfLines = new ArrayList<String>();
     listOfLines.add("private void validate() {");
-    for (IField each : missingFieldValidationsInBuild) {
+    for (Field each : missingFieldValidationsInBuild) {
       listOfLines.add(validationFramework.composeFieldValidation(each));
     }
     listOfLines.add("}");
@@ -151,15 +154,13 @@ public class Composer {
   private String composeConstructorWithBuilder(
         ComposerRequest request,
         DialogContent dialogRequest,
-        IType type,
-        Analyzed analyzed) {
-    Set<IField> fieldsToAddInBuilder = new HashSet<IField>();
-    fieldsToAddInBuilder.addAll(analyzed.getBuilderFields());
+        IType type) {
+    Set<Field> fieldsToAddInBuilder = new HashSet<Field>();
     fieldsToAddInBuilder.addAll(request.getMissingFieldsInBuilder());
     fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());
     List<String> sourceLines = new ArrayList<String>();
     sourceLines.add("private " + type.getElementName() + "(Builder builder) {");
-    for (IField each : fieldsToAddInBuilder) {
+    for (Field each : fieldsToAddInBuilder) {
       composeAssignmentsInConstructorWithBuilder(sourceLines, each);
     }
     sourceLines.add("}");
@@ -167,13 +168,13 @@ public class Composer {
   }
 
   private void composeAssignmentsInConstructorWithBuilder(
-      List<String> sourceLines, IField each) {
+      List<String> sourceLines, Field each) {
     sourceLines
           .add("  " + composeSingleAssignment(each));
   }
 
-  public static String composeSingleAssignment(IField field) {
-    return "this." + field.getElementName() + " = builder." + field.getElementName() + ";";
+  public static String composeSingleAssignment(Field field) {
+    return "this." + field.getName() + " = builder." + field.getName() + ";";
   }
 
   private String composeBuilder() {
@@ -182,24 +183,48 @@ public class Composer {
           "}" }, "\n");
   }
 
-  public static String composeFieldInBuilder(IField each) throws JavaModelException {
-    return "private " + Signature.toString(each.getTypeSignature()) + " "
-        + each.getElementName() + ";";
+  public static String composeFieldInBuilder(IField field) throws JavaModelException {
+    return composeFieldInBuilder(field.getTypeSignature(), field.getElementName());
   }
 
-  private String composeWithMethodInBuilder(IField each) throws JavaModelException {
+  public static String composeFieldInBuilder(Field field) throws JavaModelException {
+    return composeFieldInBuilder(field.getSignature(), field.getName());
+  }
+
+  private static String composeFieldInBuilder(String signature, String name) throws JavaModelException {
+    return "private " + Signature.toString(signature) + " " + name + ";";
+  }
+
+  private String composeWithMethodInBuilder(Field each) throws JavaModelException {
     return StringUtils.join(
         new String[] {
             composeWithMethodSignature(each),
-            "  this." + each.getElementName() + " = " + each.getElementName() + ";",
+            "  this." + each.getName() + " = " + each.getName() + ";",
             "  return this;",
             "}" }, "\n");
   }
 
   public static String composeWithMethodSignature(IField field) throws JavaModelException {
-    return "public Builder with" + StringUtils.capitalize(field.getElementName()) + "("
-        + Signature.toString(field.getTypeSignature()) + " " + field.getElementName()
-        + ") {";
+    return composeWithMethodSignature(field.getElementName(), field.getTypeSignature());
+  }
+
+  public static String composeWithMethodSignature(Field field) throws JavaModelException {
+    return composeWithMethodSignature(field.getName(), field.getSignature());
+  }
+
+  private static String composeWithMethodSignature(String name, String signature) throws JavaModelException {
+    return composeWithMethodSignature( "with"+ StringUtils.capitalize(name), signature, name);
+  }
+
+  public static String composeWithMethodSignature(WithMethod withMethod) throws JavaModelException {
+    return composeWithMethodSignature(
+      withMethod.getName(), withMethod.getField().getSignature(), withMethod.getField().getName());
+  }
+
+  private static String composeWithMethodSignature(String methodName, String fieldSignature, String fieldName) throws JavaModelException {
+    return "public Builder " + methodName + "("
+    + Signature.toString(fieldSignature) + " " + fieldName
+    + ") {";
   }
 
   static String composeValidation(IField field, ValidationFramework validationFramework) {

@@ -5,8 +5,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -74,7 +75,7 @@ public class CompilationUnitFlattenerTest {
   @Mock
   private IMethod extraWithMethod;
   
-  private Set<IMethod> extraWithMethods = new HashSet<IMethod>();
+  private Map<IField, IMethod> extraWithMethods = new HashMap<IField, IMethod>();
 
   @Before
   public void setUp() throws JavaModelException {
@@ -95,7 +96,7 @@ public class CompilationUnitFlattenerTest {
     when(buildMethodMapper.findBuildMethod(builderType)).thenReturn(buildMethod);
     extraBuilderFields.add(extraField);
     when(builderFieldsSupplementProvider.supplement(mainType)).thenReturn(extraBuilderFields);
-    extraWithMethods.add(extraWithMethod);
+    extraWithMethods.put(extraField, extraWithMethod);
     when(withMethodsSupplementProvider.findExtra(mainType)).thenReturn(extraWithMethods);
     expectedFlattenedICompilationUnitBuilder = new FlattenedICompilationUnit.Builder()
         .withCompilationUnit(iCompilationUnit)
@@ -105,7 +106,7 @@ public class CompilationUnitFlattenerTest {
         .withValidateMethod(validateMethod)
         .withBuildMethod(buildMethod)
         .withExtraFields(Sets.newHashSet(extraBuilderFields))
-        .withExtraWithMethods(extraWithMethods);
+        .withExtraWithMethods(Sets.newHashSet(extraWithMethods.values()));
 
   }
 

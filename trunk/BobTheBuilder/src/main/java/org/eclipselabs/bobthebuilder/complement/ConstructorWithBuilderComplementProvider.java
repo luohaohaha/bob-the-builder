@@ -13,8 +13,9 @@ public class ConstructorWithBuilderComplementProvider {
     ConstructorWithBuilderComplement.Builder builder = new ConstructorWithBuilderComplement.Builder();
     builder.withName(mainType.getName());
     if (mainType.getConstructorWithBuilder() == null) {
+      builder.withCompleteCompletement();
       for (Field each : mainType.getFields()) {
-        builder.addFieldAssignment(new FieldAssignment(each.getName()));
+        builder.addFieldAssignment(new FieldAssignment(each));
       }
     }
     else {
@@ -27,7 +28,7 @@ public class ConstructorWithBuilderComplementProvider {
           }
         }
         if (!found) {
-          builder.addFieldAssignment(new FieldAssignment(eachField.getName()));
+          builder.addFieldAssignment(new FieldAssignment(eachField));
         }
       }
     }
