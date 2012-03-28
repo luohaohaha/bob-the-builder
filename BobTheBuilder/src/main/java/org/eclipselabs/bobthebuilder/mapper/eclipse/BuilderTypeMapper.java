@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeAnalyzer;
 import org.eclipselabs.bobthebuilder.model.BuildMethod;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
 import org.eclipselabs.bobthebuilder.model.Field;
@@ -25,6 +24,8 @@ public class BuilderTypeMapper {
 
   private final ValidateMethodMapper validateMethodMapper;
 
+  static final String BUILDER_CLASS_NAME = "Builder";
+  
   @Inject
   public BuilderTypeMapper(FieldMapper builderFieldsMapper,
       BuildMethodMapper buildMethodMapper, WithMethodsMapper withMethodsMapper,
@@ -59,7 +60,7 @@ public class BuilderTypeMapper {
     Validate.notNull(type, "type may not be null");
     IType builderType = null;
     for (IType each : type.getTypes()) {
-      if (each.getElementName().equals(BuilderTypeAnalyzer.BUILDER_CLASS_NAME)) {
+      if (each.getElementName().equals(BUILDER_CLASS_NAME)) {
         builderType = each;
         continue;
       }

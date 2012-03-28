@@ -64,8 +64,6 @@ public class MainType {
     }
 
     private void validate() {
-      Validate.notNull(constructorWithBuilder, "constructorWithBuilder may not be null");
-      Validate.notNull(builderType, "builderType may not be null");
       Validate.notNull(fields, "fields may not be null");
       Validate.noNullElements(fields, "fields may not contain null elements");
     }

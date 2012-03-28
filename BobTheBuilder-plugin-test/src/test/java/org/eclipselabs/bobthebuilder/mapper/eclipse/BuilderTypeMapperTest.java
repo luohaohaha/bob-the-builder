@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.analyzer.BuilderTypeAnalyzer;
 import org.eclipselabs.bobthebuilder.model.BuildMethod;
 import org.eclipselabs.bobthebuilder.model.BuilderType;
 import org.eclipselabs.bobthebuilder.model.Field;
@@ -75,7 +74,7 @@ public class BuilderTypeMapperTest {
     builderTypeMapper =
         new BuilderTypeMapper(
             builderFieldsMapper, buildMethodMapper, withMethodsMapper, validateMethodMapper);
-    Mockito.when(builderType.getElementName()).thenReturn(BuilderTypeAnalyzer.BUILDER_CLASS_NAME);
+    Mockito.when(builderType.getElementName()).thenReturn(BuilderTypeMapper.BUILDER_CLASS_NAME);
     Mockito.when(type.getTypes()).thenReturn(new IType[] { builderType });
     builderFields = Sets.newHashSet(field1, field2);
     Mockito.when(builderFieldsMapper.map(builderType)).thenReturn(builderFields);

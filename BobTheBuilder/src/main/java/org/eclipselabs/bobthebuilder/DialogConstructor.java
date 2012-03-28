@@ -5,11 +5,9 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -23,9 +21,10 @@ public class DialogConstructor {
 
   public DialogConstructor() {}
 
-  @SuppressWarnings("deprecation") ComposerRequest show(
-      final DialogContent dialogRequest, 
-      final FlattenedICompilationUnit flattenedICompilationUnit, 
+  @SuppressWarnings("deprecation")
+  ComposerRequest show(
+      final DialogContent dialogRequest,
+      final FlattenedICompilationUnit flattenedICompilationUnit,
       Shell shell) {
     Validate.notNull(dialogRequest, "dialogRequest may not be null");
     final ComposerRequest.Builder composerRequestBuilder = new ComposerRequest.Builder();
@@ -57,18 +56,18 @@ public class DialogConstructor {
         featuresTreeViewer.getTree().setLayoutData(createTopSectionGridData());
         featuresTreeViewer.setAllChecked(true);
 
-        final Group validationsGroup = new Group(getShell(), SWT.SHADOW_IN);
-        validationsGroup.setText("Select validation framework");
-        validationsGroup.setLayout(new RowLayout());
-        validationsGroup.setLayoutData(createTopSectionGridData());
-        boolean checked = true;
-        for (ValidationFramework each : ValidationFramework.values()) {
-          Button validationFrameworkButton = new Button(validationsGroup, SWT.RADIO);
-          validationFrameworkButton.setSelection(checked);
-          checked = false;
-          validationFrameworkButton.setText(each.getReadableName());
-          validationFrameworkButton.setData(each);
+        Label validationLabel = new Label(getShell(), SWT.BORDER);
+        validationLabel.setText("Select validation framework");
+        validationLabel.setLayoutData(createTopSectionGridData());
+        
+        final Combo validationCombo = new Combo(getShell(), SWT.READ_ONLY);
+        String[] validationNames = new String[ValidationFramework.values().length];
+        for (int i = 0; i < ValidationFramework.values().length; ++i) {
+          validationNames[i] = ValidationFramework.values()[i].name();
         }
+        validationCombo.setItems(validationNames);
+        validationCombo.setLayoutData(createTopSectionGridData());
+        validationCombo.setText(ValidationFramework.GOOGLE_GUAVA.name());
 
         addCancelButton();
 
@@ -127,12 +126,9 @@ public class DialogConstructor {
                 throw new IllegalStateException("This tree node is not recognized.");
               }
             }
-            for (Control control : validationsGroup.getChildren()) {
-              if (((Button) control).getSelection()) {
-                composerRequestBuilder.withValidationFramework((ValidationFramework) control
-                    .getData());
-              }
-            }
+            ValidationFramework selectedValidationFramework = 
+              ValidationFramework.valueOf(validationCombo.getText());
+            composerRequestBuilder.withValidationFramework(selectedValidationFramework);
             getShell().dispose();
           }
         });

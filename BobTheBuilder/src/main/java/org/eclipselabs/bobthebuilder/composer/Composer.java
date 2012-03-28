@@ -156,7 +156,7 @@ public class Composer {
         DialogContent dialogRequest,
         IType type) {
     Set<Field> fieldsToAddInBuilder = new HashSet<Field>();
-    fieldsToAddInBuilder.addAll(request.getMissingFieldsInBuilder());
+    fieldsToAddInBuilder.addAll(request.getMissingAssignmentsInConstructor());
     fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());
     List<String> sourceLines = new ArrayList<String>();
     sourceLines.add("private " + type.getElementName() + "(Builder builder) {");
