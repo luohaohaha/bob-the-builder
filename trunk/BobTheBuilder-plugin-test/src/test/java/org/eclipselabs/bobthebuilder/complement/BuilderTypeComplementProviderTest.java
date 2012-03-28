@@ -45,8 +45,7 @@ public class BuilderTypeComplementProviderTest {
 
   private Set<WithMethod> withMethodsComplement = Sets.newHashSet(withMethod1);
 
-  @Mock
-  private BuildMethodComplement buildMethodComplement;
+  private BuildMethodComplement buildMethodComplement = BuildMethodComplement.ENTIRE_METHOD;
 
   @Mock
   private ValidateMethodComplement validateMethodComplement;

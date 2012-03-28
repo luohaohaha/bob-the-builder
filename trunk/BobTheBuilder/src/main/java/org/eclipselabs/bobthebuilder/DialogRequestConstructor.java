@@ -62,8 +62,8 @@ public class DialogRequestConstructor {
     tree.addChild(
           new FeatureTreeNode.Builder()
               .withData(constructorCompleteComplement
-                  ? Feature.NONE
-                  : Feature.MISSING_CONSTRUCTOR)
+                  ? Feature.MISSING_CONSTRUCTOR
+                  : Feature.NONE)
               .withParent(tree)
               .withText(
                 constructorCompleteComplement
@@ -82,8 +82,8 @@ public class DialogRequestConstructor {
         buildMethodComplement.isCompleteComplement();
     tree.addChild(new FeatureTreeNode.Builder()
           .withData(buildMethodcompleteComplement
-              ? Feature.NONE
-              : Feature.MISSING_BUILD)
+              ? Feature.MISSING_BUILD
+              : Feature.NONE)
           .withParent(tree)
           .withText(buildMethodcompleteComplement
               ? "The build() method already exists in the Builder"

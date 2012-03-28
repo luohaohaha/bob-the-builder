@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipselabs.bobthebuilder.analyzer.AnalyzerModule;
 import org.eclipselabs.bobthebuilder.complement.ComplementModule;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.MapperModule;
 import org.eclipselabs.bobthebuilder.supplement.SupplementModule;
@@ -39,7 +38,6 @@ public class BobTheBuilderWorker extends AbstractHandler {
   public BobTheBuilderWorker() {
     Injector injector = Guice.createInjector(
       new WorkerModule(), 
-      new AnalyzerModule(), 
       new MapperModule(), 
       new ComplementModule(), 
       new SupplementModule());

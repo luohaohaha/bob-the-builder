@@ -21,7 +21,7 @@ public class ConstructorWithBuilderComposer {
     if (request.isCreateConstructorWithBuilder()) {
       Set<Field> fieldsToAddInBuilder = new HashSet<Field>();
       fieldsToAddInBuilder.addAll(request.getMissingFieldsInBuilder());
-      fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());
+      fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());//This sounds idiotic
       List<String> sourceLines = new ArrayList<String>();
       sourceLines.add("private " + type.getElementName() + "(Builder builder) {");
       for (Field each : fieldsToAddInBuilder) {
