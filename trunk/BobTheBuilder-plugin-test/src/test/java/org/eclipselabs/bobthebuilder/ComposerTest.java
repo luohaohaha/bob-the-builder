@@ -153,8 +153,8 @@ public class ComposerTest {
     builderFields.add(field2);
     missingBuilderFields.add(field3);
     when(flattenedICompilationUnit.getConstructorWithBuilder()).thenReturn(null);
-    new Composer()
-        .compose(composerRequestBuilder.build(), dialogRequest, flattenedICompilationUnit);
+//    new Composer()
+//        .compose(composerRequestBuilder.build(), dialogRequest, flattenedICompilationUnit);
     verify(type).createMethod(
       constructorWithBuilderCaptor.capture(), eq(builderType), eq(true),
       any(IProgressMonitor.class));
@@ -187,8 +187,8 @@ public class ComposerTest {
     missingBuilderFields.add(field1);
     when(flattenedICompilationUnit.getConstructorWithBuilder()).thenReturn(null);
     when(type.getTypes()).thenReturn(new IType[] { builderType });
-    new Composer().compose(
-      composerRequestBuilder.build(), dialogRequest, flattenedICompilationUnit);
+//    new Composer().compose(
+//      composerRequestBuilder.build(), dialogRequest, flattenedICompilationUnit);
     verify(type).createMethod(anyString(), eq(builderType), eq(true), any(IProgressMonitor.class));
     verify(builderType).createField(
       anyString(), any(IJavaElement.class), eq(true), any(IProgressMonitor.class));
@@ -219,15 +219,15 @@ public class ComposerTest {
     int length = originalSource.length();
     when(constructorSourceRange.getLength()).thenReturn(length);
     when(constructorWithBuilder.getSource()).thenReturn(originalSource);
-    new Composer().compose(
-      composerRequestBuilder
-          .withConstructorWithBuilder()
-          .addMissingAssignmentInConstructor(field3)
-          .addExtraFieldInBuilder(field2)
-          .addMissingWithMethodInBuilder(field3)
-          .addMissingFieldInBuilder(field3)
-          .build(),
-        dialogRequest, flattenedICompilationUnit);
+//    new Composer().compose(
+//      composerRequestBuilder
+//          .withConstructorWithBuilder()
+//          .addMissingAssignmentInConstructor(field3)
+//          .addExtraFieldInBuilder(field2)
+//          .addMissingWithMethodInBuilder(field3)
+//          .addMissingFieldInBuilder(field3)
+//          .build(),
+//        dialogRequest, flattenedICompilationUnit);
     verify(constructorWithBuilder).delete(true, null);
     verify(type).createMethod(
       constructorWithBuilderCaptor.capture(), eq(builderType), eq(true),

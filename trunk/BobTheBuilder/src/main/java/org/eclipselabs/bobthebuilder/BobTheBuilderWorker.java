@@ -15,6 +15,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipselabs.bobthebuilder.complement.ComplementModule;
+import org.eclipselabs.bobthebuilder.composer.ComposerModule;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.MapperModule;
 import org.eclipselabs.bobthebuilder.supplement.SupplementModule;
 
@@ -40,7 +41,8 @@ public class BobTheBuilderWorker extends AbstractHandler {
       new WorkerModule(), 
       new MapperModule(), 
       new ComplementModule(), 
-      new SupplementModule());
+      new SupplementModule(),
+      new ComposerModule());
     subContractor = injector.getInstance(SubContractor.class);
     Validate.notNull(subContractor, "BobTheBuilderSubContractor may not null");
   }

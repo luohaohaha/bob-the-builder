@@ -1,9 +1,10 @@
 package org.eclipselabs.bobthebuilder.composer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -22,16 +23,23 @@ import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class Composer {
 
+  private final ConstructorComposer constructorComposer;
+  
+  @Inject
+  public Composer(ConstructorComposer constructorComposer) {
+    this.constructorComposer = constructorComposer;
+  }
+  
   public void compose(ComposerRequest request,
       DialogContent dialogRequest, 
       FlattenedICompilationUnit flattenedICompilationUnit) throws JavaModelException {
     ICompilationUnit compilationUnit = flattenedICompilationUnit.getCompilationUnit();
     IType type = flattenedICompilationUnit.getMainType();
     if (request.isCreateConstructorWithBuilder()) {
-      String constructorWithBuilderBuilder = composeConstructorWithBuilder(
-          request, dialogRequest, type);
-      type.createMethod(constructorWithBuilderBuilder.toString(), flattenedICompilationUnit.getBuilderType(),
-          true, null);
+      String constructorWithBuilderBuilder = 
+        constructorComposer.composeFromScratch(request, type.getElementName());
+      type.createMethod(
+        constructorWithBuilderBuilder, flattenedICompilationUnit.getBuilderType(), true, null);
     }
     compilationUnit.commitWorkingCopy(true, null);
     if (flattenedICompilationUnit.getConstructorWithBuilder() != null &&
@@ -149,22 +157,6 @@ public class Composer {
     sourceLines.add(constructorInvocationLine);
     sourceLines.add(closeMethodLine);
     return StringUtils.join(sourceLines, "\n");
-  }
-
-  private String composeConstructorWithBuilder(
-        ComposerRequest request,
-        DialogContent dialogRequest,
-        IType type) {
-    Set<Field> fieldsToAddInBuilder = new HashSet<Field>();
-    fieldsToAddInBuilder.addAll(request.getMissingAssignmentsInConstructor());
-    fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());
-    List<String> sourceLines = new ArrayList<String>();
-    sourceLines.add("private " + type.getElementName() + "(Builder builder) {");
-    for (Field each : fieldsToAddInBuilder) {
-      composeAssignmentsInConstructorWithBuilder(sourceLines, each);
-    }
-    sourceLines.add("}");
-    return StringUtils.join(sourceLines.toArray(), "\n");
   }
 
   private void composeAssignmentsInConstructorWithBuilder(
