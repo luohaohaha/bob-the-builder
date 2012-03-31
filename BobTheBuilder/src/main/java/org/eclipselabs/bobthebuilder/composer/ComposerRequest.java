@@ -10,6 +10,7 @@ import org.eclipselabs.bobthebuilder.model.Field;
 
 public class ComposerRequest {
 
+  //TODO add validation so that missingFieldsInBuilder do not overlap with extraFieldsInBuilder
   private final Set<Field> missingFieldsInBuilder;
 
   private final Set<Field> extraFieldsInBuilder;

@@ -161,6 +161,6 @@ public class BobTheBuilderSubContractorTest {
     Mockito.when(dialogConstructor.show(dialogContent, flattenedICompilationUnit, shell))
         .thenReturn(composerRequest);
     subContractor.work(shell, compilationUnit);
-    Mockito.verify(composer).compose(composerRequest, dialogContent, flattenedICompilationUnit);
+    Mockito.verify(composer).compose(composerRequest, dialogContent, flattenedICompilationUnit, javaClassFile);
   }
 }

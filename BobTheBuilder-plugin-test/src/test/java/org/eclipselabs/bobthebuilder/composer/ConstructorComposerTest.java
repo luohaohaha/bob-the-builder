@@ -4,11 +4,17 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
+import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
+import org.eclipselabs.bobthebuilder.model.ConstructorWithBuilder;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.FieldAssignment;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.Sets;
 
 public class ConstructorComposerTest {
 
@@ -30,10 +36,12 @@ public class ConstructorComposerTest {
 
   private String signature = "String";
 
+  private ConstructorWithBuilder.Builder constructorWithBuilder;
+
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    constructorComposer = new ConstructorComposer();
+    constructorComposer = new ConstructorComposer(new FieldPredicate.FieldAssignment());
     missingAssignment1 =
         new Field.Builder().withName("missingAssignment1").withSignature(signature).build();
     missingAssignment2 =
@@ -48,28 +56,60 @@ public class ConstructorComposerTest {
         .withValidationFramework(validationFramework)
         .addMissingAssignmentInConstructor(missingAssignment1)
         .addMissingAssignmentInConstructor(missingAssignment2)
-        .addMissingAssignmentInConstructor(missingAssignment3)
         .addExtraFieldInBuilder(extraField1)
         .addExtraFieldInBuilder(missingAssignment3);
+    String source = "private MainType(Builder builder) {" + "\n" +
+      "  this.extraField1 = builder.extraField1;" + "\n" +
+      "  this.missingAssignment3 = builder.missingAssignment3;" + "\n" +
+      "  this.assignment3 = builder.assignment3;" + "\n" +
+      "}";
+    constructorWithBuilder = new ConstructorWithBuilder.Builder()
+        .withName(mainTypeName)
+        .withFieldAssignment(Sets.<FieldAssignment> newHashSet())
+        .withSource(source);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullRequest() {
+  public void testComposeFromScratchNullRequest() {
     constructorComposer.composeFromScratch(null, mainTypeName);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullMainTypeName() {
+  public void testComposeFromScratchNullMainTypeName() {
     constructorComposer.composeFromScratch(composerRequestBuilder.build(), null);
   }
 
   @Test
-  public void testCompose() throws Exception {
+  public void testComposeFromScratch() throws Exception {
     String actual =
         constructorComposer.composeFromScratch(composerRequestBuilder.build(),
           mainTypeName);
-    String expected = 
+    String expected =
+        "private MainType(Builder builder) {" + "\n" +
+          "  this.missingAssignment2 = builder.missingAssignment2;" + "\n" +
+          "  this.missingAssignment1 = builder.missingAssignment1;" + "\n" +
+          "}";
+    assertEquals(expected, actual);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testComposeFromExistingNullRequest() {
+    constructorComposer.composeFromExisting(null, constructorWithBuilder.build());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testComposeFromExistingNullMainTypeName() {
+    constructorComposer.composeFromExisting(composerRequestBuilder.build(), null);
+  }
+
+  @Test
+  public void testComposeFromExisting() throws Exception {
+    String actual =
+      constructorComposer.composeFromExisting(
+        composerRequestBuilder.build(), constructorWithBuilder.build());
+    String expected =
       "private MainType(Builder builder) {" + "\n" +
+      "  this.assignment3 = builder.assignment3;" + "\n" +
       "  this.missingAssignment2 = builder.missingAssignment2;" + "\n" +
       "  this.missingAssignment1 = builder.missingAssignment1;" + "\n" +
       "}";
