@@ -18,7 +18,9 @@ import org.eclipselabs.bobthebuilder.DialogContent;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 import org.eclipselabs.bobthebuilder.mapper.eclipse.FlattenedICompilationUnit;
+import org.eclipselabs.bobthebuilder.model.ConstructorWithBuilder;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.JavaClassFile;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class Composer {
@@ -32,7 +34,7 @@ public class Composer {
   
   public void compose(ComposerRequest request,
       DialogContent dialogRequest, 
-      FlattenedICompilationUnit flattenedICompilationUnit) throws JavaModelException {
+      FlattenedICompilationUnit flattenedICompilationUnit, JavaClassFile javaClassFile) throws JavaModelException {
     ICompilationUnit compilationUnit = flattenedICompilationUnit.getCompilationUnit();
     IType type = flattenedICompilationUnit.getMainType();
     if (request.isCreateConstructorWithBuilder()) {
@@ -45,23 +47,13 @@ public class Composer {
     if (flattenedICompilationUnit.getConstructorWithBuilder() != null &&
           (!request.getMissingAssignmentsInConstructor().isEmpty() ||
               !request.getExtraFieldsInBuilder().isEmpty())) {
-      IMethod originalConstructorWithBuilder = flattenedICompilationUnit.getConstructorWithBuilder();
-      Validate.notNull(originalConstructorWithBuilder,
-          "originalConstructorWithBuilder may not be null");
-      int length = originalConstructorWithBuilder.getSourceRange().getLength();
-      List<String> sourceLines = new ArrayList<String>();
-      String originalSource = originalConstructorWithBuilder.getSource().substring(0, length - 1);
-      for (Field each : request.getExtraFieldsInBuilder()) {
-        originalSource = originalSource.replaceAll(
-            FieldPredicate.FieldAssignment.createFieldAssignmentRegex(each.getName()), "");
-      }
-      sourceLines.add(originalSource);
+      String sourceLines = 
+        constructorComposer.composeFromExisting(
+          request, javaClassFile.getMainType().getConstructorWithBuilder());
+      IMethod originalConstructorWithBuilder = 
+        flattenedICompilationUnit.getConstructorWithBuilder();
       originalConstructorWithBuilder.delete(true, null);
-      for (Field each : request.getMissingAssignmentsInConstructor()) {
-        composeAssignmentsInConstructorWithBuilder(sourceLines, each);
-      }
-      sourceLines.add("}");
-      type.createMethod(StringUtils.join(sourceLines, "\n"), null, true, null);
+      type.createMethod(sourceLines, null, true, null);
     }
     IType builder;
     if (flattenedICompilationUnit.getBuilderType() ==  null) {
@@ -157,12 +149,6 @@ public class Composer {
     sourceLines.add(constructorInvocationLine);
     sourceLines.add(closeMethodLine);
     return StringUtils.join(sourceLines, "\n");
-  }
-
-  private void composeAssignmentsInConstructorWithBuilder(
-      List<String> sourceLines, Field each) {
-    sourceLines
-          .add("  " + composeSingleAssignment(each));
   }
 
   public static String composeSingleAssignment(Field field) {

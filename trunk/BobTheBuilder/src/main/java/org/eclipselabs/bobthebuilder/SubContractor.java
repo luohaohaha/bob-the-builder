@@ -76,7 +76,7 @@ public class SubContractor {
     }
     ComposerRequest composerRequest =
         dialogConstructor.show(dialogContent, flattenedICompilationUnit, shell);
-    composer.compose(composerRequest, dialogContent, flattenedICompilationUnit);
+    composer.compose(composerRequest, dialogContent, flattenedICompilationUnit, javaClassFile);
     return;
   }
 }
