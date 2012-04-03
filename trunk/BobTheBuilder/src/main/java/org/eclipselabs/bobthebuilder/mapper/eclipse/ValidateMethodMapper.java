@@ -41,6 +41,7 @@ public class ValidateMethodMapper {
     }
     ValidateMethod.Builder builder = new ValidateMethod.Builder();
     builder.withSource(validateMethod.getSource());
+    //TODO why on earth this is returning FieldAssignment??!!
     Set<FieldAssignment> validatedFields = validatedFieldsMapper.map(validateMethod, fields);
     builder.withValidatedFields(validatedFields);
     //TODO add the validation framework at the field level and allow for more than one framework to be used

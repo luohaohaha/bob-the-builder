@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.model.Field;
 
 public class FieldMapper {
@@ -53,7 +54,7 @@ public class FieldMapper {
     protected Field createElement(IField each) throws JavaModelException {
       return new Field.Builder()
       .withName(each.getElementName())
-      .withSignature(each.getTypeSignature())
+      .withSignature(Signature.toString(each.getTypeSignature()))
       .build();
     }
     

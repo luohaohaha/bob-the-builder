@@ -55,8 +55,9 @@ public class ConstructorComposer {
       ListIterator<String> iterator = originalLines.listIterator();
       while(iterator.hasNext()) {
         String eachOriginalLine = iterator.next();
-        if (fieldPredicate.match(each.getName(), eachOriginalLine, each.getSignature()))
+        if (fieldPredicate.match(each.getName(), eachOriginalLine, each.getSignature())) {
           iterator.remove();
+        }
       }
     }
     sourceLines.addAll(originalLines);

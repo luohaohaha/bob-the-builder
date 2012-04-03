@@ -2,8 +2,6 @@ package org.eclipselabs.bobthebuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.model.Field;
 
 //TODO StringUtils import needs to be added as well
@@ -59,32 +57,32 @@ public enum ValidationFramework {
     return StringUtils.lowerCase(this.name()).replace('_', ' ');
   }
   
-  public String composeFieldValidation(Field field) throws JavaModelException {
+  public String composeFieldValidation(Field field) {
     Validate.notNull(field, "field may not be null");
     String signature = field.getSignature();
     String fieldName = field.getName();
-    if (signature.equals(Signature.SIG_BYTE)) {
+    if (signature.equals("byte")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0");
     }
-    else if (signature.equals(Signature.SIG_CHAR)) {
+    else if (signature.equals("char")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "'\u0000'");
     }
-    else if (signature.equals(Signature.SIG_DOUBLE)) {
+    else if (signature.equals("double")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0L");
     }
-    else if (signature.equals(Signature.SIG_FLOAT)) {
+    else if (signature.equals("float")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0.0f");
     }
-    else if (signature.equals(Signature.SIG_INT)) {
+    else if (signature.equals("int")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0");
     }
-    else if (signature.equals(Signature.SIG_LONG)) {
+    else if (signature.equals("long")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0L");
     }
-    else if (signature.equals(Signature.SIG_SHORT)) {
+    else if (signature.equals("short")) {
       return String.format(checkArgument + checkNotDefaultTemplateEnding, fieldName, "0");
     }
-    else if (signature.contains("QString") || signature.contains("Qjava.lang.String")) {
+    else if (signature.contains("String") || signature.contains("java.lang.String")) {
       return String.format(checkArgument + checkBlankStringTemplateEnding, fieldName);
     }
     else if (signature.contains("Map")
