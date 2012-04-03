@@ -1,37 +1,60 @@
 package org.eclipselabs.bobthebuilder;
 
-import org.eclipse.jdt.core.IField;
+import javax.inject.Inject;
+
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipselabs.bobthebuilder.composer.Composer;
+import org.eclipselabs.bobthebuilder.composer.BuilderComposer;
 import org.eclipselabs.bobthebuilder.composer.ConstructorWithBuilderComposer;
 import org.eclipselabs.bobthebuilder.model.Field;
 
+//TODO add this to guice
 public interface FieldTextBuilder {
   String createMessage(Field field) throws JavaModelException;
   
   public static class FieldDeclarationBuilder implements FieldTextBuilder {
 
+    private final BuilderComposer builderComposer;
+    
+    @Inject
+    public FieldDeclarationBuilder(BuilderComposer builderComposer) {
+      this.builderComposer = builderComposer;
+    }
+
     @Override
     public String createMessage(Field field) throws JavaModelException {
-      return Composer.composeFieldInBuilder(field);
+      return builderComposer.composeFieldDeclaration(field);
     }
     
   }
   
   public static class WithMethodBuilder implements FieldTextBuilder {
 
+    private final BuilderComposer builderComposer;
+    
+    @Inject
+    public WithMethodBuilder(BuilderComposer builderComposer) {
+      this.builderComposer = builderComposer;
+    }
+
     @Override
     public String createMessage(Field field) throws JavaModelException {
-      return Composer.composeWithMethodSignature(field) + "...}";
+      return builderComposer.composeWithMethodFirstLine(field) + "...}";
     }
     
   }
   
   public static class FieldAssignmentBuilder implements FieldTextBuilder {
 
+    private final ConstructorWithBuilderComposer constructorWithBuilderComposer;
+    
+    @Inject
+    public FieldAssignmentBuilder(ConstructorWithBuilderComposer constructorWithBuilderComposer) {
+      this.constructorWithBuilderComposer = constructorWithBuilderComposer;
+    }
+    
     @Override
     public String createMessage(Field field) throws JavaModelException {
-      return new ConstructorWithBuilderComposer().composeSingleAssignment(field);
+      return constructorWithBuilderComposer.composeSingleAssignment(field);
     }
     
   }
@@ -40,7 +63,7 @@ public interface FieldTextBuilder {
 
     private ValidationFramework validationFramework;
 
-    ValidationBuilder(ValidationFramework validationFramework) {
+    public ValidationBuilder(ValidationFramework validationFramework) {
       this.validationFramework = validationFramework;
     }
     

@@ -1,10 +1,7 @@
 package org.eclipselabs.bobthebuilder.composer;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
 
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
 import org.eclipselabs.bobthebuilder.analyzer.FieldPredicate;
 import org.eclipselabs.bobthebuilder.model.ConstructorWithBuilder;

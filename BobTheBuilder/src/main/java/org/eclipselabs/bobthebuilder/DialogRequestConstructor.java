@@ -3,6 +3,8 @@ package org.eclipselabs.bobthebuilder;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.FieldTextBuilder.FieldAssignmentBuilder;
@@ -19,6 +21,21 @@ import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class DialogRequestConstructor {
 
+  
+  private final FieldDeclarationBuilder fieldDeclarationBuilder;
+  private final FieldTextBuilder.WithMethodBuilder withMethodBuilder;
+  private final FieldTextBuilder.FieldAssignmentBuilder fieldAssignmentBuilder;
+
+  @Inject
+  public DialogRequestConstructor(
+    FieldDeclarationBuilder fieldDeclarationBuilder,
+    FieldTextBuilder.WithMethodBuilder withMethodBuilder,
+    FieldTextBuilder.FieldAssignmentBuilder fieldAssignmentBuilder) {
+    this.fieldDeclarationBuilder = fieldDeclarationBuilder;
+    this.withMethodBuilder = withMethodBuilder;
+    this.fieldAssignmentBuilder = fieldAssignmentBuilder;
+  }
+  
   public DialogContent work(
     MainTypeComplement mainTypeComplement,
     BuilderTypeSupplement builderTypeSupplement) throws JavaModelException {
@@ -40,21 +57,21 @@ public class DialogRequestConstructor {
             Feature.MISSING_FIELDS,
             "Select missing fields to add to the builder class",
             builderTypeComplement.getBuilderFieldsComplement(),
-            new FieldDeclarationBuilder(),
+            fieldDeclarationBuilder,
             tree));
     tree.addChild(
           convertToTree(
             Feature.EXTRA_FIELDS,
             "Select existing extra fields to remove from the Builder",
             builderTypeSupplement.getExtraFields(),
-            new FieldDeclarationBuilder(),
+            fieldDeclarationBuilder,
             tree));
     tree.addChild(
           convertToTree(
             Feature.MISSING_WITHS,
             "Select with-methods to add to the Builder",
             builderTypeComplement.getWithMethodsComplement(),
-            new FieldTextBuilder.WithMethodBuilder(),
+            withMethodBuilder,
             tree));
     boolean constructorCompleteComplement = mainTypeComplement
         .getConstructorWithBuilderComplement()
@@ -75,7 +92,7 @@ public class DialogRequestConstructor {
             Feature.MISSING_ASSIGNMENTS,
             "Select assignments to add to the private constructor",
             mainTypeComplement.getConstructorWithBuilderComplement().getFieldAssignments(),
-            new FieldTextBuilder.FieldAssignmentBuilder(),
+            fieldAssignmentBuilder,
             tree));
     BuildMethodComplement buildMethodComplement = builderTypeComplement.getBuildMethodComplement();
     boolean buildMethodcompleteComplement =

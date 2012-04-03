@@ -26,14 +26,18 @@ public class FieldMapperTest {
 
   private String field1Name = "field1";
 
-  private String field1Signature = "field1Signature";
+  private String field1Signature = "String";
+
+  private String eclipseField1Signature = "QString;";
 
   @Mock
   private IField finalField2;
 
   private String field2Name = "field2";
 
-  private String field2Signature = "field2Signature";
+  private String field2Signature = "String";
+
+  private String eclipseField2Signature = "QString;";
 
   @Mock
   private IField staticFinalField3;
@@ -50,10 +54,10 @@ public class FieldMapperTest {
     MockitoAnnotations.initMocks(this);
     Mockito.when(field1.getFlags()).thenReturn(Flags.AccDefault);
     Mockito.when(field1.getElementName()).thenReturn(field1Name);
-    Mockito.when(field1.getTypeSignature()).thenReturn(field1Signature);
+    Mockito.when(field1.getTypeSignature()).thenReturn(eclipseField1Signature);
     Mockito.when(finalField2.getFlags()).thenReturn(Flags.AccFinal);
     Mockito.when(finalField2.getElementName()).thenReturn(field2Name);
-    Mockito.when(finalField2.getTypeSignature()).thenReturn(field2Signature);
+    Mockito.when(finalField2.getTypeSignature()).thenReturn(eclipseField2Signature);
     Mockito.when(staticFinalField3.getFlags()).thenReturn(Flags.AccFinal | Flags.AccStatic);
     Mockito.when(mainType.getFields()).thenReturn(
       new IField[] { field1, finalField2, staticFinalField3 });

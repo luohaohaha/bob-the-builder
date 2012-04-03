@@ -36,7 +36,7 @@ public class WithMethodPredicateTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullField() throws JavaModelException {
-    withMethodPredicate.match(null, method);
+    withMethodPredicate.match((IField)null, method);
   }
 
   @Test(expected = IllegalArgumentException.class)
