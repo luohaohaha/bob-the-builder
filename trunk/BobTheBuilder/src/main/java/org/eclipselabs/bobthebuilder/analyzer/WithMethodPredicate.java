@@ -5,6 +5,7 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.model.Field;
 
 public class WithMethodPredicate {
@@ -21,7 +22,7 @@ public class WithMethodPredicate {
     Validate.notNull(method, "method may not be null");
     return method.getElementName()
         .equals("with" + StringUtils.capitalize(field.getName())) &&
-      method.getParameterTypes()[0].equals(field.getSignature());
+      Signature.toString(method.getParameterTypes()[0]).equals(field.getSignature());
   }
 
 }

@@ -50,11 +50,11 @@ public class WithMethodsMapperTest {
 
   private String field1Name = "field1";
 
-  private String field1Signature = "signature1";
+  private String field1Signature = "QString;";
 
   private String field2Name = "field1";
 
-  private String field2Signature = "signature2";
+  private String field2Signature = "Qlong;";
 
   @Before
   public void setUp() throws Exception {
@@ -94,7 +94,7 @@ public class WithMethodsMapperTest {
         new WithMethod.Builder()
             .withName(method1Name)
             .withField(
-              new Field.Builder().withName(field1Name).withSignature(field1Signature).build())
+              new Field.Builder().withName(field1Name).withSignature("String").build())
             .build());
     assertEquals(expected, actual);
   }
