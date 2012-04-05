@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
@@ -20,6 +22,7 @@ public class BuilderComposer {
   private static final String WITH = "with";
   private final FieldPredicate fieldPredicate;
   
+  @Inject
   public BuilderComposer(@ValidateMethodInBuilder FieldPredicate fieldPredicate) {
     this.fieldPredicate = fieldPredicate;
   }

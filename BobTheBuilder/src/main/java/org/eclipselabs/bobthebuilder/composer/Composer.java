@@ -35,14 +35,14 @@ public class Composer {
       FlattenedICompilationUnit flattenedICompilationUnit, 
       JavaClassFile javaClassFile) throws JavaModelException {
     ICompilationUnit compilationUnit = flattenedICompilationUnit.getCompilationUnit();
+    compilationUnit.becomeWorkingCopy(null);
     IType type = flattenedICompilationUnit.getMainType();
     if (request.isCreateConstructorWithBuilder()) {
       String constructorWithBuilderBuilder =
           constructorComposer.composeFromScratch(request, type.getElementName());
       type.createMethod(
-        constructorWithBuilderBuilder, flattenedICompilationUnit.getBuilderType(), true, null);
+        constructorWithBuilderBuilder, flattenedICompilationUnit.getBuilderType(), false, null);
     }
-    compilationUnit.commitWorkingCopy(true, null);
     if (flattenedICompilationUnit.getConstructorWithBuilder() != null &&
           (!request.getMissingAssignmentsInConstructor().isEmpty() ||
               !request.getExtraFieldsInBuilder().isEmpty())) {
@@ -51,13 +51,13 @@ public class Composer {
             request, javaClassFile.getMainType().getConstructorWithBuilder());
       IMethod originalConstructorWithBuilder =
           flattenedICompilationUnit.getConstructorWithBuilder();
-      originalConstructorWithBuilder.delete(true, null);
-      type.createMethod(sourceLines, null, true, null);
+      originalConstructorWithBuilder.delete(false, null);
+      type.createMethod(sourceLines, null, false, null);
     }
     IType builder;
     if (flattenedICompilationUnit.getBuilderType() == null) {
       String builderSkeleton = builderComposer.composeSkeleton();
-      type.createType(builderSkeleton, null, true, null);
+      type.createType(builderSkeleton, null, false, null);
       IType[] types = type.getTypes();
       Validate.notEmpty(types, "types may not be empty");
       builder = types[0];
@@ -69,41 +69,40 @@ public class Composer {
       String composeFieldInBuilder = builderComposer.composeFieldDeclaration(each);
       builder.createField(composeFieldInBuilder, null, true, null);
     }
-    compilationUnit.commitWorkingCopy(true, null);
     for (Field each : request.getExtraFieldsInBuilder()) {
       for (IField eachBuilderField : builder.getFields()) {
         if (eachBuilderField.getElementName().equals(each.getName())) {
-          eachBuilderField.delete(true, null);
+          eachBuilderField.delete(false, null);
         }
       }
       for (IMethod eachBuilderMethod : builder.getMethods()) {
         if (withMethodPredicate.match(each, eachBuilderMethod)) {
-          eachBuilderMethod.delete(true, null);
+          eachBuilderMethod.delete(false, null);
         }
       }
     }
     for (Field each : request.getMissingWithMethodsInBuilder()) {
       String composeWithMethod = builderComposer.composeWithMethod(each);
-      builder.createMethod(composeWithMethod, null, true, null);
+      builder.createMethod(composeWithMethod, null, false, null);
     }
     if (request.isCreateBuildMethodInBuilder()) {
       String composeBuilderMethod = 
         builderComposer.composeBuilderMethod(
           javaClassFile.getMainType(), request.isCreateValidateMethodInBuilder());
-      builder.createMethod(composeBuilderMethod, null, true, null);
+      builder.createMethod(composeBuilderMethod, null, false, null);
     }
     if (request.isCreateValidateMethodInBuilder()) {
       String composeValidateMethod = builderComposer.composeValidateMethodFromScratch(
         request.getMissingFieldValidationsInBuild(),
         request.getValidationFramework());
-      builder.createMethod(composeValidateMethod, null, true, null);
+      builder.createMethod(composeValidateMethod, null, false, null);
     }
     else if (!request.getMissingFieldValidationsInBuild().isEmpty()) {
       String newLines = builderComposer.composeValidateMethodFromExisting(
         request, javaClassFile.getMainType().getBuilderType().getValidateMethod());
       IMethod originalValidateMethod = flattenedICompilationUnit.getValidateMethod();
-      originalValidateMethod.delete(true, null);
-      builder.createMethod(newLines, null, true, null);
+      originalValidateMethod.delete(false, null);
+      builder.createMethod(newLines, null, false, null);
     }
     if (request.isCreateValidateMethodInBuilder()
           || !request.getMissingFieldValidationsInBuild().isEmpty()) {

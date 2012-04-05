@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.analyzer.WithMethodPredicate;
 import org.eclipselabs.bobthebuilder.model.Field;
 import org.eclipselabs.bobthebuilder.model.WithMethod;
@@ -65,7 +66,7 @@ public class WithMethodsMapper {
           .withField(
             new Field.Builder()
                 .withName(eachField.getElementName())
-                .withSignature(eachField.getTypeSignature())
+                .withSignature(Signature.toString(eachField.getTypeSignature()))
                 .build())
           .build();
     }

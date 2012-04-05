@@ -23,24 +23,6 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
-         <menu
-               id="BobTheBuilder.menus.bobTheBuilderMenu"
-               label="Bob The Builder"
-               mnemonic="B">
-            <command
-                  commandId="BobTheBuilder.commands.bobTheBuilderCommand"
-                  id="BobTheBuilder.menus.bobTheBuilderCommand"
-                  mnemonic="B">
-              <visibleWhen>
-                <with variable="activeEditorId">
-                   <equals value="org.eclipse.jdt.ui.CompilationUnitEditor"/>
-                </with>
-              </visibleWhen>
-            </command>
-         </menu>
-      </menuContribution>
-      <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
                id="BobTheBuilder.toolbars.bobTheBuilderToolbar">
