@@ -57,8 +57,8 @@ public class MainTypeComplement {
   }
 
   public boolean isEmptyComplement() {
-    return constructorWithBuilderComplement.isCompleteComplement() &&
-      builderTypeComplement.isCompleteComplement();
+    return constructorWithBuilderComplement.isEmptyComplement() &&
+      builderTypeComplement.isEmptyComplement();
   }
 
   @Override
