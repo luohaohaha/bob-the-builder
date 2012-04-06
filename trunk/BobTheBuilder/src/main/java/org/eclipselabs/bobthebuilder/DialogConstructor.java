@@ -1,8 +1,10 @@
 package org.eclipselabs.bobthebuilder;
 
+
 import org.apache.commons.lang.Validate;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -37,6 +39,7 @@ public class DialogConstructor {
 
         getShell().setLayout(gridLayout);
 
+        
         String title =
             "Select Actions To Perform On "
               + flattenedICompilationUnit.getCompilationUnit().getResource().getName();
@@ -44,21 +47,30 @@ public class DialogConstructor {
         titleLabel.setText(title);
         titleLabel.setLayoutData(createTopSectionGridData());
 
+        ScrolledComposite scrolledComposite = 
+          new ScrolledComposite(getShell(), SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
+        GridData treeGridData = createTopSectionGridData();
+        treeGridData.heightHint = 250;
+        scrolledComposite.setLayoutData(treeGridData);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setShowFocusedControl(true);
         int CHECKED_TREE = SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.Expand;
 
-        final CheckboxTreeViewer featuresTreeViewer = new CheckboxTreeViewer(getShell(),
-            CHECKED_TREE);
+        final CheckboxTreeViewer featuresTreeViewer = 
+          new CheckboxTreeViewer(scrolledComposite, CHECKED_TREE);
         featuresTreeViewer.setLabelProvider(new FieldTreeLabelProvider());
         featuresTreeViewer.setContentProvider(new FieldTreeContentProvider());
         int twoLevelsExpansion = 2;
         featuresTreeViewer.setAutoExpandLevel(twoLevelsExpansion);
         featuresTreeViewer.setInput(dialogRequest.getTree());
-        featuresTreeViewer.getTree().setLayoutData(createTopSectionGridData());
         featuresTreeViewer.setAllChecked(true);
-
+        featuresTreeViewer.getControl().setSize(100, 100);
+        scrolledComposite.setContent(featuresTreeViewer.getControl());
+        
         Label validationLabel = new Label(getShell(), SWT.BORDER);
         validationLabel.setText("Select validation framework");
-        validationLabel.setLayoutData(createTopSectionGridData());
+        validationLabel.setLayoutData(createValidationAreaGridData());
         
         final Combo validationCombo = new Combo(getShell(), SWT.READ_ONLY);
         String[] validationNames = new String[ValidationFramework.values().length];
@@ -66,9 +78,12 @@ public class DialogConstructor {
           validationNames[i] = ValidationFramework.values()[i].name();
         }
         validationCombo.setItems(validationNames);
-        validationCombo.setLayoutData(createTopSectionGridData());
+        validationCombo.setLayoutData(createValidationAreaGridData());
         validationCombo.setText(ValidationFramework.GOOGLE_GUAVA.name());
 
+        Label fillerLabel = new Label(getShell(), SWT.BORDER);
+        fillerLabel.setLayoutData(createValidationAreaGridData());
+        
         addCancelButton();
 
         addResetButton(featuresTreeViewer);
@@ -134,6 +149,10 @@ public class DialogConstructor {
         });
         display();
         waitAndSee();
+      }
+
+      private GridData createValidationAreaGridData() {
+        return new GridData(GridData.FILL, GridData.CENTER, true, false);
       }
 
       private void addResetButton(final CheckboxTreeViewer featuresTreeViewer) {
