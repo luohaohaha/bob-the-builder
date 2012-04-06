@@ -21,21 +21,22 @@ import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class DialogRequestConstructor {
 
-  
   private final FieldDeclarationBuilder fieldDeclarationBuilder;
+
   private final FieldTextBuilder.WithMethodBuilder withMethodBuilder;
+
   private final FieldTextBuilder.FieldAssignmentBuilder fieldAssignmentBuilder;
 
   @Inject
   public DialogRequestConstructor(
-    FieldDeclarationBuilder fieldDeclarationBuilder,
-    FieldTextBuilder.WithMethodBuilder withMethodBuilder,
-    FieldTextBuilder.FieldAssignmentBuilder fieldAssignmentBuilder) {
+      FieldDeclarationBuilder fieldDeclarationBuilder,
+      FieldTextBuilder.WithMethodBuilder withMethodBuilder,
+      FieldTextBuilder.FieldAssignmentBuilder fieldAssignmentBuilder) {
     this.fieldDeclarationBuilder = fieldDeclarationBuilder;
     this.withMethodBuilder = withMethodBuilder;
     this.fieldAssignmentBuilder = fieldAssignmentBuilder;
   }
-  
+
   public DialogContent work(
     MainTypeComplement mainTypeComplement,
     BuilderTypeSupplement builderTypeSupplement) throws JavaModelException {
@@ -52,25 +53,37 @@ public class DialogRequestConstructor {
                     ? "A builder will be created"
                     : "The existing builder will be modified")
               .build());
+    Set<Field> builderFieldsComplement = builderTypeComplement.getBuilderFieldsComplement();
     tree.addChild(
           convertToTree(
             Feature.MISSING_FIELDS,
-            "Select missing fields to add to the builder class",
-            builderTypeComplement.getBuilderFieldsComplement(),
+            builderFieldsComplement.isEmpty()
+                ?
+                "No missing fields in builder"
+                : "Fields to add to the builder...",
+            builderFieldsComplement,
             fieldDeclarationBuilder,
             tree));
+    Set<Field> extraFields = builderTypeSupplement.getExtraFields();
     tree.addChild(
           convertToTree(
             Feature.EXTRA_FIELDS,
-            "Select existing extra fields to remove from the Builder",
-            builderTypeSupplement.getExtraFields(),
+            extraFields.isEmpty()
+                ?
+                "No extra fields in the builder"
+                : "Extra fields to remove from the builder...",
+            extraFields,
             fieldDeclarationBuilder,
             tree));
+    Set<WithMethod> withMethodsComplement = builderTypeComplement.getWithMethodsComplement();
     tree.addChild(
           convertToTree(
             Feature.MISSING_WITHS,
-            "Select with-methods to add to the Builder",
-            builderTypeComplement.getWithMethodsComplement(),
+            withMethodsComplement.isEmpty()
+                ?
+                "No with-methods missing in the builder"
+                : "With-methods to add to the builder...",
+            withMethodsComplement,
             withMethodBuilder,
             tree));
     boolean constructorCompleteComplement = mainTypeComplement
@@ -85,13 +98,18 @@ public class DialogRequestConstructor {
               .withText(
                 constructorCompleteComplement
                     ? "A private constructor will be created"
-                    : "A private constructor with Builder already exists")
+                    : "A private constructor with the builder already exists")
               .build());
+    Set<FieldAssignment> fieldAssignments = 
+      mainTypeComplement.getConstructorWithBuilderComplement().getFieldAssignments();
     tree.addChild(
           convertToTree(
             Feature.MISSING_ASSIGNMENTS,
-            "Select assignments to add to the private constructor",
-            mainTypeComplement.getConstructorWithBuilderComplement().getFieldAssignments(),
+            fieldAssignments.isEmpty()
+                ?
+                "No assignments to add to the private constructor"
+                : "Assignments to add to the private constructor...",
+            fieldAssignments,
             fieldAssignmentBuilder,
             tree));
     BuildMethodComplement buildMethodComplement = builderTypeComplement.getBuildMethodComplement();
@@ -103,8 +121,8 @@ public class DialogRequestConstructor {
               : Feature.NONE)
           .withParent(tree)
           .withText(buildMethodcompleteComplement
-              ? "The build() method already exists in the Builder"
-              : "A build() method will be created in the Builder")
+              ? "A build() method will be created in the builder"
+              : "The build() method already exists in the builder")
           .build());
     boolean validateMethodComplement = buildMethodComplement.isValidateMethodComplement();
     tree.addChild(new FeatureTreeNode.Builder()
@@ -113,14 +131,19 @@ public class DialogRequestConstructor {
               : Feature.NONE)
           .withParent(tree)
           .withText(validateMethodComplement
-              ? "A validate() method will be created in the Builder"
-              : "The validate() method already exists in the Builder")
+              ? "A validate() method will be created in the builder"
+              : "The validate() method already exists in the builder")
             .build());
+    Set<FieldAssignment> fieldsToValidate = 
+      builderTypeComplement.getValidateMethodComplement().getFieldAssignments();
     tree.addChild(
           convertToTree(
             Feature.MISSING_VALIDATIONS,
-            "Select the validation to add to the validate method in the Builder",
-            builderTypeComplement.getValidateMethodComplement().getFieldAssignments(),
+            fieldsToValidate.isEmpty()
+                ?
+                "No fields to validate"
+                : "Fields to validate...",
+            fieldsToValidate,
               new FieldTextBuilder.ValidationBuilder(ValidationFramework.GOOGLE_GUAVA),
             tree));
     return new DialogContent(tree);

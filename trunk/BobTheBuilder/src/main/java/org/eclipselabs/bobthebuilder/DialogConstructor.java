@@ -61,8 +61,9 @@ public class DialogConstructor {
           new CheckboxTreeViewer(scrolledComposite, CHECKED_TREE);
         featuresTreeViewer.setLabelProvider(new FieldTreeLabelProvider());
         featuresTreeViewer.setContentProvider(new FieldTreeContentProvider());
-        int twoLevelsExpansion = 2;
-        featuresTreeViewer.setAutoExpandLevel(twoLevelsExpansion);
+        featuresTreeViewer.setCheckStateProvider(new DialogTreeCheckStateProvider());
+        featuresTreeViewer.setComparator(new DialogTreeEntryComparator());
+        featuresTreeViewer.setAutoExpandLevel(0);
         featuresTreeViewer.setInput(dialogRequest.getTree());
         featuresTreeViewer.setAllChecked(true);
         featuresTreeViewer.getControl().setSize(100, 100);
