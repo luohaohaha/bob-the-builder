@@ -44,7 +44,6 @@ public abstract class BobTheBuilderDialog extends Dialog {
   }
 
   protected void display() {
-    shell.setSize(200, 400);
     shell.pack();
     shell.open();
   }
