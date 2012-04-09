@@ -21,7 +21,7 @@ import org.eclipselabs.bobthebuilder.model.WithMethod;
 
 public class DialogRequestConstructor {
 
-  private final FieldDeclarationBuilder fieldDeclarationBuilder;
+  private final FieldTextBuilder.FieldDeclarationBuilder fieldDeclarationBuilder;
 
   private final FieldTextBuilder.WithMethodBuilder withMethodBuilder;
 
@@ -203,7 +203,7 @@ public class DialogRequestConstructor {
       FieldTreeNode child = new FieldTreeNode.Builder()
           .withData(each)
           .withParent(parent)
-          .withText(each.getName())
+          .withText(fieldTextBuilder.createMessage(each))
           .build();
       parent.addChild(child);
     }
