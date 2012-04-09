@@ -1,5 +1,7 @@
 package org.eclipselabs.bobthebuilder.composer;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang.Validate;
@@ -52,12 +54,12 @@ public class Composer {
       IMethod originalConstructorWithBuilder =
           flattenedICompilationUnit.getConstructorWithBuilder();
       originalConstructorWithBuilder.delete(false, null);
-      type.createMethod(sourceLines, null, false, null);
+      type.createMethod(sourceLines, flattenedICompilationUnit.getBuilderType(), false, null);
     }
     IType builder;
     if (flattenedICompilationUnit.getBuilderType() == null) {
       String builderSkeleton = builderComposer.composeSkeleton();
-      type.createType(builderSkeleton, null, false, null);
+      type.createType(builderSkeleton, null, false, null); //TODO map getters or any other method in the main type to place the builder class before it
       IType[] types = type.getTypes();
       Validate.notEmpty(types, "types may not be empty");
       builder = types[0];
@@ -67,7 +69,12 @@ public class Composer {
     }
     for (Field each : request.getMissingFieldsInBuilder()) {
       String composeFieldInBuilder = builderComposer.composeFieldDeclaration(each);
-      builder.createField(composeFieldInBuilder, null, true, null);
+      Set<IMethod> withMethods = flattenedICompilationUnit.getExistingMethodsMinusExtra();
+      IMethod firstWithMethod = null;
+      if (!withMethods.isEmpty()) {
+        firstWithMethod = withMethods.iterator().next();
+      }
+      builder.createField(composeFieldInBuilder,firstWithMethod, true, null);
     }
     for (Field each : request.getExtraFieldsInBuilder()) {
       for (IField eachBuilderField : builder.getFields()) {
@@ -83,13 +90,15 @@ public class Composer {
     }
     for (Field each : request.getMissingWithMethodsInBuilder()) {
       String composeWithMethod = builderComposer.composeWithMethod(each);
-      builder.createMethod(composeWithMethod, null, false, null);
+      builder.createMethod(
+        composeWithMethod, flattenedICompilationUnit.getBuildMethod(), false, null);
     }
     if (request.isCreateBuildMethodInBuilder()) {
       String composeBuilderMethod = 
         builderComposer.composeBuilderMethod(
           javaClassFile.getMainType(), request.isCreateValidateMethodInBuilder());
-      builder.createMethod(composeBuilderMethod, null, false, null);
+      builder.createMethod(
+        composeBuilderMethod, flattenedICompilationUnit.getValidateMethod(), false, null);
     }
     if (request.isCreateValidateMethodInBuilder()) {
       String composeValidateMethod = builderComposer.composeValidateMethodFromScratch(

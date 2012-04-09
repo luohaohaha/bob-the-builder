@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -77,6 +78,11 @@ public class CompilationUnitFlattenerTest {
   
   private Map<IField, IMethod> extraWithMethods = new HashMap<IField, IMethod>();
 
+  @Mock
+  private WithMethodsMapper withMethodsMapper;
+  
+  private Set<IMethod> existingWithMethods;
+  
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
@@ -87,7 +93,8 @@ public class CompilationUnitFlattenerTest {
         validateMethodMapper,
         buildMethodMapper,
         builderFieldsSupplementProvider,
-        withMethodsSupplementProvider);
+        withMethodsSupplementProvider,
+        withMethodsMapper);
     when(mainTypeSelector.map(iCompilationUnit)).thenReturn(mainType);
     when(constructorWithBuilderMapper.findConstructorWithBuilder(mainType)).thenReturn(
       constructorWithBuilder);
@@ -98,6 +105,8 @@ public class CompilationUnitFlattenerTest {
     when(builderFieldsSupplementProvider.supplement(mainType)).thenReturn(extraBuilderFields);
     extraWithMethods.put(extraField, extraWithMethod);
     when(withMethodsSupplementProvider.findExtra(mainType)).thenReturn(extraWithMethods);
+    existingWithMethods = Sets.newHashSet(extraWithMethod);
+    when(withMethodsMapper.findWithMethods(builderType)).thenReturn(existingWithMethods);
     expectedFlattenedICompilationUnitBuilder = new FlattenedICompilationUnit.Builder()
         .withCompilationUnit(iCompilationUnit)
         .withMainType(mainType)
@@ -106,8 +115,8 @@ public class CompilationUnitFlattenerTest {
         .withValidateMethod(validateMethod)
         .withBuildMethod(buildMethod)
         .withExtraFields(Sets.newHashSet(extraBuilderFields))
-        .withExtraWithMethods(Sets.newHashSet(extraWithMethods.values()));
-
+        .withExtraWithMethods(Sets.newHashSet(extraWithMethods.values()))
+        .withExistingWithMethods(existingWithMethods);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -125,6 +134,7 @@ public class CompilationUnitFlattenerTest {
         .withBuilderType(null)
         .withExtraFields(Collections.<IField>emptySet())
         .withExtraWithMethods(Collections.<IMethod>emptySet())
+        .withExistingWithMethods(Collections.<IMethod>emptySet())
         .build();
     assertEquals(expected, actual);
   }
@@ -137,6 +147,7 @@ public class CompilationUnitFlattenerTest {
     FlattenedICompilationUnit expected = expectedFlattenedICompilationUnitBuilder
         .withExtraFields(Sets.newHashSet(emptySet))
         .withExtraWithMethods(Collections.<IMethod>emptySet())
+        .withExistingWithMethods(Collections.<IMethod>emptySet())
         .build();
     assertEquals(expected, actual);
 
