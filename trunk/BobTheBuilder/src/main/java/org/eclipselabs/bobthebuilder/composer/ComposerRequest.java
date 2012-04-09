@@ -3,6 +3,7 @@ package org.eclipselabs.bobthebuilder.composer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 import org.eclipselabs.bobthebuilder.ValidationFramework;
@@ -43,19 +44,19 @@ public class ComposerRequest {
 
   public static class Builder {
 
-    public Set<Field> missingFieldsInBuilder = new HashSet<Field>();
+    public Set<Field> missingFieldsInBuilder = new TreeSet<Field>();
 
     private Set<Field> extraFieldsInBuilder = new HashSet<Field>();
 
-    private Set<Field> missingWithMethodsInBuilder = new HashSet<Field>();
+    private Set<Field> missingWithMethodsInBuilder = new TreeSet<Field>();
 
     private boolean createConstructorWithBuilder = false;
 
-    private Set<Field> missingAssignmentsInConstructor = new HashSet<Field>();
+    private Set<Field> missingAssignmentsInConstructor = new TreeSet<Field>();
 
     private boolean createBuildMethodInBuilder = false;
 
-    private Set<Field> missingFieldValidationsInBuild = new HashSet<Field>();
+    private Set<Field> missingFieldValidationsInBuild = new TreeSet<Field>();
 
     private boolean createValidateMethodInBuilder = false;
 

@@ -49,8 +49,16 @@ public class FieldAssignmentInConstructorMapperTest {
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
     fieldBasedContentInMethodMapper = new FieldBasedContentInMethodMapper();
-    field1 = new Field.Builder().withName(field1Name).withSignature(signature1).build();
-    field2 = new Field.Builder().withName(field2Name).withSignature(signature2).build();
+    field1 = new Field.Builder()
+        .withName(field1Name)
+        .withSignature(signature1)
+        .withPosition(1)
+        .build();
+    field2 = new Field.Builder()
+        .withName(field2Name)
+        .withSignature(signature2)
+        .withPosition(2)
+        .build();
     fields.add(field1);
     fields.add(field2);
     when(method.getSource()).thenReturn(source);

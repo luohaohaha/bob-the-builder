@@ -60,13 +60,14 @@ public class WithMethodsMapper {
     }
 
     @Override
-    protected WithMethod transform(IField eachField, IMethod eachMethod) throws JavaModelException {
+    protected WithMethod transform(IField field, IMethod method) throws JavaModelException {
       return new WithMethod.Builder()
-          .withName(eachMethod.getElementName())
+          .withName(method.getElementName())
           .withField(
             new Field.Builder()
-                .withName(eachField.getElementName())
-                .withSignature(Signature.toString(eachField.getTypeSignature()))
+                .withName(field.getElementName())
+                .withSignature(Signature.toString(field.getTypeSignature()))
+                .withPosition(field.getSourceRange().getOffset())
                 .build())
           .build();
     }

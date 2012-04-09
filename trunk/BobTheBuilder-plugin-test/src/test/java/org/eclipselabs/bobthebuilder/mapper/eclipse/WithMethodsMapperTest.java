@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.WithMethodPredicate;
@@ -56,6 +57,12 @@ public class WithMethodsMapperTest {
 
   private String field2Signature = "Qlong;";
 
+  @Mock
+  private ISourceRange sourceRange1;
+
+  @Mock
+  private ISourceRange sourceRange2;
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -68,8 +75,12 @@ public class WithMethodsMapperTest {
     Mockito.when(fieldMapper.findFields(builderType)).thenReturn(Sets.newHashSet(field1, field2));
     Mockito.when(field1.getElementName()).thenReturn(field1Name);
     Mockito.when(field1.getTypeSignature()).thenReturn(field1Signature);
+    Mockito.when(field1.getSourceRange()).thenReturn(sourceRange1);
     Mockito.when(field2.getElementName()).thenReturn(field2Name);
     Mockito.when(field2.getTypeSignature()).thenReturn(field2Signature);
+    Mockito.when(field2.getSourceRange()).thenReturn(sourceRange2);
+    Mockito.when(sourceRange1.getOffset()).thenReturn(1);
+    Mockito.when(sourceRange2.getOffset()).thenReturn(1);
     withMethodsMapper = new WithMethodsMapper(withMethodPredicate, fieldMapper);
   }
 
@@ -94,7 +105,11 @@ public class WithMethodsMapperTest {
         new WithMethod.Builder()
             .withName(method1Name)
             .withField(
-              new Field.Builder().withName(field1Name).withSignature("String").build())
+              new Field.Builder()
+                  .withName(field1Name)
+                  .withSignature("String")
+                  .withPosition(1)
+                  .build())
             .build());
     assertEquals(expected, actual);
   }

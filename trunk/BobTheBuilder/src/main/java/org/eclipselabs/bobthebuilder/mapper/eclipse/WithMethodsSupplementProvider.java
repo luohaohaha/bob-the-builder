@@ -63,13 +63,15 @@ public class WithMethodsSupplementProvider {
       return Collections.unmodifiableSet(extraWithMethods);
     }
     for (Map.Entry<IField, IMethod> eachEntry : extraRawWithMethods.entrySet()) {
+      IField eachField = eachEntry.getKey();
       extraWithMethods.add(
           new WithMethod.Builder()
               .withName(eachEntry.getValue().getElementName())
               .withField(
                 new Field.Builder()
-                    .withName(eachEntry.getKey().getElementName())
-                    .withSignature(eachEntry.getKey().getTypeSignature())
+                    .withName(eachField.getElementName())
+                    .withSignature(eachField.getTypeSignature())
+                    .withPosition(eachField.getSourceRange().getOffset())
                     .build())
               .build());
     }

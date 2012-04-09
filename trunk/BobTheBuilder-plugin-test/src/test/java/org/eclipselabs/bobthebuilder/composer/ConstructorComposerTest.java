@@ -40,12 +40,29 @@ public class ConstructorComposerTest {
     MockitoAnnotations.initMocks(this);
     constructorComposer = new ConstructorComposer(new FieldPredicate.FieldAssignment());
     missingAssignment1 =
-        new Field.Builder().withName("missingAssignment1").withSignature(signature).build();
+        new Field.Builder()
+            .withName("missingAssignment1")
+            .withSignature(signature)
+            .withPosition(1)
+            .build();
     missingAssignment2 =
-        new Field.Builder().withName("missingAssignment2").withSignature(signature).build();
+        new Field.Builder()
+            .withName("missingAssignment2")
+            .withSignature(signature)
+            .withPosition(2)
+            .build();
     missingAssignment3 =
-        new Field.Builder().withName("missingAssignment3").withSignature(signature).build();
-    extraField1 = new Field.Builder().withName("extraField1").withSignature(signature).build();
+        new Field.Builder()
+            .withName("missingAssignment3")
+            .withSignature(signature)
+            .withPosition(3)
+            .build();
+    extraField1 =
+        new Field.Builder()
+            .withName("extraField1")
+            .withSignature(signature)
+            .withPosition(4)
+            .build();
     composerRequestBuilder = new ComposerRequest.Builder()
         .withBuildMethodInBuilder()
         .withConstructorWithBuilder()
@@ -83,8 +100,8 @@ public class ConstructorComposerTest {
           mainTypeName);
     String expected =
         "private MainType(Builder builder) {" + "\n" +
-          "  this.missingAssignment2 = builder.missingAssignment2;" + "\n" +
           "  this.missingAssignment1 = builder.missingAssignment1;" + "\n" +
+          "  this.missingAssignment2 = builder.missingAssignment2;" + "\n" +
           "}";
     assertEquals(expected, actual);
   }
@@ -102,14 +119,14 @@ public class ConstructorComposerTest {
   @Test
   public void testComposeFromExisting() throws Exception {
     String actual =
-      constructorComposer.composeFromExisting(
-        composerRequestBuilder.build(), constructorWithBuilder.build());
+        constructorComposer.composeFromExisting(
+          composerRequestBuilder.build(), constructorWithBuilder.build());
     String expected =
-      "private MainType(Builder builder) {" + "\n" +
-      "  this.assignment3 = builder.assignment3;" + "\n" +
-      "  this.missingAssignment2 = builder.missingAssignment2;" + "\n" +
-      "  this.missingAssignment1 = builder.missingAssignment1;" + "\n" +
-      "}";
+        "private MainType(Builder builder) {" + "\n" +
+          "  this.assignment3 = builder.assignment3;" + "\n" +
+          "  this.missingAssignment1 = builder.missingAssignment1;" + "\n" +
+          "  this.missingAssignment2 = builder.missingAssignment2;" + "\n" +
+          "}";
     assertEquals(expected, actual);
   }
 }

@@ -36,7 +36,8 @@ public class BuilderTypeComplementProviderTest {
 
   private BuilderTypeComplementProvider builderTypeComplementProvider;
 
-  private Field field1 = new Field.Builder().withName("field1").withSignature("signature1").build();
+  private Field field1 = 
+    new Field.Builder().withName("field1").withSignature("signature1").withPosition(1).build();
   
   private Set<Field> builderFieldsComplement = Sets.newHashSet(field1);
 

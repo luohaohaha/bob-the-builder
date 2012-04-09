@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 public class MainTypeMapperTest {
   @Mock
   private BuilderTypeMapper builderTypeMapper;
-  
+
   @Mock
   private MainTypeMapper mainTypeMapper;
 
@@ -44,10 +44,18 @@ public class MainTypeMapperTest {
   @Mock
   private ConstructorWithBuilderMapper constructorWithBuilderMapper;
 
-  private Field field1 = new Field.Builder().withName("field1").withSignature("signature1").build();
+  private Field field1 = new Field.Builder()
+      .withName("field1")
+      .withSignature("signature1")
+      .withPosition(1)
+      .build();
 
-  private Field field2 = new Field.Builder().withName("field2").withSignature("signature2").build();
-  
+  private Field field2 = new Field.Builder()
+      .withName("field2")
+      .withSignature("signature2")
+      .withPosition(2)
+      .build();
+
   private Set<Field> fields = Sets.newHashSet(field1, field2);
 
   @Mock

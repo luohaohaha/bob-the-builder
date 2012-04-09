@@ -4,7 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class FieldAssignment {
+public class FieldAssignment implements Comparable<FieldAssignment>{
 
   private final Field field;
   
@@ -33,6 +33,11 @@ public class FieldAssignment {
   @Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this);
+  }
+
+  @Override
+  public int compareTo(FieldAssignment o) {
+    return this.field.compareTo(o.field);
   }
 
 }

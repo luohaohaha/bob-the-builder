@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipselabs.bobthebuilder.analyzer.WithMethodPredicate;
@@ -63,6 +64,9 @@ public class WithMethodsSupplementProviderTest {
 
   private String field1Signature = "field1Signature";
 
+  @Mock
+  private ISourceRange sourceRange1;
+
   @Before
   public void setUp() throws JavaModelException {
     MockitoAnnotations.initMocks(this);
@@ -80,6 +84,8 @@ public class WithMethodsSupplementProviderTest {
     when(withMethodPredicate.match(field2, anotherMethod)).thenReturn(false);
     when(field1.getElementName()).thenReturn(field1Name);
     when(field1.getTypeSignature()).thenReturn(field1Signature);
+    when(field1.getSourceRange()).thenReturn(sourceRange1);
+    when(sourceRange1.getOffset()).thenReturn(1);
   }
 
   @Test(expected = IllegalArgumentException.class)
