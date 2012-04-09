@@ -30,6 +30,8 @@ public class CompilationUnitFlattener {
 
   private final WithMethodsSupplementProvider withMethodsSupplementProvider;
 
+  private final WithMethodsMapper withMethodsMapper;
+  
   @Inject
   public CompilationUnitFlattener(MainTypeSelector mainTypeSelector,
       ConstructorWithBuilderMapper constructorWithBuilderMapper,
@@ -37,7 +39,8 @@ public class CompilationUnitFlattener {
       ValidateMethodMapper validateMethodMapper,
       BuildMethodMapper buildMethodMapper,
       BuilderFieldsSupplementProvider builderFieldsSupplementProvider,
-      WithMethodsSupplementProvider withMethodsSupplementProvider) {
+      WithMethodsSupplementProvider withMethodsSupplementProvider,
+      WithMethodsMapper withMethodsMapper) {
     this.mainTypeSelector = mainTypeSelector;
     this.constructorWithBuilderMapper = constructorWithBuilderMapper;
     this.builderTypeMapper = builderTypeMapper;
@@ -45,6 +48,7 @@ public class CompilationUnitFlattener {
     this.buildMethodMapper = buildMethodMapper;
     this.builderFieldsSupplementProvider = builderFieldsSupplementProvider;
     this.withMethodsSupplementProvider = withMethodsSupplementProvider;
+    this.withMethodsMapper = withMethodsMapper;
   }
 
   public FlattenedICompilationUnit flatten(ICompilationUnit compilationUnit) throws JavaModelException {
@@ -76,6 +80,8 @@ public class CompilationUnitFlattener {
     Set<IMethod> extraWithMethodsInSet = new HashSet<IMethod>();
     extraWithMethodsInSet.addAll(extraWithMethods);
     result.withExtraWithMethods(extraWithMethodsInSet);
+    Set<IMethod> existingWithMethods = withMethodsMapper.findWithMethods(builderType);
+    result.withExistingWithMethods(existingWithMethods);
     return result.build();
   }
 

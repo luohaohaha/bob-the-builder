@@ -1,6 +1,7 @@
 package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -11,6 +12,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipselabs.bobthebuilder.model.Field;
+import org.eclipselabs.bobthebuilder.model.FieldPositionComparator;
 
 public class FieldMapper {
 
@@ -30,13 +32,15 @@ public class FieldMapper {
     return false;
   }
 
-  static abstract class FieldCollector<T> {
+  static abstract class FieldCollector<T, C extends Comparator<T>> {
 
+    protected abstract C getComparator();
+    
     protected abstract T createElement(IField each) throws JavaModelException;
 
     Set<T> collect(IType typeWithFields) throws JavaModelException {
       Validate.notNull(typeWithFields, "typeWithFields may not be null");
-      Set<T> result = new TreeSet<T>();
+      Set<T> result = new TreeSet<T>(getComparator());
       for (IField each : typeWithFields.getFields()) {
         if (isFinalStatic(each)) {
           continue;
@@ -48,7 +52,7 @@ public class FieldMapper {
     }
   }
 
-  static class MappedFieldCollector extends FieldCollector<Field> {
+  static class MappedFieldCollector extends FieldCollector<Field, FieldPositionComparator> {
 
     @Override
     protected Field createElement(IField each) throws JavaModelException {
@@ -59,13 +63,23 @@ public class FieldMapper {
           .build();
     }
 
+    @Override
+    protected FieldPositionComparator getComparator() {
+      return new FieldPositionComparator();
+    }
+
   }
 
-  static class RawFieldCollector extends FieldCollector<IField> {
+  static class RawFieldCollector extends FieldCollector<IField, RawFieldPositionComparator> {
 
     @Override
     protected IField createElement(IField each) throws JavaModelException {
       return each;
+    }
+
+    @Override
+    protected RawFieldPositionComparator getComparator() {
+      return new RawFieldPositionComparator();
     }
 
   }

@@ -65,8 +65,8 @@ public class BobTheBuilderWorker extends AbstractHandler {
       subContractor.work(shell, compilationUnit);
     }
     catch (Exception e) {
-      bark("Could not create the request to send to the dialog" + e.getClass().getName() + " "
-        + e.getMessage() + " " + StringUtils.left(ExceptionUtils.getFullStackTrace(e), 100));
+      bark("Could not create the request to send to the dialog.\n" + e.getClass().getName() + " "
+        + e.getMessage() + "\n" + StringUtils.left(ExceptionUtils.getFullStackTrace(e), 1000));
     }
     return null;
   }
