@@ -13,6 +13,7 @@ public class Field implements Comparable<Field> {
   
   private final int position;
 
+  private static final String[] EXCLUDED_FIELDS = new String[]{"position"};
   
   private Field(Builder builder) {
     this.name = builder.name;
@@ -69,12 +70,12 @@ public class Field implements Comparable<Field> {
   
   @Override
   public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
+    return HashCodeBuilder.reflectionHashCode(this, EXCLUDED_FIELDS);
   }
 
   @Override
   public boolean equals(Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
+    return EqualsBuilder.reflectionEquals(this, obj, EXCLUDED_FIELDS);
   }
 
   @Override
