@@ -1,7 +1,7 @@
 package org.eclipselabs.bobthebuilder;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 
@@ -155,7 +155,7 @@ public class DialogRequestConstructor {
     Set<WithMethod> withMethodComplement,
     WithMethodBuilder withMethodBuilder,
     BobTheBuilderTreeNode tree) throws JavaModelException {
-    Set<Field> fields = new HashSet<Field>();
+    Set<Field> fields = new TreeSet<Field>();
     for (WithMethod each : withMethodComplement) {
       fields.add(each.getField());
     }
@@ -168,7 +168,7 @@ public class DialogRequestConstructor {
     Set<FieldAssignment> fieldAssignmentComplement,
     ValidationBuilder validationBuilder,
     BobTheBuilderTreeNode tree) throws JavaModelException {
-    Set<Field> fields = new HashSet<Field>();
+    Set<Field> fields = new TreeSet<Field>();
     for (FieldAssignment each : fieldAssignmentComplement) {
       fields.add(each.getField());
     }
@@ -181,7 +181,7 @@ public class DialogRequestConstructor {
     Set<FieldAssignment> fieldAssignmentComplement,
     FieldAssignmentBuilder fieldTextBuilder,
     BobTheBuilderTreeNode tree) throws JavaModelException {
-    Set<Field> fields = new HashSet<Field>();
+    Set<Field> fields = new TreeSet<Field>();
     for (FieldAssignment each : fieldAssignmentComplement) {
       fields.add(each.getField());
     }

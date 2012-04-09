@@ -2,8 +2,10 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -48,7 +50,7 @@ public class BuilderTypeMapperTest {
   @Mock
   private BuildMethod buildMethod;
 
-  private Set<WithMethod> withMethods;
+  private TreeSet<WithMethod> withMethods;
 
   @Mock
   private ValidateMethod validateMethod;
@@ -76,10 +78,13 @@ public class BuilderTypeMapperTest {
             builderFieldsMapper, buildMethodMapper, withMethodsMapper, validateMethodMapper);
     Mockito.when(builderType.getElementName()).thenReturn(BuilderTypeMapper.BUILDER_CLASS_NAME);
     Mockito.when(type.getTypes()).thenReturn(new IType[] { builderType });
-    builderFields = Sets.newHashSet(field1, field2);
+    builderFields = Sets.newTreeSet();
+    builderFields.add(field1);
+    builderFields.add(field2);
     Mockito.when(builderFieldsMapper.map(builderType)).thenReturn(builderFields);
     Mockito.when(buildMethodMapper.map(builderType)).thenReturn(buildMethod);
-    withMethods = Sets.newHashSet(withMethod1);
+    withMethods = Sets.newTreeSet();
+    withMethods.add(withMethod1);
     Mockito.when(withMethodsMapper.map(builderType)).thenReturn(withMethods);
     Mockito.when(validateMethodMapper.map(builderType, imports, fields)).thenReturn(validateMethod);
   }
@@ -99,11 +104,10 @@ public class BuilderTypeMapperTest {
   @Test
   public void testBuilder() throws JavaModelException {
     BuilderType actual = builderTypeMapper.map(type, imports, fields);
-    BuilderType expected = new BuilderType.Builder().withBuilderFields(builderFields)
-        .withBuildMethod(buildMethod)
-        .withValidateMethod(validateMethod).withWithMethods(withMethods).build();
-    assertEquals(expected, actual);
-
+    assertEquals(buildMethod, actual.getBuildMethod());
+    assertEquals(validateMethod, actual.getValidateMethod());
+    assertEquals(withMethod1, actual.getWithMethods().iterator().next());
+    assertEquals(Sets.newHashSet(field1, field2), actual.getBuilderFields());
   }
 
 }

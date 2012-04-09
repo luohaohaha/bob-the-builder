@@ -1,6 +1,7 @@
 package org.eclipselabs.bobthebuilder.model;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -25,12 +26,14 @@ public class ConstructorWithBuilder {
 
     public String source;
 
-    private Set<FieldAssignment> fieldAssignment;
+    private Set<FieldAssignment> fieldAssignment = new TreeSet<FieldAssignment>();
 
     private String name;
 
     public Builder withFieldAssignment(Set<FieldAssignment> fieldAssignment) {
-      this.fieldAssignment = fieldAssignment;
+      Validate.notNull(fieldAssignment, "fieldAssignment may not be null");
+      Validate.noNullElements(fieldAssignment, "fieldAssignment may not contain null elements");
+      this.fieldAssignment.addAll(fieldAssignment);
       return this;
     }
 

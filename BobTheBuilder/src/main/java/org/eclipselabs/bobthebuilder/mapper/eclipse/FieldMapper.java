@@ -1,8 +1,8 @@
 package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.Flags;
@@ -29,14 +29,14 @@ public class FieldMapper {
     }
     return false;
   }
-  
+
   static abstract class FieldCollector<T> {
 
     protected abstract T createElement(IField each) throws JavaModelException;
-    
-    Set<T> collect (IType typeWithFields) throws JavaModelException {
+
+    Set<T> collect(IType typeWithFields) throws JavaModelException {
       Validate.notNull(typeWithFields, "typeWithFields may not be null");
-      Set<T> result = new HashSet<T>();
+      Set<T> result = new TreeSet<T>();
       for (IField each : typeWithFields.getFields()) {
         if (isFinalStatic(each)) {
           continue;
@@ -47,19 +47,20 @@ public class FieldMapper {
       return Collections.unmodifiableSet(result);
     }
   }
-  
+
   static class MappedFieldCollector extends FieldCollector<Field> {
 
     @Override
     protected Field createElement(IField each) throws JavaModelException {
       return new Field.Builder()
-      .withName(each.getElementName())
-      .withSignature(Signature.toString(each.getTypeSignature()))
-      .build();
+          .withName(each.getElementName())
+          .withSignature(Signature.toString(each.getTypeSignature()))
+          .withPosition(each.getSourceRange().getOffset())
+          .build();
     }
-    
+
   }
-  
+
   static class RawFieldCollector extends FieldCollector<IField> {
 
     @Override
@@ -67,6 +68,5 @@ public class FieldMapper {
       return each;
     }
 
-    
   }
 }

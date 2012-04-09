@@ -54,7 +54,8 @@ public class BuilderComposerTest {
     MockitoAnnotations.initMocks(this);
     fieldPredicate = new FieldPredicate.FieldValidation();
     builderComposer = new BuilderComposer(fieldPredicate);
-    fieldBuilder = new Field.Builder().withName(name).withSignature(signature);
+    fieldBuilder = 
+      new Field.Builder().withName(name).withSignature(signature).withPosition(3);
     source =
         "private void validate() {\n" +
           "  Preconditions.checkArgument(" +
@@ -67,10 +68,15 @@ public class BuilderComposerTest {
         .withValidationFramework(ValidationFramework.GOOGLE_GUAVA)
         .withValidatedFields(fieldAssignments);
     extraField =
-        new Field.Builder().withName("extraField").withSignature(extraFieldSignature).build();
+        new Field.Builder()
+          .withName("extraField")
+          .withSignature(extraFieldSignature)
+          .withPosition(1)
+          .build();
     missingFieldValidation = new Field.Builder()
         .withName(missingFieldValidationName)
         .withSignature(missingFieldValidationSignature)
+        .withPosition(2)
         .build();
     composerRequestBuilder = new ComposerRequest.Builder()
         .withBuildMethodInBuilder()

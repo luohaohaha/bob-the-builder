@@ -1,7 +1,7 @@
 package org.eclipselabs.bobthebuilder.model;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -27,7 +27,7 @@ public class ValidateMethod {
 
   public static class Builder {
 
-    private Set<FieldAssignment> validatedFields = new HashSet<FieldAssignment>();
+    private Set<FieldAssignment> validatedFields = new TreeSet<FieldAssignment>();
 
     private ValidationFramework validationFramework;
 
