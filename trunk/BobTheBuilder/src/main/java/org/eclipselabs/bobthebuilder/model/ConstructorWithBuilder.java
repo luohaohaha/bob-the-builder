@@ -1,7 +1,7 @@
 package org.eclipselabs.bobthebuilder.model;
 
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -26,7 +26,7 @@ public class ConstructorWithBuilder {
 
     public String source;
 
-    private Set<FieldAssignment> fieldAssignment = new TreeSet<FieldAssignment>();
+    private Set<FieldAssignment> fieldAssignment = new HashSet<FieldAssignment>();
 
     private String name;
 

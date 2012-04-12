@@ -93,7 +93,7 @@ public class DialogRequestConstructor {
           new FeatureTreeNode.Builder()
               .withData(constructorCompleteComplement
                   ? Feature.MISSING_CONSTRUCTOR
-                  : Feature.NONE)
+                  : Feature.NO_MISSING_CONSTRUCTOR)
               .withParent(tree)
               .withText(
                 constructorCompleteComplement
@@ -118,7 +118,7 @@ public class DialogRequestConstructor {
     tree.addChild(new FeatureTreeNode.Builder()
           .withData(buildMethodcompleteComplement
               ? Feature.MISSING_BUILD
-              : Feature.NONE)
+              : Feature.NO_MISSING_BUILD)
           .withParent(tree)
           .withText(buildMethodcompleteComplement
               ? "A build() method will be created in the builder"
@@ -128,7 +128,7 @@ public class DialogRequestConstructor {
     tree.addChild(new FeatureTreeNode.Builder()
           .withData(validateMethodComplement
               ? Feature.MISSING_VALIDATE
-              : Feature.NONE)
+              : Feature.NO_MISSING_VALIDATE)
           .withParent(tree)
           .withText(validateMethodComplement
               ? "A validate() method will be created in the builder"

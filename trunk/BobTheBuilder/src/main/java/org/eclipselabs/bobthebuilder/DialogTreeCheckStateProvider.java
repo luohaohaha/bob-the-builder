@@ -6,6 +6,18 @@ import org.eclipse.jface.viewers.ICheckStateProvider;
 
 public class DialogTreeCheckStateProvider implements ICheckStateProvider {
 
+  /*
+   * There is no point on disabling/un-checking these in the UI, they should always be activated
+   */
+  private EnumSet<Feature> unCheckedFeatures = 
+    EnumSet.of(
+      Feature.NO_MISSING_VALIDATE,
+      Feature.NO_MISSING_CONSTRUCTOR,  
+      Feature.NO_MISSING_BUILD, 
+      Feature.MISSING_BUILDER, 
+      Feature.MISSING_CONSTRUCTOR,
+      Feature.MISSING_BUILD);
+
   @Override
   public boolean isChecked(Object arg0) {
     return true;
@@ -15,9 +27,7 @@ public class DialogTreeCheckStateProvider implements ICheckStateProvider {
   public boolean isGrayed(Object arg0) {
     TreeNode<?, ?, ?> node = (TreeNode<?, ?, ?>)arg0;
     Object data = node.getData();
-    EnumSet<Feature> unCheckedFeatures = 
-      EnumSet.of(Feature.NONE, Feature.MISSING_BUILDER, Feature.MISSING_CONSTRUCTOR);
-    if (data instanceof Feature && node.getChildren() != null) {
+    if (data instanceof Feature && node.getChildren() != null && !node.getChildren().isEmpty()) {
       return true;
     }
     else if (data instanceof Feature && unCheckedFeatures.contains((Feature) data)) {

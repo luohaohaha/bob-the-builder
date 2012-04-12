@@ -9,6 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -51,6 +52,7 @@ public class DialogConstructor {
           new ScrolledComposite(getShell(), SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
         GridData treeGridData = createTopSectionGridData();
         treeGridData.heightHint = 250;
+        treeGridData.widthHint = 425;
         scrolledComposite.setLayoutData(treeGridData);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
@@ -63,14 +65,20 @@ public class DialogConstructor {
         featuresTreeViewer.setContentProvider(new FieldTreeContentProvider());
         featuresTreeViewer.setCheckStateProvider(new DialogTreeCheckStateProvider());
         featuresTreeViewer.setComparator(new DialogTreeEntryComparator());
-        featuresTreeViewer.setAutoExpandLevel(0);
+        /*
+         * Expand the entire tree so that DialogTreeCheckStateProvider 
+         * is call upon all elements in the tree.
+         */
+        featuresTreeViewer.setAutoExpandLevel(2);
         featuresTreeViewer.setInput(dialogRequest.getTree());
         featuresTreeViewer.setAllChecked(true);
-        featuresTreeViewer.getControl().setSize(100, 100);
-        scrolledComposite.setContent(featuresTreeViewer.getControl());
+        Control featureTree = featuresTreeViewer.getControl();
+        featureTree.setSize(100, 100);
+        scrolledComposite.setContent(featureTree);
         
         Label validationLabel = new Label(getShell(), SWT.BORDER);
         validationLabel.setText("Select validation framework");
+        validationLabel.setAlignment(SWT.RIGHT);
         validationLabel.setLayoutData(createValidationAreaGridData());
         
         final Combo validationCombo = new Combo(getShell(), SWT.READ_ONLY);
@@ -149,6 +157,11 @@ public class DialogConstructor {
           }
         });
         display();
+        /*
+         * So that the tree is displayed collapsed but the items are checked
+         */
+        featuresTreeViewer.collapseAll();
+        getShell().layout();
         waitAndSee();
       }
 

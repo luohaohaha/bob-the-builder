@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 
@@ -60,7 +61,7 @@ public class BuilderComposer {
     Validate.noNullElements(missingFields, "missingFields may not contain null elements");
     ArrayList<String> listOfLines = new ArrayList<String>();
     listOfLines.add("private void validate() {");
-    for (Field each : missingFields) {
+    for (Field each : new TreeSet<Field>(missingFields)) {
       listOfLines.add("  " + validationFramework.composeFieldValidation(each));
     }
     listOfLines.add("}");
@@ -87,7 +88,7 @@ public class BuilderComposer {
       }
     }
     sourceLines.addAll(originalLines);
-    for (Field each : request.getMissingFieldValidationsInBuild()) {
+    for (Field each : new TreeSet<Field>(request.getMissingFieldValidationsInBuild())) {
       sourceLines.add("  " + request.getValidationFramework().composeFieldValidation(each));
     }
     sourceLines.add("}");

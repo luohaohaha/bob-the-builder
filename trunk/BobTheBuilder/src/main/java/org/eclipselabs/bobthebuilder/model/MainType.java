@@ -1,8 +1,8 @@
 package org.eclipselabs.bobthebuilder.model;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -36,7 +36,7 @@ public class MainType {
 
     private String name;
 
-    private Set<Field> fields = new TreeSet<Field>();
+    private Set<Field> fields = new HashSet<Field>();
 
     public Builder withConstructorWithBuilder(ConstructorWithBuilder constructorWithBuilder) {
       this.constructorWithBuilder = constructorWithBuilder;

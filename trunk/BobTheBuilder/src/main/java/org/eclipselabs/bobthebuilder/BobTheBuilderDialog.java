@@ -25,7 +25,7 @@ public abstract class BobTheBuilderDialog extends Dialog {
   
   public BobTheBuilderDialog(Shell parentShell) {
     super(parentShell);
-    shell = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.ON_TOP);
+    shell = new Shell(parentShell, SWT.APPLICATION_MODAL);
     windowCoordinates = centerWindow();
     shell.addListener(SWT.Traverse, createListenerThatClosesDialog());
     shell.setLocation(windowCoordinates.getX(), windowCoordinates.getY());

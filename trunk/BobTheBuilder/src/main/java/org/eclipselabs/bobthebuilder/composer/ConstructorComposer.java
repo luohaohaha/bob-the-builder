@@ -2,6 +2,7 @@ package org.eclipselabs.bobthebuilder.composer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -29,12 +30,12 @@ public class ConstructorComposer {
   public String composeFromScratch(ComposerRequest request, String mainTypeName) {
     Validate.notNull(request, "request may not be null");
     Validate.notNull(mainTypeName, "mainTypeName may not be null");
-    Set<Field> fieldsToAddInBuilder = new TreeSet<Field>();
+    Set<Field> fieldsToAddInBuilder = new HashSet<Field>();
     fieldsToAddInBuilder.addAll(request.getMissingAssignmentsInConstructor());
     fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());
     List<String> sourceLines = new ArrayList<String>();
     sourceLines.add("private " + mainTypeName + "(Builder builder) {");
-    for (Field each : fieldsToAddInBuilder) {
+    for (Field each : new TreeSet<Field>(fieldsToAddInBuilder)) {
       sourceLines.add(composeAssignmentsInConstructorWithBuilder(each));
     }
     sourceLines.add("}");
@@ -61,7 +62,9 @@ public class ConstructorComposer {
       }
     }
     sourceLines.addAll(originalLines);
-    for (Field each : request.getMissingAssignmentsInConstructor()) {
+    Set<Field> orderedMissingAssignmentsInConstructor = 
+      new TreeSet<Field>(request.getMissingAssignmentsInConstructor());
+    for (Field each : orderedMissingAssignmentsInConstructor) {
       sourceLines .add("  " + composeSingleAssignment(each));
     }
     sourceLines.add("}");

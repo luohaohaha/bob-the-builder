@@ -2,8 +2,8 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.core.Flags;
@@ -40,7 +40,7 @@ public class FieldMapper {
 
     Set<T> collect(IType typeWithFields) throws JavaModelException {
       Validate.notNull(typeWithFields, "typeWithFields may not be null");
-      Set<T> result = new TreeSet<T>(getComparator());
+      Set<T> result = new HashSet<T>();
       for (IField each : typeWithFields.getFields()) {
         if (isFinalStatic(each)) {
           continue;
