@@ -1,8 +1,8 @@
 package org.eclipselabs.bobthebuilder.model;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -31,11 +31,11 @@ public class BuilderType {
 
   public static class Builder {
 
-    private Set<WithMethod> withMethods = new TreeSet<WithMethod>();
+    private Set<WithMethod> withMethods = new HashSet<WithMethod>();
 
     private BuildMethod buildMethod = null;
 
-    private Set<Field> builderFields = new TreeSet<Field>();
+    private Set<Field> builderFields = new HashSet<Field>();
 
     private ValidateMethod validateMethod = null;
 

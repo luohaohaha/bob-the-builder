@@ -1,6 +1,7 @@
 package org.eclipselabs.bobthebuilder.composer;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 
@@ -67,7 +68,7 @@ public class Composer {
     else {
       builder = flattenedICompilationUnit.getBuilderType();
     }
-    for (Field each : request.getMissingFieldsInBuilder()) {
+    for (Field each : new TreeSet<Field>(request.getMissingFieldsInBuilder())) {
       String composeFieldInBuilder = builderComposer.composeFieldDeclaration(each);
       Set<IMethod> withMethods = flattenedICompilationUnit.getExistingMethodsMinusExtra();
       IMethod firstWithMethod = null;
@@ -88,7 +89,7 @@ public class Composer {
         }
       }
     }
-    for (Field each : request.getMissingWithMethodsInBuilder()) {
+    for (Field each : new TreeSet<Field>(request.getMissingWithMethodsInBuilder())) {
       String composeWithMethod = builderComposer.composeWithMethod(each);
       builder.createMethod(
         composeWithMethod, flattenedICompilationUnit.getBuildMethod(), false, null);

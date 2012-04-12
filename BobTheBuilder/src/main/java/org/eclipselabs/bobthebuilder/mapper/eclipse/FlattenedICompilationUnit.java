@@ -3,7 +3,6 @@ package org.eclipselabs.bobthebuilder.mapper.eclipse;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -67,10 +66,10 @@ public class FlattenedICompilationUnit {
     private IType mainType;
 
     private Set<IMethod> existingWithMethods =
-        new TreeSet<IMethod>(new RawWithMethodComparator());
+        new HashSet<IMethod>();
 
     private Set<IMethod> existingWithMethodsMinusExtra =
-        new TreeSet<IMethod>(new RawWithMethodComparator());
+        new HashSet<IMethod>();
 
     public Builder withBuildMethod(IMethod buildMethod) {
       this.buildMethod = buildMethod;

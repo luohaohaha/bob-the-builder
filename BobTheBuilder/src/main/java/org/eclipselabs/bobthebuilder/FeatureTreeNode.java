@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipselabs.bobthebuilder.model.Field;
 
 public class FeatureTreeNode implements TreeNode<String, Feature, Field> {
@@ -48,7 +51,7 @@ public class FeatureTreeNode implements TreeNode<String, Feature, Field> {
     children.add(node);
     return this;
   }
-  
+
   public static class Builder {
 
     private Feature data;
@@ -77,4 +80,18 @@ public class FeatureTreeNode implements TreeNode<String, Feature, Field> {
     }
   }
 
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode(this);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return EqualsBuilder.reflectionEquals(this, obj);
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
+  }
 }

@@ -1,9 +1,9 @@
 package org.eclipselabs.bobthebuilder.composer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -19,7 +19,7 @@ public class ConstructorWithBuilderComposer {
   public StringResult compose(
     ComposerRequest request, IType type, FlattenedICompilationUnit flattenedICompilationUnit) throws JavaModelException {
     if (request.isCreateConstructorWithBuilder()) {
-      Set<Field> fieldsToAddInBuilder = new TreeSet<Field>();
+      Set<Field> fieldsToAddInBuilder = new HashSet<Field>();
       fieldsToAddInBuilder.addAll(request.getMissingFieldsInBuilder());
       fieldsToAddInBuilder.removeAll(request.getExtraFieldsInBuilder());//This sounds idiotic
       List<String> sourceLines = new ArrayList<String>();
